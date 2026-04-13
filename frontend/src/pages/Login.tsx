@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
+import HomeNavbar from "../components/HomeNavbar";
+import "./Login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -33,6 +35,7 @@ export default function Login() {
 
   return (
     <div className="login-container">
+      <HomeNavbar />
       <div className="login-box">
         <h2>Bienvenido</h2>
         <p>Inicia sesión en tu cuenta</p>

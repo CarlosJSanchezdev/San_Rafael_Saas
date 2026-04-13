@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useToast } from "../context/ToastContext";
+import HomeNavbar from "../components/HomeNavbar";
 import "./RecuperarPassword.css";
 
 export default function RecuperarPassword() {
@@ -53,8 +54,9 @@ export default function RecuperarPassword() {
 
   return (
     <div className="recuperar-container">
+      <HomeNavbar />
       <motion.div 
-        className="recuperar-box glass-card"
+        className="recuperar-box"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >

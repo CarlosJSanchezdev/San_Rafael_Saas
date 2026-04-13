@@ -41,8 +41,8 @@ export default function Contacto() {
       </motion.div>
 
       <div className="contacto-container">
-        <motion.div 
-          className="contacto-info glass-card"
+        <motion.div
+          className="contacto-info"
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
@@ -95,7 +95,7 @@ export default function Contacto() {
         </motion.div>
 
         <motion.div 
-          className="contacto-form glass-card"
+          className="contacto-form"
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
@@ -174,7 +174,7 @@ export default function Contacto() {
       </div>
 
       <motion.div 
-        className="contacto-mapa glass-card"
+        className="contacto-mapa"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}

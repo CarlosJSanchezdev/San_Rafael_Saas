@@ -17,7 +17,7 @@ export default function Carrito() {
     const pathMatch = location.pathname.match(/^\/t\/([^/]+)/);
     if (pathMatch) {
       setSubdominioTienda(pathMatch[1]);
-      // Fetch store color
+      // Fetch store color by subdomain
       axios.get(`http://localhost:8000/tiendas/por-subdominio/${pathMatch[1]}`)
         .then(res => {
           if (res.data.color_primario) {
@@ -29,6 +29,20 @@ export default function Carrito() {
       setSubdominioTienda(null);
     }
   }, [location.pathname]);
+
+  // Fetch color based on tienda_id when cart is opened (fallback for non-store routes)
+  useEffect(() => {
+    if (isOpen && !subdominioTienda) {
+      const tiendaId = items.length > 0 ? items[0].tienda_id : null;
+      if (tiendaId) {
+        axios.get(`http://localhost:8000/tiendas/${tiendaId}`)
+          .then(res => {
+            if (res.data.color_primario) setColorTienda(res.data.color_primario);
+          })
+          .catch(() => {});
+      }
+    }
+  }, [isOpen, subdominioTienda, items]);
 
   const handleCheckout = () => {
     toggleCarrito();

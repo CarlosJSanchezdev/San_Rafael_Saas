@@ -154,6 +154,17 @@ def obtener_tienda_por_subdominio(subdominio: str, db: Session = Depends(get_db)
     return tienda
 
 
+@router_publico.get("/tiendas/{tienda_id}", response_model=schemas.TiendaPublicaOut)
+def obtener_tienda_por_id(tienda_id: int, db: Session = Depends(get_db)):
+    tienda = db.query(models.Tienda).filter(
+        models.Tienda.id == tienda_id,
+        models.Tienda.activa == True
+    ).first()
+    if not tienda:
+        raise HTTPException(status_code=404, detail="Tienda no encontrada")
+    return tienda
+
+
 @router_publico.get("/tiendas/por-slug/{slug}", response_model=schemas.TiendaPublicaOut)
 def obtener_tienda_por_slug(slug: str, db: Session = Depends(get_db)):
     tienda = db.query(models.Tienda).filter(

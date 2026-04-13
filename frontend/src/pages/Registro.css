@@ -1,7 +1,8 @@
-/* Recuperar Password - Landing theme colors */
-.recuperar-container {
+/* Registro Page - Landing theme colors */
+.registro-container {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: #0a0a0a;
@@ -12,7 +13,7 @@
   padding: 6rem 1rem 2rem;
 }
 
-.recuperar-box {
+.registro-box {
   width: 100%;
   max-width: 420px;
   background: rgba(255, 255, 255, 0.03);
@@ -23,7 +24,7 @@
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
 }
 
-.recuperar-box h2 {
+.registro-box h2 {
   text-align: center;
   font-size: 1.75rem;
   margin-bottom: 0.5rem;
@@ -33,27 +34,21 @@
   background-clip: text;
 }
 
-.recuperar-box > p {
+.registro-box p {
   text-align: center;
   color: #888;
   margin-bottom: 2rem;
   font-size: 0.875rem;
 }
 
-.recuperar-box form {
+.formulario-registro {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.recuperar-box .form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #888;
-  font-size: 0.875rem;
-}
-
-.recuperar-box .form-group input {
+.formulario-registro input,
+.formulario-registro select {
   width: 100%;
   padding: 1rem 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -64,13 +59,31 @@
   transition: all 0.3s ease;
 }
 
-.recuperar-box .form-group input:focus {
+.formulario-registro input:focus,
+.formulario-registro select:focus {
   outline: none;
   border-color: #663399;
   box-shadow: 0 0 20px rgba(102, 51, 153, 0.3);
 }
 
-.recuperar-box .btn-primary {
+.formulario-registro input::placeholder {
+  color: #666;
+}
+
+.formulario-registro select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
+
+.formulario-registro select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.formulario-registro button {
   width: 100%;
   padding: 1rem;
   border: none;
@@ -81,16 +94,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 0.5rem;
 }
 
-.recuperar-box .btn-primary:hover {
+.formulario-registro button:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(102, 51, 153, 0.4);
-}
-
-.recuperar-box .btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .switch-link {

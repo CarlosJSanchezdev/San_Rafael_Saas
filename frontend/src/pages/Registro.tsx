@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
+import HomeNavbar from "../components/HomeNavbar";
+import "./Registro.css";
 
 export default function Registro() {
   const [nombre, setNombre] = useState("");
@@ -31,6 +33,7 @@ export default function Registro() {
 
   return (
     <div className="registro-container">
+      <HomeNavbar />
       <div className="registro-box">
         <h2>Crear Cuenta</h2>
         <p>Regístrate para comenzar</p>
