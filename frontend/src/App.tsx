@@ -21,6 +21,7 @@ import ProductoDetalle from './pages/ProductoDetalle';
 import Checkout from './pages/Checkout';
 import Pedidos from './pages/Pedidos';
 import Contacto from './pages/Contacto';
+import Home from './pages/Home';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { usuario, loading } = useAuth();
@@ -52,7 +53,7 @@ function App() {
           <Router>
             <Carrito />
             <Routes>
-            <Route path="/" element={<Tienda />} />
+            <Route path="/" element={<Home />} />
             <Route path="/tienda" element={<Tienda />} />
             <Route path="/tienda/producto/:id" element={<ProductoDetalle />} />
             <Route path="/checkout" element={<Checkout />} />
