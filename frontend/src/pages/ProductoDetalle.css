@@ -1,0 +1,214 @@
+.producto-detalle-page {
+  min-height: 100vh;
+  padding-top: 70px;
+}
+
+.loading-page,
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 70px);
+  text-align: center;
+  padding: 2rem;
+}
+
+.not-found h2 {
+  margin-bottom: 1.5rem;
+}
+
+.btn-volver {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.detalle-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.volver-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-bottom: 2rem;
+  transition: color 0.3s ease;
+}
+
+.volver-link:hover {
+  color: var(--accent);
+}
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.detalle-imagen {
+  aspect-ratio: 1;
+  background: var(--bg-glass);
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.detalle-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6rem;
+  color: var(--text-secondary);
+}
+
+.detalle-info {
+  padding: 1rem 0;
+}
+
+.categoria-tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--accent);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.detalle-info h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.detalle-info .precio {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+.detalle-info .descripcion {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.stock-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #10b981;
+  margin-bottom: 2rem;
+}
+
+.cantidad-selector {
+  margin-bottom: 2rem;
+}
+
+.cantidad-selector label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.5rem;
+}
+
+.selector button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.selector button:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.selector span {
+  width: 40px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn-agregar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 2rem;
+  background: var(--gradient-button);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-agregar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px var(--accent-glow);
+}
+
+.acciones .total {
+  text-align: center;
+  font-size: 1.125rem;
+}
+
+.acciones .total strong {
+  color: var(--accent);
+  font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .detalle-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .detalle-info h1 {
+    font-size: 1.75rem;
+  }
+}

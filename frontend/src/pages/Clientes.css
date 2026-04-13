@@ -1,0 +1,91 @@
+.clientes-page {
+  width: 100%;
+}
+
+.clientes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.cliente-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cliente-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.cliente-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--gradient-button);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.cliente-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cliente-info h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cliente-empresa {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.cliente-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cliente-contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cliente-contacto span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.cliente-notas {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  padding: 0.75rem;
+  background: var(--bg-glass);
+  border-radius: 8px;
+  margin: 0;
+}
+
+.sin-resultados {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}

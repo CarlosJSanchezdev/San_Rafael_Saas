@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>La Miscelanea - Moda, Kids y Accesorios</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7311d4",
+                        "whatsapp": "#25D366",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Manrope', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        details[open] summary .expand-icon {
+            transform: rotate(180deg);
+        }
+        .whatsapp-tooltip {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .whatsapp-container:hover .whatsapp-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="fixed bottom-8 right-8 z-[60] flex items-center gap-3 whatsapp-container">
+<div class="whatsapp-tooltip bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 text-sm font-semibold whitespace-nowrap">
+        ¿Necesitas ayuda? Chatea con nosotros
+    </div>
+<a class="w-16 h-16 bg-whatsapp text-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300" href="https://wa.me/yourphonenumber" rel="noopener noreferrer" target="_blank">
+<svg class="w-8 h-8 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .004 5.412.001 12.049a11.82 11.82 0 001.611 5.973L0 24l6.117-1.605a11.845 11.845 0 005.933 1.586h.005c6.637 0 12.048-5.413 12.051-12.051a11.841 11.841 0 00-3.536-8.509z"></path>
+</svg>
+</a>
+</div>
+<header class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-20">
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-2 text-primary" href="#">
+<span class="material-symbols-outlined text-3xl">shopping_bag</span>
+<h1 class="text-xl font-extrabold tracking-tight">La Miscelanea</h1>
+</a>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#categorias">Categorías</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#productos">Destacados</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#nosotros">Nosotros</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#testimonios">Testimonios</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#faq">FAQ</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden sm:flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-lg hover:shadow-primary/30 transition-all">
+                    Explorar Catálogo
+                </button>
+<button class="p-2 text-slate-600 dark:text-slate-300 hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">person</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<main>
+<section class="relative overflow-hidden bg-white dark:bg-background-dark py-20 lg:py-32">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-12">
+<div class="flex-1 text-center lg:text-left z-10">
+<span class="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest text-primary uppercase bg-primary/10 rounded-full">
+                    Nueva Colección 2024
+                </span>
+<h2 class="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white leading-[1.1] mb-6">
+                    Estilo y Calidad para <span class="text-primary">Toda la Familia</span>
+</h2>
+<p class="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                    Descubre una selección única de moda infantil, ropa contemporánea y accesorios exclusivos. En La Miscelanea, unimos tendencia y comodidad en un solo lugar.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+<a class="px-8 py-4 bg-primary text-white rounded-xl font-bold text-lg hover:shadow-xl hover:shadow-primary/30 transform hover:-translate-y-1 transition-all flex items-center justify-center gap-2" href="#categorias">
+                        Ver Categorías
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+<a class="px-8 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl font-bold text-lg hover:bg-slate-50 transition-all flex items-center justify-center" href="#productos">
+                        Productos Destacados
+                    </a>
+</div>
+</div>
+<div class="flex-1 relative w-full max-w-xl lg:max-w-none">
+<div class="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
+<img alt="Hero Lifestyle" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz3eK4OXVgYfn6KbXB8zUYsIkov4q2f2Q8_cN88822EZov16HRVGwBDhAlq4C24WmVDBzo0ursanh3VaRWQQ-ITeNF2vzg0wgHX4L45kSETj8LYbhsSWdwfWwyrlMiDFcoRTnxJNoTlWPXfWTTflB_Ps7HNKlyVGL0u8kmNoI37ENRH-7eCdnS7Gv420-ElYXVbNN2EmXPS-jtbsHiAUG3pYckeWnOxRVVrLig416qL8W7WmePIXJybILUu_mJR9tffd5YIBJPt2fl"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<div class="absolute bottom-8 left-8 text-white">
+<p class="text-sm font-medium opacity-80">Tendencia de Verano</p>
+<p class="text-2xl font-bold italic">Conjuntos Florales</p>
+</div>
+</div>
+<div class="absolute -top-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-10 -left-10 w-48 h-48 bg-primary/10 rounded-full blur-3xl"></div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-slate-50 dark:bg-background-dark/50" id="categorias">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-16">
+<h2 class="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mb-4">Nuestras Categorías</h2>
+<p class="text-slate-500 max-w-xl mx-auto">Explora nuestras secciones especializadas diseñadas para cada estilo de vida.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer">
+<img alt="Kids Section" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTtzkUE_nVWgwyv_q-2BvS-GkXQc-1CalTGScjblqAYbCP1HqGRFBS6h0ZmVkVA0-PPPDsb-qRib2XEVO08rzMqAC-VRHeQtQLYhVUqNc0qfjSO_CE48Bgs7npnJtP8QzOcW1hOg80aLxVx6Q_Hyi2nB0_WERTJT53zdWH9JqMzJR3WUwI7Sa0L7sKmJ9cqVGooShBKZMEArw8vpsso5BjCP7XwGuzCzwQwCNzoCTl-khj2LDpzE9GVlkVp0_pJhljhgxz2T9awgCq"/>
+<div class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
+<div class="absolute inset-0 p-8 flex flex-col justify-end">
+<h3 class="text-3xl font-black text-white mb-2 tracking-tight">Mundo Kids</h3>
+<p class="text-white/80 text-sm mb-6 max-w-xs">Ropa divertida y resistente para los más pequeños de casa.</p>
+<span class="inline-flex items-center gap-2 text-white font-bold group-hover:gap-4 transition-all">
+                            Explorar <span class="material-symbols-outlined">east</span>
+</span>
+</div>
+</div>
+<div class="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer">
+<img alt="Clothing Section" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClRtabcMiAnzCD94wQU3Crhs8ir65XPSdrBkoTabnSPa_7oiCj6P0CwIq8_z4gHXQDy7K19aaeChgUQqjJDzZXKtxgSuZVN9Mge0MYdDVQZW4grkJIRJLeMQhFRkOuJmCuqr6WI59Dn4Jb09I987zEhPv6HhxOynLlazMnM9CUyt2U5WMYed1GsrKiVzY8G8QU5E98x6zPYRGn55clGSCz4f4c4v7kWuPHOn5vIfxnEwCe8uGdJqhUK2KAGc1iXDmIuTEm6ZYP2pAv"/>
+<div class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
+<div class="absolute inset-0 p-8 flex flex-col justify-end">
+<h3 class="text-3xl font-black text-white mb-2 tracking-tight">Ropa &amp; Tendencia</h3>
+<p class="text-white/80 text-sm mb-6 max-w-xs">Colecciones contemporáneas para hombre y mujer.</p>
+<span class="inline-flex items-center gap-2 text-white font-bold group-hover:gap-4 transition-all">
+                            Explorar <span class="material-symbols-outlined">east</span>
+</span>
+</div>
+</div>
+<div class="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer">
+<img alt="Accessories Section" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx7KSHR7Z0tkwFZadnoRgHtcJKwpsC4t-HPMj6XY7Z6s3p4hVhNy_0Whf0tuNe-FK3t6Yz4Aeazlu7HP_HQvziRp8_XwlgDNLst2KS0a979EIFw0NLZmTIpJTGN0NmoheEqkyVsLr44y6YmkRjkP8626G0po5v-wbuv8_Vu6fW1qCFMC9hzZEfP2-ITjwvVEC1UUX2a7tuchedG_VecKiGfzcGbeVsRnll2B27ZpBg4HvEiwgX-6YC_SFJ8YMoP4N6zLparTsBQ6qm"/>
+<div class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
+<div class="absolute inset-0 p-8 flex flex-col justify-end">
+<h3 class="text-3xl font-black text-white mb-2 tracking-tight">Accesorios</h3>
+<p class="text-white/80 text-sm mb-6 max-w-xs">El complemento perfecto para cualquier outfit.</p>
+<span class="inline-flex items-center gap-2 text-white font-bold group-hover:gap-4 transition-all">
+                            Explorar <span class="material-symbols-outlined">east</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-white dark:bg-background-dark" id="productos">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+<div>
+<h2 class="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mb-4">Productos Destacados</h2>
+<p class="text-slate-500">Lo que más gusta a nuestra comunidad esta semana.</p>
+</div>
+<div class="flex gap-4">
+<button class="p-3 border border-slate-200 dark:border-slate-800 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-3 border border-slate-200 dark:border-slate-800 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="group cursor-pointer">
+<div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 mb-5">
+<img alt="Chaqueta Acolchada" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3HsSILP0PDIjNbZgXKsOPDw10HQ8QR5vp4BblJfe4c9eCarfKC__PbhHKH5WCog2UmzeXkSI8yYTQQipVlEU6n2iHHIZQBR9QC0tk8moUgRHaFFHPVJN5uW3D4crmvrpYENmqn_KqDD8ROUz2uasE4fn_CPyB3vZ9QHmVdzhW8vG_stHyfbVFRmujKHcQaokDGYsM9onh9fQu4Fqw1rULp6ZJYayFVlom2DdlNweIbjAM0aKTzUNPNw3A0jfOPJcj2MjleQMFLEgp"/>
+<div class="absolute top-4 left-4 bg-primary text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">Nuevo</div>
+<button class="absolute bottom-4 right-4 bg-white p-4 rounded-full shadow-xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+<span class="material-symbols-outlined text-primary text-xl">add_shopping_cart</span>
+</button>
+</div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100 mb-1 group-hover:text-primary transition-colors">Chaqueta Acolchada</h4>
+<p class="text-slate-500 text-sm mb-2">Kids Wear</p>
+<p class="text-primary font-black text-lg">$125.000</p>
+</div>
+<div class="group cursor-pointer">
+<div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 mb-5">
+<img alt="Conjunto Verano" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz3eK4OXVgYfn6KbXB8zUYsIkov4q2f2Q8_cN88822EZov16HRVGwBDhAlq4C24WmVDBzo0ursanh3VaRWQQ-ITeNF2vzg0wgHX4L45kSETj8LYbhsSWdwfWwyrlMiDFcoRTnxJNoTlWPXfWTTflB_Ps7HNKlyVGL0u8kmNoI37ENRH-7eCdnS7Gv420-ElYXVbNN2EmXPS-jtbsHiAUG3pYckeWnOxRVVrLig416qL8W7WmePIXJybILUu_mJR9tffd5YIBJPt2fl"/>
+<button class="absolute bottom-4 right-4 bg-white p-4 rounded-full shadow-xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+<span class="material-symbols-outlined text-primary text-xl">add_shopping_cart</span>
+</button>
+</div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100 mb-1 group-hover:text-primary transition-colors">Conjunto Verano Floral</h4>
+<p class="text-slate-500 text-sm mb-2">Moda Mujer</p>
+<p class="text-primary font-black text-lg">$78.000</p>
+</div>
+<div class="group cursor-pointer">
+<div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 mb-5">
+<img alt="Tenis Deportivos" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK_c-6IEzKNFkcPR9cgnbdjwVrwdq-18gxhisQoinKOKngnQHEHQI_qObhkGhUc08OfGAX2J0XtSleid5J-k3ATs55AzWPVejeY77NkrK8x9Wf6ppWLgoY0dnCybcKSJd-H-L1gPwxn9YDS_iL2b-aU8fQgk5caWdo2y7E-1TMiUPnyt6IfDsU3SJ1u9ePebGfUxx6kVobDIsDt11Bms_jLpczVzXfBViaLZbvlP_1BjvArZmda2l7-p0Oun4IZtupADwM5ls5AEvO"/>
+<button class="absolute bottom-4 right-4 bg-white p-4 rounded-full shadow-xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+<span class="material-symbols-outlined text-primary text-xl">add_shopping_cart</span>
+</button>
+</div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100 mb-1 group-hover:text-primary transition-colors">Tenis Deportivos Ultra</h4>
+<p class="text-slate-500 text-sm mb-2">Calzado</p>
+<p class="text-primary font-black text-lg">$210.000</p>
+</div>
+<div class="group cursor-pointer">
+<div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 mb-5">
+<img alt="Gafas de Sol Kids" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx7KSHR7Z0tkwFZadnoRgHtcJKwpsC4t-HPMj6XY7Z6s3p4hVhNy_0Whf0tuNe-FK3t6Yz4Aeazlu7HP_HQvziRp8_XwlgDNLst2KS0a979EIFw0NLZmTIpJTGN0NmoheEqkyVsLr44y6YmkRjkP8626G0po5v-wbuv8_Vu6fW1qCFMC9hzZEfP2-ITjwvVEC1UUX2a7tuchedG_VecKiGfzcGbeVsRnll2B27ZpBg4HvEiwgX-6YC_SFJ8YMoP4N6zLparTsBQ6qm"/>
+<button class="absolute bottom-4 right-4 bg-white p-4 rounded-full shadow-xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+<span class="material-symbols-outlined text-primary text-xl">add_shopping_cart</span>
+</button>
+</div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100 mb-1 group-hover:text-primary transition-colors">Gafas de Sol Protect</h4>
+<p class="text-slate-500 text-sm mb-2">Accesorios</p>
+<p class="text-primary font-black text-lg">$35.000</p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-slate-50 dark:bg-background-dark/30 overflow-hidden" id="nosotros">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid lg:grid-cols-2 gap-16 items-center">
+<div class="relative">
+<div class="relative z-10 grid grid-cols-2 gap-4">
+<div class="space-y-4">
+<img alt="Quality Detail" class="w-full aspect-square object-cover rounded-2xl shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoprjmwRMZv-JVHZd68dl143gLxIFEqzLjYLzAJdEDatUgH3Y1ppxv0Iu3Lvf_ZBdw1A06P-7Mk1hxdmoG4DghmjsnizQCdO61l0ip_2WVLsoYDXbaNNU_iqqnGuUFqSRdGWYOqwEf97GogJrNQuxTBYimo8fuiNnhpox0E_R1oPqDZiG5KzIEfZp4Ik0G-qYxGYAwO717Yk5uNRqzbZWP2dNV-7zwd6-lTFmEcApG6_BTgKHT_78Xmeo-qo4jrxRY72Zyl4Laoy4L"/>
+<div class="bg-primary p-8 rounded-2xl text-white">
+<span class="material-symbols-outlined text-4xl mb-4">verified</span>
+<p class="font-black text-3xl">100%</p>
+<p class="text-sm font-bold opacity-80 uppercase tracking-widest">Calidad Premium</p>
+</div>
+</div>
+<div class="space-y-4 pt-12">
+<div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-primary/5">
+<span class="material-symbols-outlined text-primary text-4xl mb-4">local_shipping</span>
+<p class="font-black text-3xl text-slate-900 dark:text-white">Envío</p>
+<p class="text-sm font-bold text-slate-500 uppercase tracking-widest">A todo el país</p>
+</div>
+<img alt="Lifestyle Detail" class="w-full aspect-square object-cover rounded-2xl shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3HsSILP0PDIjNbZgXKsOPDw10HQ8QR5vp4BblJfe4c9eCarfKC__PbhHKH5WCog2UmzeXkSI8yYTQQipVlEU6n2iHHIZQBR9QC0tk8moUgRHaFFHPVJN5uW3D4crmvrpYENmqn_KqDD8ROUz2uasE4fn_CPyB3vZ9QHmVdzhW8vG_stHyfbVFRmujKHcQaokDGYsM9onh9fQu4Fqw1rULp6ZJYayFVlom2DdlNweIbjAM0aKTzUNPNw3A0jfOPJcj2MjleQMFLEgp"/>
+</div>
+</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 rounded-full blur-3xl -z-10"></div>
+</div>
+<div class="space-y-8">
+<h2 class="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white">Pasión por la Moda, Compromiso con la Calidad</h2>
+<p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                        En La Miscelanea, no solo vendemos ropa; ofrecemos experiencias. Seleccionamos cada prenda pensando en la durabilidad, el estilo y la comodidad de quienes más quieres.
+                    </p>
+<ul class="space-y-6">
+<li class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Variedad Exclusiva</h4>
+<p class="text-sm text-slate-500">Desde básicos esenciales hasta piezas de tendencia únicas.</p>
+</div>
+</li>
+<li class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">eco</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Materiales Sostenibles</h4>
+<p class="text-sm text-slate-500">Priorizamos fibras naturales y procesos responsables.</p>
+</div>
+</li>
+<li class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Atención Personalizada</h4>
+<p class="text-sm text-slate-500">Estamos contigo en cada paso de tu compra.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-white dark:bg-background-dark" id="testimonios">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-16">
+<h2 class="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mb-4">Lo que dicen nuestros clientes</h2>
+<div class="flex justify-center gap-1 text-primary">
+<span class="material-symbols-outlined">star</span>
+<span class="material-symbols-outlined">star</span>
+<span class="material-symbols-outlined">star</span>
+<span class="material-symbols-outlined">star</span>
+<span class="material-symbols-outlined">star</span>
+</div>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-10 rounded-3xl border border-primary/5 relative">
+<span class="absolute top-6 right-8 text-primary/10 material-symbols-outlined text-6xl">format_quote</span>
+<p class="text-slate-600 dark:text-slate-300 italic mb-8 relative z-10 leading-relaxed">
+                        "La calidad de la ropa para niños es excepcional. He lavado las camisetas de algodón muchas veces y siguen como nuevas. ¡Mi tienda favorita!"
+                    </p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">MA</div>
+<div>
+<p class="font-bold text-slate-900 dark:text-white">Mariana Arias</p>
+<p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Cliente Verificada</p>
+</div>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-10 rounded-3xl border border-primary/5 relative">
+<span class="absolute top-6 right-8 text-primary/10 material-symbols-outlined text-6xl">format_quote</span>
+<p class="text-slate-600 dark:text-slate-300 italic mb-8 relative z-10 leading-relaxed">
+                        "Compré unos jeans y una chaqueta. El envío fue súper rápido y el empaque es precioso. Se nota el cariño que le ponen a la marca."
+                    </p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">CR</div>
+<div>
+<p class="font-bold text-slate-900 dark:text-white">Carlos Rodríguez</p>
+<p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Cliente Verificado</p>
+</div>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-10 rounded-3xl border border-primary/5 relative">
+<span class="absolute top-6 right-8 text-primary/10 material-symbols-outlined text-6xl">format_quote</span>
+<p class="text-slate-600 dark:text-slate-300 italic mb-8 relative z-10 leading-relaxed">
+                        "Los accesorios son muy originales. Siempre que regalo algo de La Miscelanea quedo muy bien. ¡Totalmente recomendados!"
+                    </p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">LP</div>
+<div>
+<p class="font-bold text-slate-900 dark:text-white">Laura Peña</p>
+<p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Cliente Verificada</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-white dark:bg-background-dark" id="faq">
+<div class="max-w-4xl mx-auto px-4 sm:px-6">
+<div class="text-center mb-16">
+<h2 class="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mb-4">Preguntas Frecuentes</h2>
+<p class="text-slate-500">Resolvemos tus dudas para que tu experiencia de compra sea perfecta.</p>
+</div>
+<div class="space-y-0">
+<details class="group border-b border-slate-200 dark:border-slate-800">
+<summary class="flex items-center justify-between w-full py-6 cursor-pointer list-none text-left">
+<span class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">¿Cuáles son los tiempos de envío?</span>
+<span class="expand-icon material-symbols-outlined text-slate-400 transition-transform duration-300">expand_more</span>
+</summary>
+<div class="pb-6">
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                            Realizamos envíos a todo el país. El tiempo estimado de entrega en ciudades principales es de 2 a 4 días hábiles. Para el resto del país, puede tardar entre 5 y 8 días hábiles dependiendo de la ubicación.
+                        </p>
+</div>
+</details>
+<details class="group border-b border-slate-200 dark:border-slate-800">
+<summary class="flex items-center justify-between w-full py-6 cursor-pointer list-none text-left">
+<span class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">¿Cómo puedo realizar un cambio?</span>
+<span class="expand-icon material-symbols-outlined text-slate-400 transition-transform duration-300">expand_more</span>
+</summary>
+<div class="pb-6">
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                            Tienes hasta 30 días después de tu compra para realizar cambios. La prenda debe estar en perfecto estado, con etiquetas originales y sin señales de uso. Puedes gestionarlo a través de nuestra línea de WhatsApp o visitando nuestra tienda física.
+                        </p>
+</div>
+</details>
+<details class="group border-b border-slate-200 dark:border-slate-800">
+<summary class="flex items-center justify-between w-full py-6 cursor-pointer list-none text-left">
+<span class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">¿Tienen tienda física?</span>
+<span class="expand-icon material-symbols-outlined text-slate-400 transition-transform duration-300">expand_more</span>
+</summary>
+<div class="pb-6">
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                            ¡Sí! Nuestra sede principal se encuentra ubicada en la Av. Principal No. 123-45 en Bogotá. Te esperamos de lunes a sábado de 10:00 AM a 8:00 PM y domingos de 11:00 AM a 6:00 PM.
+                        </p>
+</div>
+</details>
+<details class="group border-b border-slate-200 dark:border-slate-800">
+<summary class="flex items-center justify-between w-full py-6 cursor-pointer list-none text-left">
+<span class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">¿Cuáles son los métodos de pago?</span>
+<span class="expand-icon material-symbols-outlined text-slate-400 transition-transform duration-300">expand_more</span>
+</summary>
+<div class="pb-6">
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                            Aceptamos todas las tarjetas de crédito (Visa, Mastercard, American Express), PSE, transferencias directas y pagos en efectivo a través de puntos autorizados. También contamos con opción de pago contra entrega en ciudades seleccionadas.
+                        </p>
+</div>
+</details>
+</div>
+</div>
+</section>
+<section class="py-20 bg-primary overflow-hidden relative">
+<div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+<h2 class="text-4xl lg:text-5xl font-black text-white mb-8">¿Listo para renovar tu armario?</h2>
+<p class="text-white/80 text-lg mb-12">Únete a nuestra comunidad y recibe un 10% de descuento en tu primera compra.</p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<input class="px-6 py-4 rounded-xl border-none focus:ring-4 focus:ring-white/20 w-full sm:w-80 text-slate-900" placeholder="Tu correo electrónico" type="email"/>
+<button class="px-8 py-4 bg-white text-primary rounded-xl font-bold text-lg hover:shadow-2xl transition-all">
+                    Suscribirme
+                </button>
+</div>
+</div>
+<div class="absolute -top-24 -left-24 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-24 -right-24 w-64 h-64 bg-black/10 rounded-full blur-3xl"></div>
+</section>
+</main>
+<footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 py-16">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1">
+<div class="flex items-center gap-2 text-primary mb-6">
+<span class="material-symbols-outlined text-3xl">shopping_bag</span>
+<h1 class="text-xl font-extrabold tracking-tight">La Miscelanea</h1>
+</div>
+<p class="text-sm text-slate-500 leading-relaxed mb-6">Tienda multimarca líder en moda infantil, ropa para adultos y accesorios exclusivos. Calidad que se siente.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">alternate_email</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">thumb_up</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="font-bold mb-6 text-slate-900 dark:text-white uppercase tracking-widest text-xs">Enlaces</h5>
+<ul class="space-y-3 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#categorias">Nuestras Categorías</a></li>
+<li><a class="hover:text-primary transition-colors" href="#productos">Productos Destacados</a></li>
+<li><a class="hover:text-primary transition-colors" href="#nosotros">Sobre Nosotros</a></li>
+<li><a class="hover:text-primary transition-colors" href="#testimonios">Testimonios</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-6 text-slate-900 dark:text-white uppercase tracking-widest text-xs">Ayuda</h5>
+<ul class="space-y-3 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Envíos y Entregas</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Cambios y Devoluciones</a></li>
+<li><a class="hover:text-primary transition-colors" href="#faq">Preguntas Frecuentes</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contáctanos</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-6 text-slate-900 dark:text-white uppercase tracking-widest text-xs">Sede Principal</h5>
+<p class="text-sm text-slate-500 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">location_on</span>
+                    Av. Principal No. 123-45<br/>Bogotá, Colombia
+                </p>
+<p class="text-sm text-slate-500 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">mail</span>
+                    contacto@lamiscelanea.com
+                </p>
+</div>
+</div>
+<div class="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-slate-400">© 2024 La Miscelanea. Todos los derechos reservados.</p>
+<div class="flex gap-6 grayscale opacity-40">
+<span class="material-symbols-outlined">credit_card</span>
+<span class="material-symbols-outlined">account_balance</span>
+<span class="material-symbols-outlined">payments</span>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>

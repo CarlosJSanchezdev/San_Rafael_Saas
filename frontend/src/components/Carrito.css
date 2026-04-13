@@ -1,0 +1,243 @@
+.carrito-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1001;
+}
+
+.carrito-sidebar {
+  --carrito-primary: #0ea5e9;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 450px;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  z-index: 1002;
+  display: flex;
+  flex-direction: column;
+}
+
+.carrito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 4px solid var(--carrito-primary);
+  background: var(--bg-secondary);
+}
+
+.carrito-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--carrito-primary);
+}
+
+.btn-cerrar {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.btn-cerrar:hover {
+  background: var(--carrito-primary);
+  color: white;
+}
+
+.carrito-vacio {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.carrito-vacio p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.btn-seguir {
+  padding: 0.75rem 1.5rem;
+  background: var(--carrito-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.carrito-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.carrito-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-glass);
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.item-imagen {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-primary);
+}
+
+.item-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-imagen .placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-info h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-precio {
+  color: var(--carrito-primary);
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.item-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item-cantidad button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.item-cantidad button:hover {
+  background: var(--carrito-primary);
+  color: white;
+}
+
+.item-cantidad span {
+  width: 24px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.btn-eliminar {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+.btn-eliminar:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.carrito-footer {
+  padding: 1.5rem;
+  border-top: 4px solid var(--carrito-primary);
+  background: var(--bg-primary);
+}
+
+.carrito-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+}
+
+.carrito-total strong {
+  font-size: 1.5rem;
+  color: var(--carrito-primary);
+}
+
+.btn-vaciar {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.btn-vaciar:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.btn-checkout {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  background: var(--carrito-primary);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-checkout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--carrito-primary) 40%, transparent);
+}
