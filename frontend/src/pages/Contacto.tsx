@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineUser, HiOutlineMenuAlt2 } from "react-icons/hi";
-import PublicNavbar from "../components/PublicNavbar";
+import HomeNavbar from "../components/HomeNavbar";
 import { useToast } from "../context/ToastContext";
 import "./Contacto.css";
 
@@ -29,7 +29,7 @@ export default function Contacto() {
 
   return (
     <div className="contacto-page">
-      <PublicNavbar />
+      <HomeNavbar />
       
       <motion.div 
         className="contacto-hero"

@@ -1,6 +1,7 @@
 .contacto-page {
   min-height: 100vh;
   background: var(--bg-primary);
+  padding-top: 60px;
   padding-bottom: 4rem;
 }
 

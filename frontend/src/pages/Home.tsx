@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import HomeNavbar from "../components/HomeNavbar";
 import "./Home.css";
 
 export default function Home() {
   return (
     <div className="home-page">
+      {/* Navbar */}
+      <HomeNavbar />
+
       {/* Hero */}
       <section className="home-hero">
         <div className="home-hero-content">
