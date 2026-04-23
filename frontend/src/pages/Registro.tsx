@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import HomeNavbar from "../components/HomeNavbar";
@@ -17,7 +17,7 @@ export default function Registro() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/auth/registro", {
+      await api.post("/auth/registro", {
         nombre,
         usuario,
         email,

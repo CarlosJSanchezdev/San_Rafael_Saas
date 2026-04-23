@@ -21,6 +21,14 @@
   box-sizing: border-box;
 }
 
+/* Cursor pointer para elementos interactivos */
+button, 
+a, 
+[role="button"],
+.clickable {
+  cursor: pointer;
+}
+
 body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-primary);

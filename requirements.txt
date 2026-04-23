@@ -6,3 +6,5 @@ pydantic
 pydantic[email]
 sqlalchemy
 email-validator
+stripe
+python-dotenv

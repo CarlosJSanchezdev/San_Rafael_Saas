@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useToast } from "../context/ToastContext";
@@ -20,7 +20,7 @@ export default function RecuperarPassword() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("http://localhost:8000/auth/recuperar-password", null, {
+      await api.post("/auth/recuperar-password", null, {
         params: { email }
       });
       showToast("Si el correo existe, recibirás un enlace de recuperación", "success");
@@ -40,7 +40,7 @@ export default function RecuperarPassword() {
     }
     setLoading(true);
     try {
-      await axios.post("http://localhost:8000/auth/reset-password", null, {
+      await api.post("/auth/reset-password", null, {
         params: { token, nueva_password: password }
       });
       showToast("Contraseña actualizada correctamente", "success");

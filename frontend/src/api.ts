@@ -1,20 +1,23 @@
 /**
  * Cliente HTTP centralizado para el frontend.
- * - La baseURL se toma de la variable de entorno VITE_API_URL (configurable por entorno).
- * - Un interceptor añade automáticamente el token de sesión como query param
- *   en todas las peticiones salientes (el backend lo espera como ?token=...).
+ * - Si VITE_API_URL está vacío, usa paths relativos (para proxy de Vite en producción)
+ * - El token ahora se envía automáticamente via cookie HttpOnly (configurado en backend).
+ * - Mantenemos fallback con sessionStorage para backwards compatibility.
  */
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8000",
+  baseURL: API_BASE_URL,
+  withCredentials: true,
 });
 
-// ── Interceptor de petición: adjunta el token si existe ──────────────────────
+// ── Interceptor de petición: envía token via header como fallback ──────────────────────
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("userToken");
   if (token) {
-    config.params = { ...config.params, token };
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -24,10 +27,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Limpiar sesión y redirigir
       sessionStorage.removeItem("userToken");
       sessionStorage.removeItem("userEmail");
-      // Evitar bucle si ya estamos en /login
       if (!window.location.pathname.startsWith("/login")) {
         window.location.href = "/login";
       }

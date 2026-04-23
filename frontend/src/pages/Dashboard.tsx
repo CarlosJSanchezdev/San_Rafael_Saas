@@ -14,7 +14,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { HiOutlineUsers, HiOutlineCube, HiOutlineCurrencyDollar, HiOutlineShoppingCart, HiOutlineExclamation } from "react-icons/hi";
+import { HiOutlineUsers, HiOutlineCube, HiOutlineCurrencyDollar, HiOutlineShoppingCart, HiOutlineExclamation, HiOutlineUser } from "react-icons/hi";
 import api from "../api";
 import { useAuth } from "../context/AuthContext";
 import Layout from "../components/Layout";
@@ -40,7 +40,7 @@ interface CategoryData {
 }
 
 // Colores más sobrios y profesionales
-const COLORS = ["#0284c7", "#ea580c", "#4f46e5", "#059669", "#7c3aed", "#db2777"];
+const COLORS = ["#1E40AF", "#F59E0B", "#059669", "#7C3AED", "#DC2626", "#EC4899"];
 
 // Animaciones sutiles
 const container = {
@@ -154,7 +154,7 @@ export default function Dashboard() {
               </span>
               <span className="header-separator">|</span>
               <span className="header-user">
-                <span className="user-icon">👤</span>
+                <HiOutlineUser />
                 {usuario?.nombre || usuario?.email || "Usuario"}
               </span>
             </motion.div>

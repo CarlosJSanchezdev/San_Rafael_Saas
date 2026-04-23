@@ -124,6 +124,14 @@ function App() {
               } 
             />
             <Route 
+              path="/admin/tiendas/:tiendaId/pagos" 
+              element={
+                <ProtectedRoute>
+                  <TiendaAdmin />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/admin/usuarios" 
               element={
                 <ProtectedRoute>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
@@ -21,7 +21,7 @@ export default function Login() {
       data.append("username", email);
       data.append("password", password);
 
-      const response = await axios.post("http://localhost:8000/auth/login", data, {
+      const response = await api.post("/auth/login", data, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" }
       });
 

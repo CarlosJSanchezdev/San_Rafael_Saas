@@ -1,9 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useCarrito } from "../context/CarritoContext";
-import { HiOutlineX, HiOutlineTrash, HiOutlineMinus, HiOutlinePlus } from "react-icons/hi";
+import { HiOutlineX, HiOutlineTrash, HiOutlineMinus, HiOutlinePlus, HiOutlineCube } from "react-icons/hi";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 import "./Carrito.css";
 
 export default function Carrito() {
@@ -18,7 +18,7 @@ export default function Carrito() {
     if (pathMatch) {
       setSubdominioTienda(pathMatch[1]);
       // Fetch store color by subdomain
-      axios.get(`http://localhost:8000/tiendas/por-subdominio/${pathMatch[1]}`)
+      api.get(`/tiendas/por-subdominio/${pathMatch[1]}`)
         .then(res => {
           if (res.data.color_primario) {
             setColorTienda(res.data.color_primario);
@@ -35,7 +35,7 @@ export default function Carrito() {
     if (isOpen && !subdominioTienda) {
       const tiendaId = items.length > 0 ? items[0].tienda_id : null;
       if (tiendaId) {
-        axios.get(`http://localhost:8000/tiendas/${tiendaId}`)
+        api.get(`/tiendas/${tiendaId}`)
           .then(res => {
             if (res.data.color_primario) setColorTienda(res.data.color_primario);
           })
@@ -106,7 +106,7 @@ export default function Carrito() {
                         {item.imagen ? (
                           <img src={item.imagen} alt={item.nombre} />
                         ) : (
-                          <div className="placeholder">📦</div>
+                          <div className="placeholder"><HiOutlineCube /></div>
                         )}
                       </div>
                       <div className="item-info">

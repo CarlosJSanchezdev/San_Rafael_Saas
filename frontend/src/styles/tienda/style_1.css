@@ -528,7 +528,7 @@ img {
 }
 
 .st-product-card:hover .st-product-image img {
-  transform: scale(1.1);
+  opacity: 0.8;
 }
 
 .st-product-placeholder {
@@ -646,7 +646,7 @@ img {
 
 .st-add-btn:hover {
   box-shadow: var(--shadow-primary);
-  transform: scale(1.1);
+  opacity: 0.9;
 }
 
 .st-add-btn:disabled {
@@ -1111,7 +1111,7 @@ img {
 }
 
 .st-whatsapp-btn:hover {
-  transform: scale(1.1);
+  opacity: 0.9;
   box-shadow: 0 15px 40px rgba(37, 211, 102, 0.4);
 }
 

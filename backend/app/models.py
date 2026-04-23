@@ -57,6 +57,9 @@ class Tienda(Base):
     redes_sociales = Column(JSON)  # {facebook, instagram, whatsapp}
     activa = Column(Boolean, default=True)
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
+    wompi_public_key = Column(String, nullable=True)
+    wompi_integrity_secret = Column(String, nullable=True)
+    wompi_activo = Column(Boolean, default=False)
 
 class PlantillaProducto(Base):
     __tablename__ = "plantillas_productos"
@@ -119,6 +122,7 @@ class Pedido(Base):
     direccion_envio = Column(Text, nullable=False)
     total = Column(Float, nullable=False)
     estado = Column(String, default="pendiente")
+    estado_pago = Column(String, default="pendiente")  # pendiente, pagado, fallido, reembolsado
     notas = Column(Text)
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
 

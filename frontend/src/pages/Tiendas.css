@@ -196,7 +196,8 @@
 
 .tienda-actions button:hover,
 .tienda-actions a:hover {
-  transform: scale(1.05);
+  opacity: 0.85;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .input-with-suffix {
@@ -406,7 +407,7 @@
 .color-presets .preset:hover,
 .color-presets .preset.active {
   border-color: var(--text-primary);
-  transform: scale(1.1);
+  box-shadow: 0 0 0 2px var(--text-primary);
 }
 
 /* Responsive grids */

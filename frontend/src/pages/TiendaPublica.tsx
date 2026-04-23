@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 import { useCarrito } from "../context/CarritoContext";
 import { HiOutlineShoppingBag, HiOutlinePlus, HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import WhatsAppFloat from "../components/WhatsAppFloat";
@@ -61,10 +61,10 @@ export default function TiendaPublica() {
 
   const fetchData = async () => {
     try {
-      const tiendaRes = await axios.get(`http://localhost:8000/tiendas/por-subdominio/${subdominio}`);
+      const tiendaRes = await api.get(`/tiendas/por-subdominio/${subdominio}`);
       setTienda(tiendaRes.data);
       
-      const productosRes = await axios.get(`http://localhost:8000/tiendas/${tiendaRes.data.id}/productos`);
+      const productosRes = await api.get(`/tiendas/${tiendaRes.data.id}/productos`);
       const prods = productosRes.data;
       setProductos(prods);
       
@@ -79,7 +79,7 @@ export default function TiendaPublica() {
 
   const registrarMetrica = async (tipo: string, productoId?: number) => {
     try {
-      await axios.post("http://localhost:8000/metricas/visita", {
+      await api.post("/metricas/visita", {
         tienda_id: tienda?.id,
         tipo,
         producto_id: productoId,

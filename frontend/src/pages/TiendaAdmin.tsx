@@ -32,7 +32,8 @@ import {
   HiOutlineExclamation,
   HiOutlineClock,
   HiOutlineMenu,
-  HiOutlineX
+  HiOutlineX,
+  HiOutlineUser
 } from "react-icons/hi";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
@@ -59,10 +60,22 @@ interface Producto {
 
 interface Pedido {
   id: number;
+  tienda_id?: number;
   cliente_nombre: string;
+  cliente_email: string;
+  cliente_telefono?: string;
+  direccion_envio: string;
   total: number;
   estado: string;
+  estado_pago?: string;
+  notas?: string;
   fecha_creacion: string;
+  items?: {
+    producto_id: number;
+    producto_nombre: string;
+    cantidad: number;
+    precio: number;
+  }[];
 }
 
 interface Metricas {
@@ -96,6 +109,15 @@ export default function TiendaAdmin() {
   const { tiendaId } = useParams<{ tiendaId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
+
+  if (!tiendaId) {
+    return (
+      <div className="tienda-admin-container" style={{ padding: "2rem", textAlign: "center" }}>
+        <p>Cargando...</p>
+      </div>
+    );
+  }
+
   const [tienda, setTienda] = useState<Tienda | null>(null);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -108,6 +130,13 @@ export default function TiendaAdmin() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [categoriaData, setCategoriaData] = useState<ChartData[]>([]);
   const [sidebarAbierto, setSidebarAbierto] = useState(false);
+  const [guardandoPagos, setGuardandoPagos] = useState(false);
+  const [pagosForm, setPagosForm] = useState({
+    wompi_public_key: "",
+    wompi_integrity_secret: "",
+    wompi_activo: false
+  });
+  const [pedidoSeleccionado, setPedidoSeleccionado] = useState<Pedido | null>(null);
   const { showToast } = useToast();
   const { logout, usuario: usuarioActual } = useAuth();
 
@@ -202,6 +231,14 @@ export default function TiendaAdmin() {
       } else if (currentView === "metricas") {
         const metricasRes = await api.get(`/admin/tiendas/${tiendaId}/metricas`);
         setMetricas(metricasRes.data);
+      } else if (currentView === "pagos") {
+        const tiendaRes = await api.get(`/admin/tiendas/${tiendaId}`);
+        setTienda(tiendaRes.data);
+        setPagosForm({
+          wompi_public_key: tiendaRes.data.wompi_public_key || "",
+          wompi_integrity_secret: tiendaRes.data.wompi_integrity_secret || "",
+          wompi_activo: tiendaRes.data.wompi_activo || false
+        });
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -216,6 +253,7 @@ export default function TiendaAdmin() {
     { to: `/admin/tiendas/${tiendaId}/productos`, icon: HiOutlineCube, label: "Productos" },
     { to: `/admin/tiendas/${tiendaId}/pedidos`, icon: HiOutlineShoppingCart, label: "Pedidos" },
     { to: `/admin/tiendas/${tiendaId}/metricas`, icon: HiOutlineChartBar, label: "Métricas" },
+    { to: `/admin/tiendas/${tiendaId}/pagos`, icon: HiOutlineCurrencyDollar, label: "Pagos" },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -267,6 +305,30 @@ export default function TiendaAdmin() {
     } catch (error) {
       showToast("Error al eliminar", "error");
     }
+  };
+
+  const guardarConfiguracionPagos = async () => {
+    setGuardandoPagos(true);
+    try {
+      await api.put(`/admin/tiendas/${tiendaId}`, {
+        wompi_public_key: pagosForm.wompi_public_key,
+        wompi_integrity_secret: pagosForm.wompi_integrity_secret,
+        wompi_activo: pagosForm.wompi_activo
+      });
+      showToast("Configuración de pagos guardada", "success");
+    } catch (error) {
+      showToast("Error al guardar configuración", "error");
+    } finally {
+      setGuardandoPagos(false);
+    }
+  };
+
+  const verDetallePedido = (pedido: Pedido) => {
+    setPedidoSeleccionado(pedido);
+  };
+
+  const cerrarDetallePedido = () => {
+    setPedidoSeleccionado(null);
   };
 
   if (loading) {
@@ -419,7 +481,7 @@ export default function TiendaAdmin() {
                   </span>
                   <span className="header-separator">|</span>
                   <span className="header-user">
-                    <span className="user-icon">👤</span>
+                    <HiOutlineUser />
                     {usuarioActual?.nombre || usuarioActual?.email || "Usuario"}
                   </span>
                 </motion.div>
@@ -448,7 +510,7 @@ export default function TiendaAdmin() {
                 { icon: HiOutlineClock, label: "Tiempo", value: `${metricas?.tiempo_promedio_segundos || 0}s`, color: "purple" },
                 { icon: HiOutlineCurrencyDollar, label: "Ingresos", value: `$${pedidos.reduce((sum, p) => sum + p.total, 0).toFixed(2)}`, color: "green" },
                 { icon: HiOutlineCube, label: "Productos", value: productos.length, color: "orange" },
-              ].map((stat, idx) => (
+              ].map((stat) => (
                 <motion.div
                   key={stat.label}
                   className="glass-card stat-card"
@@ -538,7 +600,7 @@ export default function TiendaAdmin() {
                         dataKey="value"
                         label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       >
-                        {(categoriaData.length > 0 ? categoriaData : [{ name: "Sin datos", value: 1 }]).map((entry, index) => (
+                        {(categoriaData.length > 0 ? categoriaData : [{ name: "Sin datos", value: 1 }]).map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -674,8 +736,13 @@ export default function TiendaAdmin() {
                 </thead>
                 <tbody>
                   {pedidos.map((pedido) => (
-                    <tr key={pedido.id}>
-                      <td>#{pedido.id}</td>
+                    <tr key={pedido.id} className="pedido-row" onClick={() => verDetallePedido(pedido)}>
+                      <td>
+                        <div className="pedido-id-cell">
+                          <HiOutlineEye className="eye-icon" />
+                          #{pedido.id}
+                        </div>
+                      </td>
                       <td>
                         <div>
                           <strong>{pedido.cliente_nombre}</strong>
@@ -687,7 +754,11 @@ export default function TiendaAdmin() {
                           <select 
                             className={`estado-select ${pedido.estado}`}
                             value={pedido.estado}
-                            onChange={(e) => cambiarEstado(pedido.id, e.target.value)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              cambiarEstado(pedido.id, e.target.value);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <option value="pendiente">Pendiente</option>
                             <option value="procesando">Procesando</option>
@@ -709,6 +780,83 @@ export default function TiendaAdmin() {
             ) : (
               <p className="no-data">No hay pedidos aún</p>
             )}
+
+            {pedidoSeleccionado && (
+              <div className="modal-detalle-overlay" onClick={cerrarDetallePedido}>
+                <div 
+                  className="modal-detalle-pedido" 
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ "--primary": tienda?.color_primario || "#0ea5e9" } as React.CSSProperties}
+                >
+                  <div className="modal-detalle-header">
+                    <h2>Pedido #{pedidoSeleccionado.id}</h2>
+                    <button className="btn-cerrar-detalle" onClick={cerrarDetallePedido}>
+                      <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="detalle-seccion">
+                    <span className={`badge-estado ${pedidoSeleccionado.estado}`}>
+                      {pedidoSeleccionado.estado}
+                    </span>
+                    <span className={`badge-pago ${pedidoSeleccionado.estado_pago || 'pendiente'}`}>
+                      {pedidoSeleccionado.estado_pago === 'pagado' ? 'Pagado' : 'Pago Pendiente'}
+                    </span>
+                  </div>
+
+                  <div className="detalle-seccion">
+                    <h3>Cliente</h3>
+                    <p><strong>Nombre:</strong> {pedidoSeleccionado.cliente_nombre}</p>
+                    <p><strong>Email:</strong> {pedidoSeleccionado.cliente_email}</p>
+                    <p><strong>Teléfono:</strong> {pedidoSeleccionado.cliente_telefono || 'No registrado'}</p>
+                  </div>
+
+                  <div className="detalle-seccion">
+                    <h3>Dirección de Envío</h3>
+                    <p>{pedidoSeleccionado.direccion_envio || 'No especificada'}</p>
+                  </div>
+
+                  <div className="detalle-seccion">
+                    <h3>Productos</h3>
+                    <div className="items-list">
+                      {pedidoSeleccionado.items && pedidoSeleccionado.items.length > 0 ? (
+                        pedidoSeleccionado.items.map((item, idx) => (
+                          <div key={idx} className="item-pedido">
+                            <span>{item.producto_nombre} x{item.cantidad}</span>
+                            <span>${(item.precio * item.cantidad).toFixed(2)}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="no-items">No hay productos registrados</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="detalle-total">
+                    <strong>Total: ${pedidoSeleccionado.total.toFixed(2)}</strong>
+                  </div>
+
+                  {pedidoSeleccionado.notas && (
+                    <div className="detalle-seccion">
+                      <h3>Notas</h3>
+                      <p>{pedidoSeleccionado.notas}</p>
+                    </div>
+                  )}
+
+                  <div className="detalle-fecha">
+                    <p>Fecha: {new Date(pedidoSeleccionado.fecha_creacion).toLocaleDateString('es-ES', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -729,6 +877,67 @@ export default function TiendaAdmin() {
                 <span className="metrica-value">{metricas?.tiempo_promedio_segundos || 0}s</span>
                 <span className="metrica-label">Tiempo Promedio</span>
               </div>
+            </div>
+          </div>
+        )}
+
+        {!vistaPrevia && currentView === "pagos" && (
+          <div className="pagos-view">
+            <h2>Configuración de Pagos - Wompi</h2>
+            
+            <div className="pagos-info-box">
+              <p>⚠️ <strong>Importante:</strong> Para habilitar pagos en tu tienda, necesitas configurar las credenciales de Wompi.</p>
+              <p>Obtén tus credenciales en <a href="https://comercios.wompi.co" target="_blank" rel="noopener noreferrer">comercios.wompi.co</a></p>
+            </div>
+
+            <div className="pagos-form">
+              <div className="form-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={pagosForm.wompi_activo}
+                    onChange={(e) => setPagosForm({ ...pagosForm, wompi_activo: e.target.checked })}
+                  />
+                  Activar Wompi para esta tienda
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>Wompi Public Key</label>
+                <input
+                  type="text"
+                  value={pagosForm.wompi_public_key}
+                  onChange={(e) => setPagosForm({ ...pagosForm, wompi_public_key: e.target.value })}
+                  placeholder="pub_test_XXXXX"
+                />
+                <small>Ejemplo: pub_test_XXXXXXXXXXXX</small>
+              </div>
+
+              <div className="form-group">
+                <label>Wompi Integrity Secret</label>
+                <input
+                  type="password"
+                  value={pagosForm.wompi_integrity_secret}
+                  onChange={(e) => setPagosForm({ ...pagosForm, wompi_integrity_secret: e.target.value })}
+                  placeholder="prod_integrity_XXXXX"
+                />
+                <small>Secreto de integridad del dashboard de Wompi</small>
+              </div>
+
+              <button
+                type="button"
+                className="save-btn"
+                onClick={guardarConfiguracionPagos}
+                disabled={guardandoPagos}
+              >
+                {guardandoPagos ? "Guardando..." : "💾 Guardar Configuración"}
+              </button>
+
+              {pagosForm.wompi_activo && (
+                <div className="pagos-status-active">
+                  ✅ Wompi está activo - Los clientes podrán pagar en tu tienda
+                </div>
+              )}
             </div>
           </div>
         )}

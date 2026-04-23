@@ -1,7 +1,13 @@
 import os
-from fastapi import FastAPI, Depends, Response
+from dotenv import load_dotenv
+from fastapi import FastAPI, Depends, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+# Load .env file
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 from .auth import router as auth_router, get_current_user
 from .usuarios import router as usuarios_router
 from .productos import router as productos_router
@@ -12,9 +18,16 @@ from .tiendas import router as tiendas_router, router_admin as tiendas_admin_rou
 from .metricas import router as metricas_router, router_admin as metricas_admin_router
 from .plantillas import router as plantillas_router
 from .pedidos import router as pedidos_router
+from .wompi_payment import router as wompi_router
 from .database import engine, Base
 
 app = FastAPI(title="SRF Web API", version="1.0.0")
+
+# ---------------------------------------------------------------------------
+# Rate Limiting
+# ---------------------------------------------------------------------------
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
 
 
 # ---------------------------------------------------------------------------
@@ -29,9 +42,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         
         # Prevent MIME-type sniffing
         response.headers["X-Content-Type-Options"] = "nosniff"
-        
-        # XSS Protection (legacy but still useful)
-        response.headers["X-XSS-Protection"] = "1; mode=block"
         
         # Content Security Policy
         response.headers["Content-Security-Policy"] = (
@@ -60,6 +70,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "usb=()"
         )
         
+        # HSTS - HTTP Strict Transport Security (solo en producción)
+        # Descomentar en producción:
+        # response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        
         return response
 
 
@@ -74,6 +88,14 @@ _raw_origins = os.getenv(
     "http://localhost:5173,http://localhost:4173"
 )
 ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+
+# Agregar dominios de ngrok para desarrollo online
+ALLOWED_ORIGINS.extend([
+    "https://sloppy-nonerosive-teresia.ngrok-free.dev",
+    "https://*.ngrok-free.dev",
+    "https://*.ngrok.io",
+    "https://*.localtunnel.me",
+])
 
 app.add_middleware(
     CORSMiddleware,
@@ -90,6 +112,7 @@ app.include_router(auth_router)
 app.include_router(tienda_router)      # /tienda (demo/home, pública)
 app.include_router(tiendas_router)    # /tiendas/*, /sectores (públicos)
 app.include_router(metricas_router)   # POST /metricas/visita (público)
+app.include_router(wompi_router, prefix="/pedidos")  # /pedidos/create-wompi-transaction, /webhooks/wompi
 
 # ---------------------------------------------------------------------------
 # Routers protegidos — todas las rutas requieren token válido

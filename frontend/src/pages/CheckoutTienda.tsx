@@ -5,6 +5,7 @@ import { useCarrito } from "../context/CarritoContext";
 import { useToast } from "../context/ToastContext";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import TiendaStyle from "../components/TiendaStyle";
+import WompiCheckout from "../components/WompiCheckout";
 
 import "../styles/tienda/style_1.css";
 
@@ -17,6 +18,8 @@ interface Tienda {
   telefono: string;
   email: string;
   plantilla: string;
+  wompi_public_key?: string;
+  wompi_activo?: boolean;
 }
 
 export default function CheckoutTienda() {
@@ -29,7 +32,7 @@ export default function CheckoutTienda() {
   
   const { items, total, vaciarCarrito, setTiendaActiva, eliminarItem } = useCarrito();
   const { showToast } = useToast();
-  
+
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
@@ -37,6 +40,8 @@ export default function CheckoutTienda() {
     direccion: "",
     notas: "",
   });
+
+  const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
     fetchTienda();
@@ -64,42 +69,23 @@ export default function CheckoutTienda() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleContinueToPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (items.length === 0) {
       showToast("El carrito está vacío", "error");
       return;
     }
+    setShowPayment(true);
+  };
 
-    setLoadingSubmit(true);
-    try {
-      const pedidoData = {
-        tienda_id: tienda?.id,
-        cliente_nombre: formData.nombre,
-        cliente_email: formData.email,
-        cliente_telefono: formData.telefono,
-        direccion_envio: formData.direccion,
-        notas: formData.notas,
-        items: items.map(item => ({
-          producto_id: item.id,
-          producto_nombre: item.nombre,
-          cantidad: item.cantidad,
-          precio: item.precio,
-        })),
-        total: total,
-      };
+  const handlePaymentSuccess = (pedidoId: number) => {
+    vaciarCarrito();
+    setPedidoCreado(pedidoId);
+    showToast("Pago realizado exitosamente", "success");
+  };
 
-      const response = await api.post("/pedidos", pedidoData);
-      setPedidoCreado(response.data.id);
-      vaciarCarrito();
-      showToast("Pedido creado exitosamente", "success");
-    } catch (error) {
-      console.error("Error creating order:", error);
-      showToast("Error al crear el pedido", "error");
-    } finally {
-      setLoadingSubmit(false);
-    }
+  const handlePaymentError = (message: string) => {
+    showToast(message, "error");
   };
 
   if (loading) {
@@ -211,7 +197,7 @@ export default function CheckoutTienda() {
             {/* Form */}
             <div className="st-checkout-form">
               <h2>Información de Contacto</h2>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleContinueToPayment}>
                 <div className="st-form-grid">
                   <div className="st-form-group">
                     <label>Nombre completo</label>
@@ -269,6 +255,41 @@ export default function CheckoutTienda() {
                   />
                 </div>
               </form>
+
+              {/* Wompi Payment */}
+              {showPayment && tienda && (
+                tienda.wompi_activo ? (
+                  <WompiCheckout
+                    items={items}
+                    total={total}
+                    tiendaId={tienda.id}
+                    formData={formData}
+                    colorPrimario={tienda.color_primario}
+                    onPaymentSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                    loadingSubmit={loadingSubmit}
+                    setLoadingSubmit={setLoadingSubmit}
+                  />
+                ) : (
+                  <div className="st-payment-unavailable">
+                    <p>⚠️ Los pagos no están disponibles en este momento.</p>
+                    <p>Por favor, contacta al administrador de la tienda.</p>
+                  </div>
+                )
+              )}
+
+              {!showPayment && (
+                <button
+                  type="button"
+                  className="st-checkout-btn"
+                  onClick={handleContinueToPayment}
+                  disabled={loadingSubmit}
+                  style={{ marginTop: "1rem" }}
+                >
+                  <span className="material-symbols-outlined">credit_card</span>
+                  Continuar al Pago
+                </button>
+              )}
             </div>
 
             {/* Cart Summary */}
@@ -315,21 +336,6 @@ export default function CheckoutTienda() {
                   <span>${total.toFixed(2)}</span>
                 </div>
               </div>
-
-              <button 
-                className="st-checkout-btn"
-                onClick={handleSubmit}
-                disabled={loadingSubmit}
-              >
-                {loadingSubmit ? (
-                  <span className="st-spinner" style={{ width: 20, height: 20 }} />
-                ) : (
-                  <>
-                    <span className="material-symbols-outlined">local_shipping</span>
-                    Realizar Pedido
-                  </>
-                )}
-              </button>
 
               {tienda.telefono && (
                 <p className="st-checkout-help">

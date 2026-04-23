@@ -33,6 +33,9 @@ Thumbs.db
 # Python
 .pytest_cache/
 
+# OpenCode (local tools)
+.opencode/
+
 # Project binaries
 Srf-web
 Srf-web.pdf

@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { HiOutlineCube, HiOutlineShoppingCart, HiOutlineChartBar, HiOutlineLockClosed, HiOutlineStar } from "react-icons/hi";
 import HomeNavbar from "../components/HomeNavbar";
 import "./Home.css";
 
@@ -66,7 +66,7 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            <div className="servicio-icon">📦</div>
+            <div className="servicio-icon"><HiOutlineCube /></div>
             <h3>Gestión de Productos</h3>
             <p>Administra tu inventario, precios y categorías fácilmente</p>
           </motion.div>
@@ -77,7 +77,7 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <div className="servicio-icon">🛒</div>
+            <div className="servicio-icon"><HiOutlineShoppingCart /></div>
             <h3>Pedidos y Checkout</h3>
             <p>Proceso de compra optimizado con notificaciones en tiempo real</p>
           </motion.div>
@@ -88,7 +88,7 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
           >
-            <div className="servicio-icon">📊</div>
+            <div className="servicio-icon"><HiOutlineChartBar /></div>
             <h3>Analíticas y Reportes</h3>
             <p>Mide visitas, productos populares y conversiones</p>
           </motion.div>
@@ -99,7 +99,7 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
           >
-            <div className="servicio-icon">🔒</div>
+            <div className="servicio-icon"><HiOutlineLockClosed /></div>
             <h3>Seguridad y Confianza</h3>
             <p>Protección de datos y transacciones seguras</p>
           </motion.div>
@@ -110,7 +110,7 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ delay: 0.5 }}
           >
-            <div className="servicio-icon">🚀</div>
+            <div className="servicio-icon"><HiOutlineStar /></div>
             <h3>Escalabilidad</h3>
             <p>Tu tienda crece contigo, sin límites de productos o ventas</p>
           </motion.div>

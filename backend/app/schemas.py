@@ -41,6 +41,9 @@ class TiendaBase(BaseModel):
     email: Optional[str] = None
     direccion: Optional[str] = None
     manager_id: Optional[int] = None  # Usuario manager de la tienda
+    wompi_public_key: Optional[str] = None
+    wompi_integrity_secret: Optional[str] = None
+    wompi_activo: bool = False
 
 class TiendaCrear(BaseModel):
     nombre: str
@@ -57,7 +60,10 @@ class TiendaCrear(BaseModel):
     email: Optional[str] = None
     direccion: Optional[str] = None
     cliente_id: Optional[int] = None
-    manager_id: Optional[int] = None  # Usuario manager de la tienda
+    manager_id: Optional[int] = None
+    wompi_public_key: Optional[str] = None
+    wompi_integrity_secret: Optional[str] = None
+    wompi_activo: bool = False
 
 class TiendaUpdate(BaseModel):
     nombre: Optional[str] = None
@@ -74,11 +80,17 @@ class TiendaUpdate(BaseModel):
     email: Optional[str] = None
     direccion: Optional[str] = None
     activa: Optional[bool] = None
+    wompi_public_key: Optional[str] = None
+    wompi_integrity_secret: Optional[str] = None
+    wompi_activo: Optional[bool] = None
 
 class TiendaOut(TiendaBase):
     id: int
     activa: bool
     fecha_creacion: datetime
+    wompi_public_key: Optional[str] = None
+    wompi_integrity_secret: Optional[str] = None
+    wompi_activo: bool = False
 
     class Config:
         from_attributes = True
@@ -97,6 +109,8 @@ class TiendaPublicaOut(BaseModel):
     telefono: Optional[str]
     email: Optional[str]
     direccion: Optional[str]
+    wompi_public_key: Optional[str] = None
+    wompi_activo: bool = False
 
     class Config:
         from_attributes = True
@@ -244,6 +258,7 @@ class PedidoOut(BaseModel):
     direccion_envio: str
     total: float
     estado: str
+    estado_pago: str = "pendiente"
     notas: Optional[str]
     fecha_creacion: datetime
     items: list[PedidoItemOut] = []

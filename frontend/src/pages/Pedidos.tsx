@@ -14,6 +14,7 @@ interface Pedido {
   direccion_envio: string;
   total: number;
   estado: string;
+  estado_pago?: string;
   notas: string;
   fecha_creacion: string;
   items: PedidoItem[];
@@ -187,6 +188,15 @@ export default function Pedidos() {
                   </button>
                 </div>
 
+                <div className="detalle-badges">
+                  <span className={`badge-estado ${pedidoSeleccionado.estado}`}>
+                    {pedidoSeleccionado.estado}
+                  </span>
+                  <span className={`badge-pago ${pedidoSeleccionado.estado_pago || 'pendiente'}`}>
+                    {pedidoSeleccionado.estado_pago === 'pagado' ? 'Pagado' : 'Pago Pendiente'}
+                  </span>
+                </div>
+
                 <div className="detalle-seccion">
                   <h3>Cliente</h3>
                   <p><strong>Nombre:</strong> {pedidoSeleccionado.cliente_nombre}</p>
@@ -221,6 +231,16 @@ export default function Pedidos() {
                     <p>{pedidoSeleccionado.notas}</p>
                   </div>
                 )}
+
+                <div className="detalle-fecha">
+                  <p>Fecha: {new Date(pedidoSeleccionado.fecha_creacion).toLocaleDateString('es-ES', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}</p>
+                </div>
               </motion.div>
             </motion.div>
           )}
