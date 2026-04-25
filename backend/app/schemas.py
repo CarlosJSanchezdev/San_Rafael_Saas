@@ -11,6 +11,18 @@ class UsuarioBase(BaseModel):
 
 class UsuarioCrear(UsuarioBase):
     password: str
+    
+    @validator('password')
+    def password_strength(cls, v):
+        if len(v) < 8:
+            raise ValueError('La contraseña debe tener al menos 8 caracteres')
+        if not any(c.isupper() for c in v):
+            raise ValueError('La contraseña debe tener al menos una mayúscula')
+        if not any(c.islower() for c in v):
+            raise ValueError('La contraseña debe tener al menos una minúscula')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('La contraseña debe tener al menos un número')
+        return v
 
 class UsuarioUpdate(BaseModel):
     nombre: Optional[str] = None

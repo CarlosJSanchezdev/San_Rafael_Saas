@@ -55,7 +55,7 @@ def crear_pedido(
         if not producto:
             raise HTTPException(
                 status_code=400, 
-                detail=f"Producto {item.producto_id} no encontrado en esta tienda"
+                detail="Error al procesar el pedido"
             )
         
         precio_real = producto.precio
@@ -145,7 +145,7 @@ def obtener_pedido(
 ):
     pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
     if not pedido:
-        raise HTTPException(status_code=404, detail="Pedido no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     if current_user.rol != "admin":
         if current_user.tienda_id != pedido.tienda_id:
@@ -167,7 +167,7 @@ def actualizar_estado_pedido(
 ):
     pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
     if not pedido:
-        raise HTTPException(status_code=404, detail="Pedido no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     if current_user.rol != "admin":
         if current_user.tienda_id != pedido.tienda_id:

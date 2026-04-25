@@ -12,9 +12,64 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
+import requests
+import os
+import logging
+
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
 limiter = Limiter(key_func=get_remote_address)
+
+
+def send_recovery_email(email: str, token: str, frontend_url: str) -> bool:
+    """Envía email de recuperación de contraseña via Brevo (Sendinblue)"""
+    try:
+        brevo_api_key = os.getenv("BREVO_API_KEY")
+        email_from = os.getenv("EMAIL_FROM", "cjsatlas@hotmail.com")
+        
+        recovery_link = f"{frontend_url}/reset-password?token={token}"
+        
+        html_content = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #0ea5e9;">Recuperación de Contraseña - SRF Web</h2>
+            <p>Has solicitado recuperar tu contraseña.</p>
+            <p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
+            <a href="{recovery_link}" style="display: inline-block; background: #0ea5e9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">
+                Recuperar mi contraseña
+            </a>
+            <p style="color: #666; font-size: 14px;">Este enlace expira en 1 hora.</p>
+            <p style="color: #999; font-size: 12px;">Si no solicitaste este cambio, puedes ignorar este correo.</p>
+        </div>
+        """
+        
+        url = "https://api.brevo.com/v3/smtp/email"
+        
+        payload = {
+            "sender": {"name": "SRF Web", "email": email_from},
+            "to": [{"email": email}],
+            "subject": "Recuperación de tu contraseña - SRF Web",
+            "htmlContent": html_content
+        }
+        
+        headers = {
+            "api-key": brevo_api_key,
+            "content-type": "application/json"
+        }
+        
+        response = requests.post(url, json=payload, headers=headers)
+        
+        if response.status_code == 201:
+            logger.info(f"✅ Email de recuperación enviado a {email}")
+            return True
+        else:
+            logger.error(f"❌ Error enviando email a {email}: {response.status_code} - {response.text}")
+            return False
+        
+    except Exception as e:
+        logger.error(f"❌ Error enviando email de recuperación a {email}: {str(e)}")
+        return False
 
 
 class CookieTokenResponse(BaseModel):
@@ -72,7 +127,7 @@ def get_current_user(
         )
     usuario = db.query(models.Usuario).filter(models.Usuario.id == sesion.usuario_id).first()
     if not usuario:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Error de autenticación")
     # Actualizar última actividad
     sesion.ultima_actividad = datetime.utcnow()
     db.commit()
@@ -112,55 +167,11 @@ def registro(request: Request, usuario: schemas.UsuarioCrear, db: Session = Depe
     db_usuario = crud.get_user_by_email(db, email=usuario.email)
     if db_usuario:
         raise HTTPException(status_code=400, detail="El correo ya está registrado")
-    return crud.crear_usuario(db, usuario)
-
-@router.post("/auth/login")
-@limiter.limit("5/minute")
-def login(
-    request: Request,
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
-):
-    user = crud.get_user_by_email(db, form_data.username)
-    if not user or not verify_password(form_data.password, user.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales inválidas")
-    
-    sesiones_anteriores = db.query(models.Sesion).filter(
-        models.Sesion.usuario_id == user.id,
-        models.Sesion.activa == True
-    ).all()
-    for sesion in sesiones_anteriores:
-        sesion.activa = False
-    db.commit()
-    
-    token = secrets.token_urlsafe(32)
-    
-    sesion = models.Sesion(
-        usuario_id=user.id,
-        token=token,
-        dispositivo=request.headers.get("user-agent", "Desconocido")[:100] if request else "Desconocido",
-        ip=request.client.host if request and request.client else "0.0.0.0"
-    )
-    db.add(sesion)
-    db.commit()
-    
-    response = JSONResponse(
-        content={"mensaje": "Inicio de sesión exitoso", "usuario": user.email, "token": token}
-    )
-    
-    response.set_cookie(
-        key="session_token",
-        value=token,
-        httponly=True,
-        samesite="lax",
-        max_age=60 * 60 * 24 * 7,
-        path="/"
-    )
-    
-    return response
+return crud.crear_usuario(db, usuario)
 
 @router.post("/auth/recuperar-password")
-def solicitar_recuperacion(email: str, db: Session = Depends(get_db)):
+@limiter.limit("3/minute")
+def solicitar_recuperacion(request: Request, email: str, db: Session = Depends(get_db)):
     usuario = crud.get_user_by_email(db, email=email)
     if not usuario:
         return {"mensaje": "Si el correo existe, recibirás un enlace de recuperación"}
@@ -174,17 +185,27 @@ def solicitar_recuperacion(email: str, db: Session = Depends(get_db)):
     db.add(recuperacion)
     db.commit()
     
-    # NOTA: En producción, enviar el token al email del usuario,
-    # nunca devolverlo en la respuesta HTTP.
-    # Ejemplo: send_recovery_email(email, token)
-    print(f"=== TOKEN DE RECUPERACIÓN (solo en desarrollo) ===")
-    print(f"Email: {email}")
-    print(f"Token: {token}")
-    print(f"===================================================")
+    # Detectar frontend URL desde headers
+    forwarded_host = request.headers.get("X-Forwarded-Host")
+    frontend_url = f"https://{forwarded_host}" if forwarded_host else os.getenv("FRONTEND_URL", "http://localhost:5173")
+    
+    # Enviar email de recuperación real
+    send_recovery_email(email, token, frontend_url)
+    
     return {"mensaje": "Si el correo existe, recibirás un enlace de recuperación"}
 
 @router.post("/auth/reset-password")
 def reset_password(token: str, nueva_password: str, db: Session = Depends(get_db)):
+    # Validar fuerza de contraseña
+    if len(nueva_password) < 8:
+        raise HTTPException(status_code=400, detail="La contraseña debe tener al menos 8 caracteres")
+    if not any(c.isupper() for c in nueva_password):
+        raise HTTPException(status_code=400, detail="La contraseña debe tener al menos una mayúscula")
+    if not any(c.islower() for c in nueva_password):
+        raise HTTPException(status_code=400, detail="La contraseña debe tener al menos una minúscula")
+    if not any(c.isdigit() for c in nueva_password):
+        raise HTTPException(status_code=400, detail="La contraseña debe tener al menos un número")
+    
     recuperacion = db.query(models.RecuperacionPassword).filter(
         models.RecuperacionPassword.token == token,
         models.RecuperacionPassword.usado == False
@@ -198,7 +219,7 @@ def reset_password(token: str, nueva_password: str, db: Session = Depends(get_db
     
     usuario = crud.get_user_by_email(db, email=recuperacion.email)
     if not usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     usuario.password = crud.hash_password(nueva_password)
     recuperacion.usado = True
@@ -210,7 +231,7 @@ def reset_password(token: str, nueva_password: str, db: Session = Depends(get_db
 def listar_sesiones(email: str, db: Session = Depends(get_db)):
     usuario = crud.get_user_by_email(db, email=email)
     if not usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     sesiones = db.query(models.Sesion).filter(
         models.Sesion.usuario_id == usuario.id,
@@ -232,7 +253,7 @@ def listar_sesiones(email: str, db: Session = Depends(get_db)):
 def cerrar_sesion(sesion_id: int, db: Session = Depends(get_db)):
     sesion = db.query(models.Sesion).filter(models.Sesion.id == sesion_id).first()
     if not sesion:
-        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     sesion.activa = False
     db.commit()
@@ -279,7 +300,7 @@ def validar_token(request: Request, token: Optional[str] = Query(None), db: Sess
     
     usuario = db.query(models.Usuario).filter(models.Usuario.id == sesion.usuario_id).first()
     if not usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     return {
         "id": usuario.id,

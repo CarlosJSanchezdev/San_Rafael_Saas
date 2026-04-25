@@ -65,7 +65,7 @@ def crear_transaccion_wompi(request: Request, pedido_data: schemas.PedidoCrear, 
         if not producto:
             raise HTTPException(
                 status_code=400,
-                detail=f"Producto {item.producto_id} no encontrado en esta tienda"
+                detail="Error al procesar el pago"
             )
 
         if abs(producto.precio - item.precio) > 0.01:

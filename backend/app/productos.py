@@ -45,7 +45,7 @@ def obtener_producto(
 ):
     producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
     if not producto:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     # Validar acceso cross-tenant
     if current_user.rol != "admin":
@@ -84,7 +84,7 @@ def actualizar_producto(
 ):
     db_producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
     if not db_producto:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     # Validar acceso cross-tenant
     if current_user.rol != "admin":
@@ -106,7 +106,7 @@ def eliminar_producto(
 ):
     db_producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
     if not db_producto:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     # Validar acceso cross-tenant
     if current_user.rol != "admin":

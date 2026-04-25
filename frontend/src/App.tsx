@@ -61,6 +61,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/recuperar-password" element={<RecuperarPassword />} />
+            <Route path="/reset-password" element={<RecuperarPassword />} />
             
             <Route path="/t/:subdominio" element={<TiendaPublica />} />
             <Route path="/t/:subdominio/checkout" element={<CheckoutTienda />} />

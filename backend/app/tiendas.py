@@ -46,7 +46,7 @@ def crear_tienda(
         (models.Tienda.slug == tienda.slug)
     ).first()
     if existente:
-        raise HTTPException(status_code=400, detail="El subdominio o slug ya existe")
+        raise HTTPException(status_code=400, detail="El recurso ya existe")
 
     if tienda.sector not in SECTORES:
         raise HTTPException(status_code=400, detail=f"Sector inválido. Opciones: {SECTORES}")

@@ -55,12 +55,12 @@ def obtener_usuario(
         else:
             usuario = None
         if not usuario:
-            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+            raise HTTPException(status_code=404, detail="Error de validación")
         return usuario
     
     usuario = db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
     if not usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     return usuario
 
 
@@ -75,7 +75,7 @@ def crear_usuario(
         (models.Usuario.usuario == usuario.usuario)
     ).first()
     if existente:
-        raise HTTPException(status_code=400, detail="El usuario o email ya existe")
+        raise HTTPException(status_code=400, detail="El recurso ya existe")
     
     nuevo_usuario = models.Usuario(
         nombre=usuario.nombre,
@@ -107,7 +107,7 @@ def actualizar_usuario(
 ):
     db_usuario = db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
     if not db_usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     if usuario.nombre:
         db_usuario.nombre = usuario.nombre
@@ -145,7 +145,7 @@ def eliminar_usuario(
 ):
     db_usuario = db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
     if not db_usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     db.delete(db_usuario)
     db.commit()

@@ -16,7 +16,7 @@ def listar_clientes(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
 def obtener_cliente(cliente_id: int, db: Session = Depends(get_db)):
     cliente = db.query(models.Cliente).filter(models.Cliente.id == cliente_id).first()
     if not cliente:
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     return cliente
 
 @router.post("/clientes", response_model=schemas.ClienteOut)
@@ -24,7 +24,7 @@ def crear_cliente(cliente: schemas.ClienteCrear, db: Session = Depends(get_db)):
     if cliente.email:
         existente = db.query(models.Cliente).filter(models.Cliente.email == cliente.email).first()
         if existente:
-            raise HTTPException(status_code=400, detail="Ya existe un cliente con este email")
+            raise HTTPException(status_code=400, detail="El recurso ya existe")
     
     nuevo_cliente = models.Cliente(**cliente.dict())
     db.add(nuevo_cliente)
@@ -36,7 +36,7 @@ def crear_cliente(cliente: schemas.ClienteCrear, db: Session = Depends(get_db)):
 def actualizar_cliente(cliente_id: int, cliente: schemas.ClienteUpdate, db: Session = Depends(get_db)):
     db_cliente = db.query(models.Cliente).filter(models.Cliente.id == cliente_id).first()
     if not db_cliente:
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     for key, value in cliente.dict(exclude_unset=True).items():
         setattr(db_cliente, key, value)
@@ -49,7 +49,7 @@ def actualizar_cliente(cliente_id: int, cliente: schemas.ClienteUpdate, db: Sess
 def eliminar_cliente(cliente_id: int, db: Session = Depends(get_db)):
     db_cliente = db.query(models.Cliente).filter(models.Cliente.id == cliente_id).first()
     if not db_cliente:
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+        raise HTTPException(status_code=404, detail="Error de validación")
     
     db.delete(db_cliente)
     db.commit()
