@@ -167,7 +167,52 @@ def registro(request: Request, usuario: schemas.UsuarioCrear, db: Session = Depe
     db_usuario = crud.get_user_by_email(db, email=usuario.email)
     if db_usuario:
         raise HTTPException(status_code=400, detail="El correo ya está registrado")
-return crud.crear_usuario(db, usuario)
+    return crud.crear_usuario(db, usuario)
+
+@router.post("/auth/login")
+@limiter.limit("5/minute")
+def login(
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    user = crud.get_user_by_email(db, form_data.username)
+    if not user or not verify_password(form_data.password, user.password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales inválidas")
+    
+    sesiones_anteriores = db.query(models.Sesion).filter(
+        models.Sesion.usuario_id == user.id,
+        models.Sesion.activa == True
+    ).all()
+    for sesion in sesiones_anteriores:
+        sesion.activa = False
+    db.commit()
+    
+    token = secrets.token_urlsafe(32)
+    
+    sesion = models.Sesion(
+        usuario_id=user.id,
+        token=token,
+        dispositivo=request.headers.get("user-agent", "Desconocido")[:100] if request else "Desconocido",
+        ip=request.client.host if request and request.client else "0.0.0.0"
+    )
+    db.add(sesion)
+    db.commit()
+    
+    response = JSONResponse(
+        content={"mensaje": "Inicio de sesión exitoso", "usuario": user.email, "token": token}
+    )
+    
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        httponly=True,
+        samesite="lax",
+        max_age=60 * 60 * 24 * 7,
+        path="/"
+    )
+    
+    return response
 
 @router.post("/auth/recuperar-password")
 @limiter.limit("3/minute")
