@@ -118,7 +118,7 @@ export default function Home() {
       </section>
 
       {/* Sectores */}
-      <section className="sectores-section">
+      <section id="sectores" className="sectores-section">
         <div className="section-header">
           <h2>Para todo tipo de negocios</h2>
           <p>Soluciones adaptadas a tu industria</p>

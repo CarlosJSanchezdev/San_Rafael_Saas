@@ -4,6 +4,7 @@
   background: #0a0a0a;
   color: #fff;
   padding-top: 60px;
+  scroll-behavior: smooth;
 }
 
 /* Hero */
