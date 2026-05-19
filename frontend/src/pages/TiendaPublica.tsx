@@ -5,8 +5,9 @@ import { useCarrito } from "../context/CarritoContext";
 import { HiOutlineShoppingBag, HiOutlinePlus, HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import WhatsAppFloat from "../components/WhatsAppFloat";
 import TiendaStyle from "../components/TiendaStyle";
+import { SkeletonProductGrid } from "../components/Skeleton";
 
-// Import styles - we'll use a simpler approach
+// Static import - ensures CSS is only loaded for store pages
 import "../styles/tienda/style_1.css";
 
 interface Tienda {
@@ -117,21 +118,26 @@ export default function TiendaPublica() {
 
   if (loading) {
     return (
-      <div className="st-store-layout">
+      <div className="st-store-layout store-theme">
         <TiendaStyle 
           colorPrimario={tienda?.color_primario}
           colorSecundario={tienda?.color_secundario}
         />
-        <div className="st-loading">
-          <div className="st-spinner" />
-        </div>
+        <main className="st-products">
+          <div className="st-container">
+            <div className="st-section-header">
+              <h2>Cargando...</h2>
+            </div>
+            <SkeletonProductGrid count={8} />
+          </div>
+        </main>
       </div>
     );
   }
 
   if (!tienda) {
     return (
-      <div className="st-store-layout">
+      <div className="st-store-layout store-theme">
         <div className="st-not-found">
           <h2>Tienda no encontrada</h2>
           <p>La tienda "{subdominio}" no existe o está inactiva.</p>

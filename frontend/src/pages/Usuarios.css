@@ -157,7 +157,7 @@ td {
   padding: 0.875rem 1rem;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: var(--bg-glass);
+  background: #FFFFFF;
   color: var(--text-primary);
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -165,9 +165,10 @@ td {
 
 .form-group input:focus,
 .form-group select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 20px var(--accent-glow);
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(105, 70, 52, 0.1);
 }
 
 .modal-actions {

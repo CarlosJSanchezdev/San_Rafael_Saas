@@ -7,14 +7,20 @@
 
 .carrito-sidebar {
   --carrito-primary: #0ea5e9;
+  --carrito-bg: #ffffff;
+  --carrito-bg-secondary: #f8fafc;
+  --carrito-bg-glass: rgba(248, 250, 252, 0.95);
+  --carrito-border: #e2e8f0;
+  --carrito-text: #1e293b;
+  --carrito-text-secondary: #64748b;
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   width: 100%;
   max-width: 450px;
-  background: var(--bg-secondary);
-  border-left: 1px solid var(--border);
+  background: var(--carrito-bg);
+  border-left: 1px solid var(--carrito-border);
   z-index: 1002;
   display: flex;
   flex-direction: column;
@@ -26,7 +32,7 @@
   align-items: center;
   padding: 1.5rem;
   border-bottom: 4px solid var(--carrito-primary);
-  background: var(--bg-secondary);
+  background: var(--carrito-bg);
 }
 
 .carrito-header h2 {
@@ -40,8 +46,8 @@
   height: 40px;
   border: none;
   border-radius: 12px;
-  background: var(--bg-glass);
-  color: var(--text-secondary);
+  background: var(--carrito-bg-glass);
+  color: var(--carrito-text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -66,7 +72,7 @@
 }
 
 .carrito-vacio p {
-  color: var(--text-secondary);
+  color: var(--carrito-text-secondary);
   margin-bottom: 1.5rem;
 }
 
@@ -89,7 +95,7 @@
   display: flex;
   gap: 1rem;
   padding: 1rem;
-  background: var(--bg-glass);
+  background: var(--carrito-bg-glass);
   border-radius: 12px;
   margin-bottom: 0.75rem;
 }
@@ -100,7 +106,7 @@
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--bg-primary);
+  background: var(--carrito-bg-secondary);
 }
 
 .item-imagen img {
@@ -148,8 +154,8 @@
   height: 28px;
   border: none;
   border-radius: 6px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  background: var(--carrito-bg-secondary);
+  color: var(--carrito-text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -174,7 +180,7 @@
   border: none;
   border-radius: 8px;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--carrito-text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -191,7 +197,7 @@
 .carrito-footer {
   padding: 1.5rem;
   border-top: 4px solid var(--carrito-primary);
-  background: var(--bg-primary);
+  background: var(--carrito-bg-secondary);
 }
 
 .carrito-total {
@@ -210,10 +216,10 @@
 .btn-vaciar {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--carrito-border);
   border-radius: 8px;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--carrito-text-secondary);
   cursor: pointer;
   margin-bottom: 0.75rem;
   transition: all 0.3s ease;

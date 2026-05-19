@@ -6,7 +6,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
-:root {
+/* Store theme - ONLY applies to .store-theme class, NOT to :root */
+.store-theme {
   /* Colors - Style 1 */
   --primary: #7311d4;
   --primary-light: #9b4dca;
@@ -304,6 +305,16 @@ img {
   color: var(--primary);
   background: rgba(115, 17, 212, 0.1);
   border-radius: var(--radius-full);
+  animation: hero-badge-glow 3s ease-in-out infinite;
+}
+
+@keyframes hero-badge-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(115, 17, 212, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px rgba(115, 17, 212, 0.1);
+  }
 }
 
 .st-hero h1 {
@@ -352,12 +363,18 @@ img {
   color: white;
   font-weight: 700;
   border-radius: var(--radius-full);
-  transition: var(--transition);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s ease;
 }
 
 .st-btn-primary:hover {
   box-shadow: var(--shadow-primary);
-  transform: translateY(-2px);
+  transform: scale(1.03);
+}
+
+.st-btn-primary:active {
+  transform: scale(0.98);
+  transition-duration: 0.1s;
 }
 
 .st-btn-secondary {
@@ -578,6 +595,7 @@ img {
   color: white;
 }
 
+/* Badge Types with Animations */
 .st-product-badge {
   position: absolute;
   top: 1rem;
@@ -588,6 +606,37 @@ img {
   font-size: 0.75rem;
   font-weight: 700;
   border-radius: var(--radius-full);
+  animation: badge-pulse 2s infinite;
+}
+
+.st-product-badge.nuevo {
+  background: #22c55e;
+  animation: badge-pulse 2s infinite;
+}
+
+.st-product-badge.oferta {
+  background: #f59e0b;
+  animation: badge-shake 2s infinite;
+}
+
+.st-product-badge.agotado {
+  background: #6b7280;
+  animation: none;
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+@keyframes badge-shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-2deg); }
+  75% { transform: rotate(2deg); }
 }
 
 .st-product-info {
@@ -641,12 +690,18 @@ img {
   color: white;
   border-radius: var(--radius-xl);
   font-size: 1.25rem;
-  transition: var(--transition);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s ease;
 }
 
 .st-add-btn:hover {
   box-shadow: var(--shadow-primary);
-  opacity: 0.9;
+  transform: scale(1.1);
+}
+
+.st-add-btn:active {
+  transform: scale(0.95);
+  transition-duration: 0.1s;
 }
 
 .st-add-btn:disabled {
@@ -1266,9 +1321,18 @@ img {
 
 .st-form-group input:focus,
 .st-form-group textarea:focus {
-  outline: none;
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(115, 17, 212, 0.1);
+  box-shadow: 0 0 0 4px rgba(115, 17, 212, 0.15);
+}
+
+/* Focus states accesibles */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(115, 17, 212, 0.15);
 }
 
 .st-checkout-summary {

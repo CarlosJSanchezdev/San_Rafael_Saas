@@ -2,6 +2,16 @@
   padding: 2rem;
 }
 
+.tiendas-page {
+  --text-primary: #2D2C2F;
+  --text-secondary: #464549;
+  --border-color: #E8E4E0;
+  --bg-card: #FFFFFF;
+  --bg-glass: rgba(245, 240, 235, 0.8);
+  --primary: #694634;
+  --primary-color: #694634;
+}
+
 .tiendas-page .page-header {
   display: flex;
   flex-direction: column;
@@ -180,7 +190,7 @@
 }
 
 .tienda-actions .btn-metricas {
-  background: #8b5cf6;
+  background: var(--primary);
   color: white;
 }
 

@@ -1,20 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
-:root {
-  --primary: #7C3AED;
-  --primary-light: #A78BFA;
-  --primary-dark: #5B21B6;
+/* Admin theme - ONLY applies to .admin-theme class, NOT to :root */
+.admin-theme {
+  --primary: #694634;
+  --primary-light: #A68B6F;
+  --primary-dark: #523C29;
   --secondary: #64748B;
-  --cta: #F97316;
-  --bg: #FAF5FF;
+  --cta: #8B6B52;
+  --bg: #F5F0EB;
   --bg-card: #FFFFFF;
-  --text: #4C1D95;
-  --text-muted: #64748B;
-  --text-light: #94A3B8;
-  --border: #E2E8F0;
+  --text: #2D2C2F;
+  --text-muted: #6B7280;
+  --text-light: #9CA3AF;
+  --text-secondary: #6B7280;
+  --text-primary: #2D2C2F;
+  --border: #E8E4E0;
   --success: #059669;
   --danger: #DC2626;
   --sidebar-width: 260px;
+  --gradient-button: linear-gradient(135deg, #694634, #8B6B52);
+  --accent: #694634;
+  --accent-glow: rgba(105, 70, 52, 0.35);
+  --bg-glass: rgba(255, 255, 255, 0.95);
+  --bg-glass-hover: rgba(245, 240, 235, 0.95);
+  --input-bg: #FFFFFF;
+  --input-text: #2D2C2F;
+  --placeholder-text: #6B7280;
 }
 
 * {
@@ -35,7 +46,6 @@ body {
   width: 100%;
 }
 
-/* Menu Toggle */
 .menu-toggle-btn {
   display: none;
 }
@@ -44,14 +54,12 @@ body {
   display: none;
 }
 
-/* Layout */
 .layout {
   display: flex;
   min-height: 100vh;
   background: var(--bg);
 }
 
-/* Sidebar */
 .sidebar {
   width: var(--sidebar-width);
   background: var(--bg-card);
@@ -107,7 +115,7 @@ body {
 .nav-item.active .nav-link {
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
   color: white;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 4px 12px rgba(105, 70, 52, 0.35);
 }
 
 .nav-link {
@@ -122,7 +130,7 @@ body {
 }
 
 .nav-link:hover {
-  background: #F3E8FF;
+  background: var(--bg-glass-hover);
   color: var(--primary);
 }
 
@@ -163,7 +171,6 @@ body {
   color: var(--danger);
 }
 
-/* Main Content */
 .main-content {
   flex: 1;
   margin-left: var(--sidebar-width);
@@ -171,7 +178,6 @@ body {
   min-height: 100vh;
 }
 
-/* Page Header */
 .page-header {
   margin-bottom: 2rem;
   display: flex;
@@ -240,7 +246,6 @@ body {
   color: var(--text-muted);
 }
 
-/* Glass Card */
 .glass-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -250,11 +255,10 @@ body {
 }
 
 .glass-card:hover {
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.08);
+  box-shadow: 0 4px 16px rgba(105, 70, 52, 0.08);
   border-color: var(--primary-light);
 }
 
-/* Dashboard Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -271,7 +275,7 @@ body {
 
 .stat-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.12);
+  box-shadow: 0 8px 24px rgba(105, 70, 52, 0.12);
 }
 
 .stat-icon {
@@ -292,7 +296,7 @@ body {
 .stat-icon.green { background: #D1FAE5; color: var(--success); }
 .stat-icon.orange { background: #FEF3C7; color: var(--cta); }
 .stat-icon.red { background: #FEE2E2; color: var(--danger); }
-.stat-icon.purple { background: #EDE9FE; color: var(--primary); }
+.stat-icon.purple { background: #F5F0EB; color: var(--primary); }
 
 .stat-info h3 {
   font-size: 0.8125rem;
@@ -307,7 +311,6 @@ body {
   color: var(--text);
 }
 
-/* Charts */
 .charts-section {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -318,7 +321,6 @@ body {
   height: 300px;
 }
 
-/* Tables */
 .table-container {
   overflow-x: auto;
 }
@@ -357,7 +359,6 @@ tbody tr:hover {
   background: #F8FAFC;
 }
 
-/* Buttons */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -370,14 +371,21 @@ tbody tr:hover {
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.2s ease,
+              background 0.2s ease;
   font-family: inherit;
 }
 
 .btn-primary:hover {
   background: var(--primary-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(105, 70, 52, 0.25);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  transition-duration: 0.1s;
 }
 
 .btn-secondary {
@@ -421,7 +429,6 @@ tbody tr:hover {
   background: #FECACA;
 }
 
-/* Badges */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -432,58 +439,51 @@ tbody tr:hover {
   font-weight: 600;
 }
 
-.badge.success {
-  background: #D1FAE5;
-  color: var(--success);
-}
+.badge.success { background: #D1FAE5; color: var(--success); }
+.badge.warning { background: #FEF3C7; color: #B45309; }
+.badge.danger { background: #FEE2E2; color: var(--danger); }
+.badge.info { background: #DBEAFE; color: var(--primary); }
 
-.badge.warning {
-  background: #FEF3C7;
-  color: #B45309;
-}
-
-.badge.danger {
-  background: #FEE2E2;
-  color: var(--danger);
-}
-
-.badge.info {
-  background: #DBEAFE;
-  color: var(--primary);
-}
-
-/* Form Elements */
 input, select, textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: var(--bg-card);
+  background: var(--input-bg, #FFFFFF);
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 0.875rem;
-  color: var(--text);
+  color: var(--input-text, var(--text));
   font-family: inherit;
   transition: all 0.2s ease;
 }
 
 input:focus, select:focus, textarea:focus {
-  outline: none;
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+  box-shadow: 0 0 0 4px rgba(105, 70, 52, 0.1);
+}
+
+/* Focus states accesibles para botones y links */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(105, 70, 52, 0.15);
 }
 
 input::placeholder {
-  color: var(--text-light);
+  color: var(--placeholder-text, var(--text-light));
 }
 
 label {
   display: block;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
   margin-bottom: 0.5rem;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -512,7 +512,6 @@ label {
   color: var(--text);
 }
 
-/* Search */
 .search-bar {
   display: flex;
   align-items: center;
@@ -538,7 +537,6 @@ label {
   color: var(--text-muted);
 }
 
-/* Empty State */
 .empty-state {
   text-align: center;
   padding: 3rem;
@@ -557,7 +555,6 @@ label {
   color: var(--text);
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
   .sidebar {
     transform: translateX(-100%);
@@ -617,4 +614,27 @@ label {
   .header-info {
     flex-wrap: wrap;
   }
+}
+
+/* ============================================
+   ADMIN DASHBOARD - COLORES PANTONE
+   Estos colores se aplican SOLO al admin
+   Chocolate Cremoso: #694634 (Pantone 19-1117 TCX)
+   Jet Black: #2D2C2F (Pantone 19-0303 TCX)
+   ============================================ */
+.admin-theme {
+  --admin-primary: #694634;
+  --admin-primary-light: #A68B6F;
+  --admin-primary-dark: #523C29;
+  --admin-cta: #8B6B52;
+  --admin-accent: #694634;
+}
+
+/* Aplicar colores admin solo al layout del admin */
+.layout {
+  --primary: #694634 !important;
+  --primary-light: #A68B6F !important;
+  --primary-dark: #523C29 !important;
+  --cta: #8B6B52 !important;
+  --accent: #694634 !important;
 }

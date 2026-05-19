@@ -68,7 +68,7 @@ export default function Layout({ children }: LayoutProps) {
   const cerrarSidebar = () => setSidebarAbierto(false);
 
   return (
-    <div className="layout">
+    <div className="layout admin-theme">
       {/* Botón menú móvil */}
       <button 
         className="menu-toggle-btn"

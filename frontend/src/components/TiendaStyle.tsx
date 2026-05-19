@@ -11,17 +11,27 @@ interface TiendaStyleProps {
 export default function TiendaStyle({ colorPrimario, colorSecundario }: TiendaStyleProps) {
   
   useEffect(() => {
-    // Update CSS variables for dynamic colors
+    // Update CSS variables for dynamic colors on .store-theme
+    const storeTheme = document.querySelector('.store-theme') as HTMLElement;
     const root = document.documentElement;
     
     if (colorPrimario) {
+      // Set on store-theme class if it exists
+      if (storeTheme) {
+        storeTheme.style.setProperty('--primary', colorPrimario);
+        storeTheme.style.setProperty('--primary-light', adjustColor(colorPrimario, 20));
+        storeTheme.style.setProperty('--primary-dark', adjustColor(colorPrimario, -20));
+      }
+      // Fallback to global :root for older implementations
       root.style.setProperty('--primary', colorPrimario);
-      // Calculate lighter and darker variants
       root.style.setProperty('--primary-light', adjustColor(colorPrimario, 20));
       root.style.setProperty('--primary-dark', adjustColor(colorPrimario, -20));
     }
     
     if (colorSecundario) {
+      if (storeTheme) {
+        storeTheme.style.setProperty('--secondary', colorSecundario);
+      }
       root.style.setProperty('--secondary', colorSecundario);
     }
   }, [colorPrimario, colorSecundario]);

@@ -1,0 +1,110 @@
+/* Skeleton Loading Styles */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Product Card Skeleton */
+.skeleton-product-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.skeleton-product-image {
+  aspect-ratio: 3/4;
+  width: 100%;
+}
+
+.skeleton-product-info {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-product-title {
+  height: 20px;
+  width: 80%;
+}
+
+.skeleton-product-desc {
+  height: 14px;
+  width: 60%;
+}
+
+.skeleton-product-price {
+  height: 28px;
+  width: 40%;
+  margin-top: 0.5rem;
+}
+
+/* Dashboard Skeleton */
+.skeleton-stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skeleton-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.skeleton-stat-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeleton-stat-label {
+  height: 14px;
+  width: 50%;
+}
+
+.skeleton-stat-value {
+  height: 28px;
+  width: 30%;
+}
+
+/* Grid layouts */
+.skeleton-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.skeleton-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Store specific skeleton (lavender tint) */
+.store-theme .skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+}
+
+/* Admin specific skeleton (warm tint) */
+.admin-theme .skeleton {
+  background: linear-gradient(90deg, #f5f0eb 25%, #ece8e3 50%, #f5f0eb 75%);
+}
