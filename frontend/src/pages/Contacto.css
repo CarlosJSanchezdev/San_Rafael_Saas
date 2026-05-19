@@ -1,7 +1,7 @@
 /* Contacto Page - Landing theme colors */
 .contacto-page {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: #2D2C2F;
   color: #fff;
   padding-bottom: 4rem;
 }
@@ -9,14 +9,14 @@
 .contacto-hero {
   text-align: center;
   padding: 5rem 2rem 2.5rem;
-  background: linear-gradient(135deg, rgba(102, 51, 153, 0.3), rgba(153, 51, 102, 0.2));
-  border-bottom: 1px solid rgba(102, 51, 153, 0.2);
+  background: linear-gradient(135deg, rgba(105, 70, 52, 0.3), rgba(139, 107, 82, 0.2));
+  border-bottom: 1px solid rgba(105, 70, 52, 0.2);
 }
 
 .contacto-hero h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, #694634, #8B6B52);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -72,7 +72,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, #694634, #8B6B52);
   color: #fff;
   border-radius: 12px;
   font-size: 1.5rem;
@@ -126,8 +126,9 @@
   padding-left: 2.75rem;
 }
 
-.form-group input,
-.form-group textarea {
+/* Scoped to contacto-page only - won't affect other pages */
+.contacto-page .form-group input,
+.contacto-page .form-group textarea {
   width: 100%;
   padding: 0.875rem 1rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -138,14 +139,14 @@
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
+.contacto-page .form-group input:focus,
+.contacto-page .form-group textarea:focus {
   outline: none;
-  border-color: #663399;
-  box-shadow: 0 0 0 3px rgba(102, 51, 153, 0.2);
+  border-color: #694634;
+  box-shadow: 0 0 0 3px rgba(105, 70, 52, 0.2);
 }
 
-.form-group textarea {
+.contacto-page .form-group textarea {
   resize: vertical;
   min-height: 120px;
 }
@@ -153,7 +154,7 @@
 .btn-enviar {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, #694634, #8B6B52);
   color: white;
   border: none;
   border-radius: 10px;
@@ -165,7 +166,7 @@
 
 .btn-enviar:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(102, 51, 153, 0.4);
+  box-shadow: 0 4px 20px rgba(105, 70, 52, 0.4);
 }
 
 .btn-enviar:disabled {
@@ -201,7 +202,7 @@
 .mapa-placeholder svg {
   font-size: 4rem;
   margin-bottom: 1rem;
-  color: #663399;
+  color: #694634;
 }
 
 @media (max-width: 768px) {

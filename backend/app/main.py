@@ -60,7 +60,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # Permissions Policy
         response.headers["Permissions-Policy"] = (
             "geolocation=(), "
-            "magnetic-field=(), "
             "accelerometer=(), "
             "gyroscope=(), "
             "local-fonts=(), "

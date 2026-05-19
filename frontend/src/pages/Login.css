@@ -1,3 +1,10 @@
+:root {
+  --login-bg: #2D2C2F;
+  --login-primary: var(--primary, #694634);
+  --login-cta: var(--cta, #8B6B52);
+  --login-accent-glow: var(--accent-glow, rgba(105, 70, 52, 0.35));
+}
+
 /* Login Page - Landing theme colors */
 .login-container {
   min-height: 100vh;
@@ -5,10 +12,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #0a0a0a;
+  background: var(--login-bg);
   background-image:
-    radial-gradient(ellipse at 30% 30%, rgba(102, 51, 153, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 70%, rgba(153, 51, 102, 0.1) 0%, transparent 50%);
+    radial-gradient(ellipse at 30% 30%, rgba(105, 70, 52, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(139, 107, 82, 0.1) 0%, transparent 50%);
   padding-top: 60px;
   padding: 6rem 1rem 2rem;
 }
@@ -28,7 +35,7 @@
   text-align: center;
   font-size: 1.75rem;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, var(--login-primary), var(--login-cta));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -60,8 +67,8 @@
 
 .formulario-login input:focus {
   outline: none;
-  border-color: #663399;
-  box-shadow: 0 0 20px rgba(102, 51, 153, 0.3);
+  border-color: var(--login-primary);
+  box-shadow: 0 0 20px var(--login-accent-glow);
 }
 
 .formulario-login input::placeholder {
@@ -73,7 +80,7 @@
   padding: 1rem;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, var(--login-primary), var(--login-cta));
   color: white;
   font-size: 1rem;
   font-weight: 600;
@@ -84,7 +91,7 @@
 
 .formulario-login button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(102, 51, 153, 0.4);
+  box-shadow: 0 10px 30px rgba(105, 70, 52, 0.4);
 }
 
 .formulario-login button:active {
@@ -99,12 +106,13 @@
 }
 
 .switch-link a {
-  color: #9966cc;
+  color: var(--login-primary);
   text-decoration: none;
   font-weight: 500;
   margin-left: 0.25rem;
 }
 
 .switch-link a:hover {
+  color: var(--login-cta);
   text-decoration: underline;
 }

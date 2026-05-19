@@ -2,20 +2,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-:root {
-  --primary: #1E40AF;
-  --primary-light: #3B82F6;
-  --secondary: #64748B;
-  --cta: #F59E0B;
-  --bg: #F8FAFC;
-  --bg-card: #FFFFFF;
-  --text: #1E3A8A;
-  --text-muted: #64748B;
-  --border: #E2E8F0;
-  --success: #059669;
-  --danger: #DC2626;
-}
-
 .dashboard {
   width: 100%;
   max-width: 1400px;
@@ -147,7 +133,7 @@
 
 .stat-card:nth-child(2):hover { border-color: var(--success); }
 .stat-card:nth-child(3):hover { border-color: var(--cta); }
-.stat-card:nth-child(4):hover { border-color: #7C3AED; }
+.stat-card:nth-child(4):hover { border-color: var(--primary); }
 
 .stat-icon {
   width: 48px;
@@ -180,8 +166,8 @@
 }
 
 .stat-icon.purple {
-  background: #EDE9FE;
-  color: #7C3AED;
+  background: #F5F0EB;
+  color: var(--primary);
 }
 
 .stat-info h3 {

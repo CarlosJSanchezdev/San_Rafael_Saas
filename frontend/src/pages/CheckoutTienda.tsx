@@ -7,6 +7,7 @@ import { HiOutlineShoppingBag } from "react-icons/hi";
 import TiendaStyle from "../components/TiendaStyle";
 import WompiCheckout from "../components/WompiCheckout";
 
+// Static import - only loads on store checkout pages
 import "../styles/tienda/style_1.css";
 
 interface Tienda {
@@ -90,7 +91,7 @@ export default function CheckoutTienda() {
 
   if (loading) {
     return (
-      <div className="st-store-layout">
+      <div className="st-store-layout store-theme">
         <TiendaStyle 
           colorPrimario={tienda?.color_primario}
           colorSecundario={tienda?.color_secundario}
@@ -104,7 +105,7 @@ export default function CheckoutTienda() {
 
   if (!tienda) {
     return (
-      <div className="st-store-layout">
+      <div className="st-store-layout store-theme">
         <div className="st-not-found">
           <h2>Tienda no encontrada</h2>
           <Link to="/">Volver al inicio</Link>
@@ -115,7 +116,7 @@ export default function CheckoutTienda() {
 
   if (pedidoCreado) {
     return (
-      <div className="st-store-layout">
+      <div className="st-store-layout store-theme">
         <TiendaStyle 
           colorPrimario={tienda.color_primario}
           colorSecundario={tienda.color_secundario}
@@ -139,7 +140,7 @@ export default function CheckoutTienda() {
 
   if (items.length === 0) {
     return (
-      <div className="st-store-layout">
+      <div className="st-store-layout store-theme">
         <TiendaStyle 
           colorPrimario={tienda.color_primario}
           colorSecundario={tienda.color_secundario}
@@ -157,7 +158,7 @@ export default function CheckoutTienda() {
   }
 
   return (
-    <div className="st-store-layout">
+    <div className="st-store-layout store-theme">
       <TiendaStyle 
         colorPrimario={tienda.color_primario}
         colorSecundario={tienda.color_secundario}

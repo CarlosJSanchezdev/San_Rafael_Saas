@@ -40,13 +40,21 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
-      '/metricas': {
+'/metricas': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
-      '/admin': {
+      '^/admin(/.*)?': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        bypass(req) {
+          const accept = req.headers.accept || '';
+          // Si el navegador pide HTML, no proxy - deja que Vite sirva el frontend
+          if (accept.includes('text/html')) {
+            return req.url;
+          }
+          // Para llamadas API (JSON), sí proxy al backend
+        },
       },
       '/tienda': {
         target: 'http://localhost:8000',

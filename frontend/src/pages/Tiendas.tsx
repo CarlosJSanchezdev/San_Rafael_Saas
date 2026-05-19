@@ -81,9 +81,11 @@ export default function Tiendas() {
   const fetchTiendas = async () => {
     try {
       const response = await api.get("/admin/tiendas");
-      setTiendas(response.data);
+      const data = response.data;
+      setTiendas(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching tiendas:", error);
+      setTiendas([]);
     }
   };
 

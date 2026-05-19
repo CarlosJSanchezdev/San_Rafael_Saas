@@ -18,6 +18,7 @@ import { HiOutlineUsers, HiOutlineCube, HiOutlineCurrencyDollar, HiOutlineShoppi
 import api from "../api";
 import { useAuth } from "../context/AuthContext";
 import Layout from "../components/Layout";
+import { SkeletonDashboard } from "../components/Skeleton";
 import "./Dashboard.css";
 
 interface Stats {
@@ -175,26 +176,30 @@ export default function Dashboard() {
           </motion.div>
         )}
 
-        <motion.div className="dashboard-grid" variants={item}>
-          {statsCards.map((stat) => (
-            <motion.div
-              key={stat.label}
-              className="stat-card"
-              variants={item}
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className={`stat-icon ${stat.color}`}>
-                <stat.icon />
-              </div>
-              <div className="stat-info">
-                <h3>{stat.label}</h3>
-                <p>{loading ? "..." : stat.value}</p>
-                <span className="change positive">{stat.change}</span>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+        {loading && <SkeletonDashboard />}
+
+        {!loading && (
+          <motion.div className="dashboard-grid" variants={item}>
+            {statsCards.map((stat) => (
+              <motion.div
+                key={stat.label}
+                className="stat-card"
+                variants={item}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className={`stat-icon ${stat.color}`}>
+                  <stat.icon />
+                </div>
+                <div className="stat-info">
+                  <h3>{stat.label}</h3>
+                  <p>{stat.value}</p>
+                  <span className="change positive">{stat.change}</span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
 
         <motion.div className="charts-section" variants={item}>
           <motion.div className="glass-card" variants={item}>

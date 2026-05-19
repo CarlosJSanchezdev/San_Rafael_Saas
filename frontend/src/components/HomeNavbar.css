@@ -28,7 +28,7 @@
 .home-navbar .logo-text {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, #694634, #8B6B52);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -82,7 +82,7 @@
 .home-navbar .btn-crear-tienda {
   display: inline-block;
   padding: 0.5rem 1.5rem;
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, #694634, #8B6B52);
   color: #fff;
   text-decoration: none;
   border-radius: 6px;
@@ -93,7 +93,7 @@
 
 .home-navbar .btn-crear-tienda:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(102, 51, 153, 0.4);
+  box-shadow: 0 4px 20px rgba(105, 70, 52, 0.4);
 }
 
 .home-navbar .menu-toggle {

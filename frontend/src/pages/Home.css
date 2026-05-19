@@ -1,7 +1,7 @@
 /* Home Page */
 .home-page {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: #2D2C2F;
   color: #fff;
   padding-top: 60px;
   scroll-behavior: smooth;
@@ -21,7 +21,7 @@
 .home-hero-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(102, 51, 153, 0.15), transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(105, 70, 52, 0.15), transparent 60%);
   pointer-events: none;
 }
 
@@ -92,7 +92,7 @@
 
 .servicio-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(102, 51, 153, 0.4);
+  border-color: rgba(105, 70, 52, 0.4);
 }
 
 .servicio-icon {
@@ -126,8 +126,8 @@
 }
 
 .sector-card {
-  background: rgba(102, 51, 153, 0.15);
-  border: 1px solid rgba(102, 51, 153, 0.3);
+  background: rgba(105, 70, 52, 0.15);
+  border: 1px solid rgba(105, 70, 52, 0.3);
   border-radius: 8px;
   padding: 1.5rem 2.5rem;
   font-size: 1.125rem;
@@ -138,7 +138,7 @@
 .cta-section {
   padding: 5rem 2rem;
   text-align: center;
-  background: radial-gradient(circle at 50% 50%, rgba(102, 51, 153, 0.2), transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(105, 70, 52, 0.2), transparent 60%);
 }
 
 .cta-content h2 {
@@ -170,7 +170,7 @@
 .footer-brand .logo-text {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, #694634, #8B6B52);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -217,7 +217,7 @@
 .btn-primary {
   display: inline-block;
   padding: 0.75rem 2rem;
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, #694634, #8B6B52);
   color: #fff;
   text-decoration: none;
   border-radius: 8px;
@@ -227,7 +227,8 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(102, 51, 153, 0.4);
+  background: linear-gradient(135deg, #523C29, #694634);
+  box-shadow: 0 4px 20px rgba(105, 70, 52, 0.4);
 }
 
 .btn-secondary {
@@ -248,7 +249,7 @@
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #663399, #993366);
+  background: linear-gradient(135deg, #694634, #8B6B52);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

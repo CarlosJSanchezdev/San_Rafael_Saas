@@ -6,6 +6,7 @@ import { useToast } from "../context/ToastContext";
 import { HiOutlineShoppingBag, HiOutlinePlus, HiOutlineMinus } from "react-icons/hi";
 import TiendaStyle from "../components/TiendaStyle";
 
+// Static import - load for store pages
 import "../styles/tienda/style_1.css";
 
 interface Tienda {
@@ -87,7 +88,7 @@ export default function ProductoDetalle() {
 
   if (loading) {
     return (
-      <div className="st-store-layout">
+      <div className="st-store-layout store-theme">
         <TiendaStyle 
           colorPrimario={tienda?.color_primario}
           colorSecundario={tienda?.color_secundario}
@@ -101,7 +102,7 @@ export default function ProductoDetalle() {
 
   if (!producto || !tienda) {
     return (
-      <div className="st-store-layout">
+      <div className="st-store-layout store-theme">
         <div className="st-not-found">
           <h2>Producto no encontrado</h2>
           <p>El producto que buscas no existe o no está disponible.</p>
@@ -112,7 +113,7 @@ export default function ProductoDetalle() {
   }
 
   return (
-    <div className="st-store-layout">
+    <div className="st-store-layout store-theme">
       <TiendaStyle 
         colorPrimario={tienda.color_primario}
         colorSecundario={tienda.color_secundario}
