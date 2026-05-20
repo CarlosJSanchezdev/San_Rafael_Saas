@@ -28,7 +28,7 @@ export default function Login() {
       await login(email, response.data.token || "");
       showToast("Bienvenido!", "success");
       navigate("/admin");
-    } catch (error) {
+    } catch {
       showToast("Correo o contraseña incorrectos", "error");
     }
   };

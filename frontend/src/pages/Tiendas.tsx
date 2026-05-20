@@ -110,8 +110,9 @@ export default function Tiendas() {
       }
       fetchTiendas();
       cerrarModal();
-    } catch (error: any) {
-      showToast(error.response?.data?.detail || "Error al guardar tienda", "error");
+    } catch (error) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      showToast(err.response?.data?.detail || "Error al guardar tienda", "error");
     }
   };
 
@@ -121,7 +122,7 @@ export default function Tiendas() {
       await api.delete(`/admin/tiendas/${id}`);
       showToast("Tienda desactivada correctamente", "success");
       fetchTiendas();
-    } catch (error) {
+    } catch {
       showToast("Error al eliminar tienda", "error");
     }
   };
@@ -185,7 +186,7 @@ export default function Tiendas() {
     try {
       const response = await api.get(`/admin/tiendas/${tienda.id}/metricas?dias=30`);
       setMetricas(response.data);
-    } catch (error) {
+    } catch {
       setMetricas(null);
     }
   };
@@ -592,7 +593,7 @@ export default function Tiendas() {
                   <h3>Productos Más Vistos</h3>
                   {metricas.productos_mas_vistos.length > 0 ? (
                     <div className="productos-vistos">
-                      {metricas.productos_mas_vistos.map((p: any, i: number) => (
+                      {metricas.productos_mas_vistos.map((p: { producto_id: number; vistas: number }, i: number) => (
                         <div key={i} className="producto-visto-item">
                           <span>Producto #{p.producto_id}</span>
                           <span className="vistas">{p.vistas} vistas</span>

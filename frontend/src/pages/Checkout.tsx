@@ -52,7 +52,7 @@ export default function Checkout() {
       setPedidoCreado(response.data.id);
       vaciarCarrito();
       showToast("Pedido creado con éxito", "success");
-    } catch (error) {
+    } catch {
       showToast("Error al procesar el pedido", "error");
     } finally {
       setLoading(false);

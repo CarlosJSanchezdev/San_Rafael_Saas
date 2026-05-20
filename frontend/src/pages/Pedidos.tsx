@@ -56,7 +56,7 @@ export default function Pedidos() {
       await api.put(`/pedidos/${pedidoId}/estado?estado=${nuevoEstado}`);
       showToast(`Pedido #${pedidoId} actualizado a ${nuevoEstado}`, "success");
       fetchPedidos();
-    } catch (error) {
+    } catch {
       showToast("Error al actualizar estado", "error");
     }
   };

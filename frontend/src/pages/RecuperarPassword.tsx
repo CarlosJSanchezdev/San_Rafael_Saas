@@ -25,7 +25,7 @@ export default function RecuperarPassword() {
       });
       showToast("Si el correo existe, recibirás un enlace de recuperación", "success");
       setTimeout(() => window.location.href = "/login", 3000);
-    } catch (error) {
+    } catch {
       showToast("Error al solicitar recuperación", "error");
     } finally {
       setLoading(false);
@@ -45,7 +45,7 @@ export default function RecuperarPassword() {
       });
       showToast("Contraseña actualizada correctamente", "success");
       setTimeout(() => window.location.href = "/login", 2000);
-    } catch (error) {
+    } catch {
       showToast("Token inválido o expirado", "error");
     } finally {
       setLoading(false);

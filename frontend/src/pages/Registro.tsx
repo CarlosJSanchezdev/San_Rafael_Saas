@@ -26,7 +26,7 @@ export default function Registro() {
       });
       showToast("Usuario registrado con éxito", "success");
       navigate("/login");
-    } catch (err) {
+    } catch {
       showToast("Error al registrar usuario", "error");
     }
   };

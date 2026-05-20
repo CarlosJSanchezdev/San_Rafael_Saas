@@ -65,7 +65,7 @@ export default function Usuarios() {
     e.preventDefault();
     try {
       if (editando) {
-        const data: any = {};
+        const data: Record<string, unknown> = {};
         if (formData.nombre) data.nombre = formData.nombre;
         if (formData.usuario) data.usuario = formData.usuario;
         if (formData.email) data.email = formData.email;
@@ -95,7 +95,7 @@ export default function Usuarios() {
       fetchUsuarios();
       fetchTiendas();
       cerrarModal();
-    } catch (error) {
+    } catch {
       showToast("Error al guardar usuario", "error");
     }
   };
@@ -106,7 +106,7 @@ export default function Usuarios() {
       await api.delete(`/usuarios/${id}`);
       showToast("Usuario eliminado correctamente", "success");
       fetchUsuarios();
-    } catch (error) {
+    } catch {
       showToast("Error al eliminar usuario", "error");
     }
   };

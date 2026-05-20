@@ -88,7 +88,7 @@ export default function Clientes() {
       let clienteId: number;
       
       if (editando) {
-        const data: any = {};
+        const data: Record<string, unknown> = {};
         Object.keys(formData).forEach(key => {
           if (formData[key as keyof typeof formData]) {
             data[key] = formData[key as keyof typeof formData];
@@ -113,8 +113,9 @@ export default function Clientes() {
 
       fetchClientes();
       cerrarModal();
-    } catch (error: any) {
-      showToast(error.response?.data?.detail || "Error al guardar cliente", "error");
+    } catch (_error) {
+      const err = _error as { response?: { data?: { detail?: string } } };
+      showToast(err.response?.data?.detail || "Error al guardar cliente", "error");
     }
   };
 
@@ -124,7 +125,7 @@ export default function Clientes() {
       await api.delete(`/clientes/${id}`);
       showToast("Cliente eliminado correctamente", "success");
       fetchClientes();
-    } catch (error) {
+    } catch {
       showToast("Error al eliminar cliente", "error");
     }
   };

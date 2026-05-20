@@ -66,7 +66,7 @@ export default function Productos() {
       }
       fetchProductos();
       cerrarModal();
-    } catch (error) {
+    } catch {
       showToast("Error al guardar producto", "error");
     }
   };
@@ -77,7 +77,7 @@ export default function Productos() {
       await api.delete(`/productos/${id}`);
       showToast("Producto eliminado correctamente", "success");
       fetchProductos();
-    } catch (error) {
+    } catch {
       showToast("Error al eliminar producto", "error");
     }
   };

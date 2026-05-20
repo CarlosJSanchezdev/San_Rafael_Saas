@@ -6,7 +6,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
-:root {
+/* Store theme - ONLY applies to .store-theme class, NOT to :root */
+.store-theme {
   /* Colors - Style 2 (Midnight Dark) */
   --primary: #B388FF;
   --primary-light: #D4AAFF;

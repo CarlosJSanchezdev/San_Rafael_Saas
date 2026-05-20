@@ -110,14 +110,6 @@ export default function TiendaAdmin() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  if (!tiendaId) {
-    return (
-      <div className="tienda-admin-container" style={{ padding: "2rem", textAlign: "center" }}>
-        <p>Cargando...</p>
-      </div>
-    );
-  }
-
   const [tienda, setTienda] = useState<Tienda | null>(null);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -139,6 +131,14 @@ export default function TiendaAdmin() {
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState<Pedido | null>(null);
   const { showToast } = useToast();
   const { logout, usuario: usuarioActual } = useAuth();
+
+  if (!tiendaId) {
+    return (
+      <div className="tienda-admin-container" style={{ padding: "2rem", textAlign: "center" }}>
+        <p>Cargando...</p>
+      </div>
+    );
+  }
 
   const puedeEditar = usuarioActual?.rol === "admin" || usuarioActual?.tienda_id === parseInt(tiendaId || "0");
 
@@ -167,10 +167,11 @@ export default function TiendaAdmin() {
       console.log("Response:", response.data);
       showToast(`Pedido #${pedidoId} actualizado a ${nuevoEstado}`, "success");
       fetchData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error completo:", error);
-      console.error("Response data:", error.response?.data);
-      showToast(error.response?.data?.detail || "Error al actualizar estado", "error");
+      const err = error as { response?: { data?: { detail?: string } } };
+      console.error("Response data:", err.response?.data);
+      showToast(err.response?.data?.detail || "Error al actualizar estado", "error");
     }
   };
 
@@ -285,8 +286,9 @@ export default function TiendaAdmin() {
       }
       handleCloseModal();
       fetchData();
-    } catch (error: any) {
-      showToast(error.response?.data?.detail || "Error al guardar", "error");
+    } catch (error) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      showToast(err.response?.data?.detail || "Error al guardar", "error");
     }
   };
 
@@ -302,7 +304,7 @@ export default function TiendaAdmin() {
       await api.delete(`/productos/${id}`);
       showToast("Producto eliminado", "success");
       fetchData();
-    } catch (error) {
+    } catch {
       showToast("Error al eliminar", "error");
     }
   };
@@ -316,7 +318,7 @@ export default function TiendaAdmin() {
         wompi_activo: pagosForm.wompi_activo
       });
       showToast("Configuración de pagos guardada", "success");
-    } catch (error) {
+    } catch {
       showToast("Error al guardar configuración", "error");
     } finally {
       setGuardandoPagos(false);

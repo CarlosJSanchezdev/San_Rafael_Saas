@@ -12,7 +12,7 @@ import "./Reportes.css";
 
 interface ReportData {
   tipo: string;
-  data: any[];
+  data: { name: string; value: number }[];
 }
 
 
@@ -68,35 +68,35 @@ export default function Reportes() {
   };
 
   const exportarCSV = (tipo: string) => {
-    let data: any[] = [];
     let filename = "";
 
     switch (tipo) {
       case "usuarios":
         api.get("/usuarios").then(res => {
-          data = res.data;
           filename = "usuarios.csv";
-          downloadCSV(data, filename, ["id", "nombre", "usuario", "email", "rol"]);
+          downloadCSV(res.data, filename, ["id", "nombre", "usuario", "email", "rol"]);
         });
         break;
       case "productos":
         api.get("/productos").then(res => {
-          data = res.data;
           filename = "productos.csv";
-          downloadCSV(data, filename, ["id", "nombre", "descripcion", "precio", "stock", "categoria"]);
+          downloadCSV(res.data, filename, ["id", "nombre", "descripcion", "precio", "stock", "categoria"]);
         });
         break;
       case "clientes":
         api.get("/clientes").then(res => {
-          data = res.data;
           filename = "clientes.csv";
-          downloadCSV(data, filename, ["id", "nombre", "empresa", "email", "telefono", "direccion"]);
+          downloadCSV(res.data, filename, ["id", "nombre", "empresa", "email", "telefono", "direccion"]);
         });
         break;
     }
   };
 
-  const downloadCSV = (data: any[], filename: string, columns: string[]) => {
+  interface CsvRow {
+    [key: string]: unknown;
+  }
+
+  const downloadCSV = (data: CsvRow[], filename: string, columns: string[]) => {
     const headers = columns.join(",");
     const rows = data.map(row => 
       columns.map(col => `"${row[col] || ''}"`).join(",")

@@ -1,9 +1,6 @@
-:root {
+.tienda-publica {
   --tienda-primary: #0ea5e9;
   --tienda-secondary: #1e293b;
-}
-
-.tienda-publica {
   min-height: 100vh;
   background: #fafafa;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

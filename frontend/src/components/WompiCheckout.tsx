@@ -4,8 +4,20 @@ import "./WompiCheckout.css";
 
 declare global {
   interface Window {
-    WidgetCheckout: any;
+    WidgetCheckout: {
+      open: (callback: (result: unknown) => void) => void;
+    };
   }
+}
+
+interface WompiData {
+  currency: string;
+  amountInCents: number;
+  reference: string;
+  publicKey: string;
+  signature: { integrity: string };
+  redirectUrl: string;
+  customerData: unknown;
 }
 
 interface WompiCheckoutProps {
@@ -31,7 +43,7 @@ export default function WompiCheckout({
   loadingSubmit,
   setLoadingSubmit,
 }: WompiCheckoutProps) {
-  const [wompiData, setWompiData] = useState<any>(null);
+  const [wompiData, setWompiData] = useState<WompiData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [widgetLoaded, setWidgetLoaded] = useState(false);
@@ -79,8 +91,9 @@ export default function WompiCheckout({
 
       const { data } = await api.post("/pedidos/create-wompi-transaction", pedidoData);
       setWompiData(data);
-    } catch (err: any) {
-      const message = err.response?.data?.detail || "Error al inicializar el pago";
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      const message = error.response?.data?.detail || "Error al inicializar el pago";
       setError(message);
       onError(message);
     } finally {
@@ -106,7 +119,7 @@ export default function WompiCheckout({
       customerData: wompiData.customerData,
     });
 
-    checkout.open(async (result: any) => {
+    checkout.open(async (result: unknown) => {
       setLoadingSubmit(false);
       
       if (result && result.transaction) {
