@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../api";
-import { HiOutlineShoppingBag, HiOutlinePencil, HiOutlineTrash, HiOutlineX, HiOutlineEye, HiOutlineChartBar, HiOutlineColorSwatch, HiOutlineGlobe, HiOutlineTemplate } from "react-icons/hi";
+import { HiOutlineShoppingBag, HiOutlinePencil, HiOutlineTrash, HiOutlineX, HiOutlineEye, HiOutlineChartBar, HiOutlineGlobe } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import Layout from "../components/Layout";
 import { ConfirmDialog } from "../components/ui";
+import TiendaWizard from "../components/tiendas/TiendaWizard";
 import { useToast } from "../context/ToastContext";
 import "./Tiendas.css";
 
@@ -59,21 +60,7 @@ export default function Tiendas() {
   const [busqueda, setBusqueda] = useState("");
   const [filtroSector, setFiltroSector] = useState("");
   const { showToast } = useToast();
-  const [formData, setFormData] = useState({
-    nombre: "",
-    subdominio: "",
-    slug: "",
-    sector: "comercial",
-    descripcion: "",
-    color_primario: "#0ea5e9",
-    color_secundario: "#1e293b",
-    plantilla: "style_1",
-    telefono: "",
-    email: "",
-    direccion: "",
-    activa: true,
-    manager_id: null as number | null,
-  });
+
 
   useEffect(() => {
     fetchTiendas();
@@ -100,14 +87,13 @@ export default function Tiendas() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleWizardSubmit = async (data: Record<string, unknown>, editing: Tienda | null) => {
     try {
-      if (editando) {
-        await api.put(`/admin/tiendas/${editando.id}`, formData);
+      if (editing) {
+        await api.put(`/admin/tiendas/${editing.id}`, data);
         showToast("Tienda actualizada correctamente", "success");
       } else {
-        await api.post("/admin/tiendas", formData);
+        await api.post("/admin/tiendas", data);
         showToast("Tienda creada correctamente", "success");
       }
       fetchTiendas();
@@ -115,6 +101,7 @@ export default function Tiendas() {
     } catch (error) {
       const err = error as { response?: { data?: { detail?: string } } };
       showToast(err.response?.data?.detail || "Error al guardar tienda", "error");
+      throw error;
     }
   };
 
@@ -134,56 +121,12 @@ export default function Tiendas() {
 
   const abrirEditar = (tienda: Tienda) => {
     setEditando(tienda);
-    setFormData({
-      nombre: tienda.nombre,
-      subdominio: tienda.subdominio,
-      slug: tienda.slug,
-      sector: tienda.sector,
-      descripcion: tienda.descripcion || "",
-      color_primario: tienda.color_primario,
-      color_secundario: tienda.color_secundario,
-      plantilla: tienda.plantilla || "style_1",
-      telefono: tienda.telefono || "",
-      email: tienda.email || "",
-      direccion: tienda.direccion || "",
-      activa: tienda.activa,
-      manager_id: tienda.manager_id || null,
-    });
     setMostrarModal(true);
   };
 
   const cerrarModal = () => {
     setMostrarModal(false);
     setEditando(null);
-    setFormData({
-      nombre: "",
-      subdominio: "",
-      slug: "",
-      sector: "comercial",
-      descripcion: "",
-      color_primario: "#0ea5e9",
-      color_secundario: "#1e293b",
-      plantilla: "style_1",
-      telefono: "",
-      email: "",
-      direccion: "",
-      activa: true,
-      manager_id: null,
-    });
-  };
-
-  const generarSlug = (nombre: string) => {
-    return nombre.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
-  };
-
-  const handleNombreChange = (nombre: string) => {
-    const slug = generarSlug(nombre);
-    setFormData({
-      ...formData,
-      nombre,
-      slug,
-      subdominio: slug,
-    });
   };
 
   const verMetricasTienda = async (tienda: Tienda) => {
@@ -362,187 +305,13 @@ export default function Tiendas() {
           </div>
         )}
 
-        <AnimatePresence>
-          {mostrarModal && (
-            <motion.div
-              className="modal-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={cerrarModal}
-            >
-              <motion.div
-                className="modal glass-card"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="modal-header">
-                  <h2>{editando ? "Editar Tienda" : "Nueva Tienda"}</h2>
-                  <button className="btn-close" onClick={cerrarModal}>
-                    <HiOutlineX />
-                  </button>
-                </div>
-                <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                    <label>Nombre de la Tienda *</label>
-                    <input
-                      type="text"
-                      value={formData.nombre}
-                      onChange={(e) => handleNombreChange(e.target.value)}
-                      placeholder="Mi Tienda"
-                      required
-                    />
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Subdominio *</label>
-                      <div className="input-with-suffix">
-                        <input
-                          type="text"
-                          value={formData.subdominio}
-                          onChange={(e) => setFormData({ 
-                            ...formData, 
-                            subdominio: generarSlug(e.target.value),
-                            slug: generarSlug(e.target.value)
-                          })}
-                          placeholder="mi-tienda"
-                          required
-                        />
-                        <span className="suffix">.srf.com</span>
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label>Sector *</label>
-                      <select
-                        value={formData.sector}
-                        onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
-                        required
-                      >
-                        {SECTORES.map(s => (
-                          <option key={s} value={s}>
-                            {s.charAt(0).toUpperCase() + s.slice(1)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label>Manager Asignado</label>
-                      <select
-                        value={formData.manager_id || ""}
-                        onChange={(e) => setFormData({ 
-                          ...formData, 
-                          manager_id: e.target.value ? parseInt(e.target.value) : null 
-                        })}
-                      >
-                        <option value="">Sin manager asignado</option>
-                        {managers.map(m => (
-                          <option key={m.id} value={m.id}>
-                            {m.nombre} ({m.email})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Descripción</label>
-                    <textarea
-                      value={formData.descripcion}
-                      onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Teléfono</label>
-                      <input
-                        type="tel"
-                        value={formData.telefono}
-                        onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Email</label>
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Dirección</label>
-                    <input
-                      type="text"
-                      value={formData.direccion}
-                      onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="colores-tienda">
-                    <label><HiOutlineColorSwatch /> Colores</label>
-                    <div className="color-pickers">
-                      <div className="color-picker">
-                        <input
-                          type="color"
-                          value={formData.color_primario}
-                          onChange={(e) => setFormData({ ...formData, color_primario: e.target.value })}
-                        />
-                        <span>Primario</span>
-                      </div>
-                      <div className="color-picker">
-                        <input
-                          type="color"
-                          value={formData.color_secundario}
-                          onChange={(e) => setFormData({ ...formData, color_secundario: e.target.value })}
-                        />
-                        <span>Secundario</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label><HiOutlineTemplate /> Plantilla</label>
-                    <select
-                      value={formData.plantilla}
-                      onChange={(e) => setFormData({ ...formData, plantilla: e.target.value })}
-                    >
-                      <option value="style_1">Clásico Lavanda</option>
-                      <option value="style_2">Midnight Dark</option>
-                    </select>
-                  </div>
-
-                  {editando && (
-                    <div className="form-group">
-                      <label className="checkbox-label">
-                        <input
-                          type="checkbox"
-                          checked={formData.activa}
-                          onChange={(e) => setFormData({ ...formData, activa: e.target.checked })}
-                        />
-                        Tienda activa
-                      </label>
-                    </div>
-                  )}
-
-                  <div className="modal-actions">
-                    <button type="button" className="btn-cancel" onClick={cerrarModal}>
-                      Cancelar
-                    </button>
-                    <button type="submit" className="btn-save">
-                      {editando ? "Actualizar" : "Crear"}
-                    </button>
-                  </div>
-                </form>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <TiendaWizard
+          isOpen={mostrarModal}
+          onClose={cerrarModal}
+          editando={editando}
+          managers={managers}
+          onSubmit={handleWizardSubmit}
+        />
 
         <AnimatePresence>
           {verMetricas && metricas && (
