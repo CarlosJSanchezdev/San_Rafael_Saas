@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Wizard, Input } from "../components/ui";
-import { HiOutlineStorefront, HiOutlineCheck } from "react-icons/hi";
+import { HiOutlineShoppingBag, HiOutlineCheck } from "react-icons/hi";
 import api from "../api";
 import { useToast } from "../context/ToastContext";
 
@@ -83,7 +83,7 @@ export default function Onboarding() {
           fontSize: "2rem",
         }}
       >
-        <HiOutlineStorefront />
+        <HiOutlineShoppingBag />
       </div>
       <h2 style={{ fontSize: "1.75rem", marginBottom: "0.5rem", color: "var(--text-primary)" }}>
         ¡Bienvenido a San Rafael!

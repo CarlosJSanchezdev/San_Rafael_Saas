@@ -14,7 +14,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { HiOutlineUsers, HiOutlineCube, HiOutlineCurrencyDollar, HiOutlineShoppingCart, HiOutlineExclamation, HiOutlineUser, HiOutlineCog } from "react-icons/hi";
+import { HiOutlineUsers, HiOutlineCube, HiOutlineCurrencyDollar, HiOutlineShoppingCart, HiOutlineExclamation, HiOutlineUser, HiOutlineCog, HiOutlineShoppingBag } from "react-icons/hi";
 import api from "../api";
 import { useAuth } from "../context/AuthContext";
 import Layout from "../components/Layout";
