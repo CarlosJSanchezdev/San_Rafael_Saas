@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Carrito from './components/Carrito';
 import Registro from './pages/Registro';
 import Login from './pages/Login';
+import Onboarding from './pages/Onboarding';
 import RecuperarPassword from './pages/RecuperarPassword';
 import Dashboard from './pages/Dashboard';
 import Usuarios from './pages/Usuarios';
@@ -60,6 +61,7 @@ function App() {
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/recuperar-password" element={<RecuperarPassword />} />
             <Route path="/reset-password" element={<RecuperarPassword />} />
             

@@ -162,6 +162,81 @@ export default function Dashboard() {
           </div>
         </div>
 
+        <motion.div
+          className="dashboard-quickstart"
+          variants={item}
+          style={{
+            background: "linear-gradient(135deg, rgba(105, 70, 52, 0.08), rgba(139, 107, 82, 0.04))",
+            border: "1px solid rgba(105, 70, 52, 0.15)",
+            borderRadius: 16,
+            padding: "1.5rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <h3 style={{ margin: "0 0 0.75rem", fontSize: "1.125rem", color: "var(--text-primary)" }}>
+            Comienza a gestionar tu negocio
+          </h3>
+          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+            <a
+              href="/admin/tiendas"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.625rem 1rem",
+                background: "white",
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                color: "var(--primary)",
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: "0.875rem",
+                transition: "all 0.2s",
+              }}
+            >
+              <HiOutlineShoppingBag size={18} /> Crear Tienda
+            </a>
+            <a
+              href="/admin/productos"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.625rem 1rem",
+                background: "white",
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                color: "var(--primary)",
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: "0.875rem",
+                transition: "all 0.2s",
+              }}
+            >
+              <HiOutlineCube size={18} /> Agregar Productos
+            </a>
+            <a
+              href="/admin/pedidos"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.625rem 1rem",
+                background: "white",
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                color: "var(--primary)",
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: "0.875rem",
+                transition: "all 0.2s",
+              }}
+            >
+              <HiOutlineShoppingCart size={18} /> Ver Pedidos
+            </a>
+          </div>
+        </motion.div>
+
         {stats.productos_bajo_stock > 0 && (
           <motion.div
             className="alert-stock"
