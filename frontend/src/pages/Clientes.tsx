@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "../api";
 import { HiOutlineUserAdd, HiOutlinePencil, HiOutlineTrash, HiOutlineX, HiOutlineMail, HiOutlinePhone, HiOutlineOfficeBuilding, HiOutlineShoppingBag } from "react-icons/hi";
 import Layout from "../components/Layout";
+import { ConfirmDialog } from "../components/ui";
 import { useToast } from "../context/ToastContext";
 import "./Clientes.css";
 
@@ -46,6 +47,7 @@ export default function Clientes() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [crearTienda, setCrearTienda] = useState(false);
   const [editando, setEditando] = useState<Cliente | null>(null);
+  const [confirmarEliminar, setConfirmarEliminar] = useState<number | null>(null);
   const [busqueda, setBusqueda] = useState("");
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
@@ -119,14 +121,17 @@ export default function Clientes() {
     }
   };
 
-  const eliminarCliente = async (id: number) => {
-    if (!confirm("¿Estás seguro de eliminar este cliente?")) return;
+  const eliminarCliente = async () => {
+    if (!confirmarEliminar) return;
+    const id = confirmarEliminar;
     try {
       await api.delete(`/clientes/${id}`);
       showToast("Cliente eliminado correctamente", "success");
       fetchClientes();
     } catch {
       showToast("Error al eliminar cliente", "error");
+    } finally {
+      setConfirmarEliminar(null);
     }
   };
 
@@ -241,7 +246,7 @@ export default function Clientes() {
                   <button className="btn-edit" onClick={() => abrirEditar(cliente)}>
                     <HiOutlinePencil />
                   </button>
-                  <button className="btn-delete" onClick={() => eliminarCliente(cliente.id)}>
+                  <button className="btn-delete" onClick={() => setConfirmarEliminar(cliente.id)}>
                     <HiOutlineTrash />
                   </button>
                 </div>
@@ -499,6 +504,16 @@ export default function Clientes() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <ConfirmDialog
+          isOpen={confirmarEliminar !== null}
+          onConfirm={eliminarCliente}
+          onCancel={() => setConfirmarEliminar(null)}
+          title="¿Eliminar cliente?"
+          description="Esta acción no se puede deshacer. El cliente y sus datos asociados se eliminarán permanentemente."
+          confirmText="Eliminar cliente"
+          variant="danger"
+        />
       </div>
     </Layout>
   );

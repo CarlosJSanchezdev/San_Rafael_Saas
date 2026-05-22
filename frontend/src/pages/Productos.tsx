@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "../api";
 import { HiOutlineUserAdd, HiOutlinePencil, HiOutlineTrash, HiOutlineX, HiOutlineExclamation } from "react-icons/hi";
 import Layout from "../components/Layout";
+import { ConfirmDialog } from "../components/ui";
 import { useToast } from "../context/ToastContext";
 import "./Productos.css";
 
@@ -24,6 +25,7 @@ export default function Productos() {
   const [editando, setEditando] = useState<Producto | null>(null);
   const [busqueda, setBusqueda] = useState("");
   const [filtroCategoria, setFiltroCategoria] = useState("");
+  const [confirmarEliminar, setConfirmarEliminar] = useState<number | null>(null);
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
     nombre: "",
@@ -71,14 +73,17 @@ export default function Productos() {
     }
   };
 
-  const eliminarProducto = async (id: number) => {
-    if (!confirm("¿Estás seguro de eliminar este producto?")) return;
+  const eliminarProducto = async () => {
+    if (!confirmarEliminar) return;
+    const id = confirmarEliminar;
     try {
       await api.delete(`/productos/${id}`);
       showToast("Producto eliminado correctamente", "success");
       fetchProductos();
     } catch {
       showToast("Error al eliminar producto", "error");
+    } finally {
+      setConfirmarEliminar(null);
     }
   };
 
@@ -163,7 +168,7 @@ export default function Productos() {
                   <button className="btn-edit" onClick={() => abrirEditar(producto)}>
                     <HiOutlinePencil />
                   </button>
-                  <button className="btn-delete" onClick={() => eliminarProducto(producto.id)}>
+                  <button className="btn-delete" onClick={() => setConfirmarEliminar(producto.id)}>
                     <HiOutlineTrash />
                   </button>
                 </div>
@@ -266,6 +271,16 @@ export default function Productos() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <ConfirmDialog
+          isOpen={confirmarEliminar !== null}
+          onConfirm={eliminarProducto}
+          onCancel={() => setConfirmarEliminar(null)}
+          title="¿Eliminar producto?"
+          description="Esta acción no se puede deshacer. El producto se eliminará permanentemente."
+          confirmText="Eliminar producto"
+          variant="danger"
+        />
       </div>
     </Layout>
   );

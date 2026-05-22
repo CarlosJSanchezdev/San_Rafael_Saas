@@ -9,10 +9,11 @@ interface Toast {
   id: number;
   message: string;
   type: ToastType;
+  undoAction?: () => void;
 }
 
 interface ToastContextType {
-  showToast: (message: string, type?: ToastType) => void;
+  showToast: (message: string, type?: ToastType, undoAction?: () => void) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -22,13 +23,14 @@ let toastId = 0;
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType = "success") => {
+  const showToast = useCallback((message: string, type: ToastType = "success", undoAction?: () => void) => {
     const id = ++toastId;
-    setToasts((prev) => [...prev, { id, message, type }]);
-    
+    setToasts((prev) => [...prev, { id, message, type, undoAction }]);
+
+    const duration = undoAction ? 5000 : 4000;
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+    }, duration);
   }, []);
 
   const removeToast = (id: number) => {
@@ -56,10 +58,23 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               initial={{ opacity: 0, x: 100, scale: 0.9 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 100, scale: 0.9 }}
-              onClick={() => removeToast(toast.id)}
+              style={{ cursor: toast.undoAction ? "default" : "pointer" }}
+              onClick={() => { if (!toast.undoAction) removeToast(toast.id); }}
             >
               <span className="toast-icon">{getIcon(toast.type)}</span>
               <span className="toast-message">{toast.message}</span>
+              {toast.undoAction && (
+                <button
+                  className="toast-undo"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.undoAction?.();
+                    removeToast(toast.id);
+                  }}
+                >
+                  Deshacer
+                </button>
+              )}
             </motion.div>
           ))}
         </AnimatePresence>

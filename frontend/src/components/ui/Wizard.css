@@ -1,0 +1,88 @@
+/* Wizard.css - Design System Wizard */
+
+.ui-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.ui-wizard-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ui-wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ui-wizard-step-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  border: 2px solid var(--border, #E8E4E0);
+  background: white;
+  color: var(--text-light, #9CA3AF);
+}
+
+.ui-wizard-step-indicator--active {
+  border-color: var(--primary, #694634);
+  background: var(--primary, #694634);
+  color: white;
+}
+
+.ui-wizard-step-indicator--completed {
+  border-color: var(--success, #059669);
+  background: var(--success, #059669);
+  color: white;
+}
+
+.ui-wizard-step-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-light, #9CA3AF);
+  white-space: nowrap;
+}
+
+.ui-wizard-step-label--active {
+  color: var(--text-primary, #2D2C2F);
+  font-weight: 600;
+}
+
+.ui-wizard-step-label--completed {
+  color: var(--success, #059669);
+}
+
+.ui-wizard-connector {
+  flex: 1;
+  height: 2px;
+  background: var(--border, #E8E4E0);
+  min-width: 24px;
+}
+
+.ui-wizard-connector--completed {
+  background: var(--success, #059669);
+}
+
+.ui-wizard-content {
+  min-height: 200px;
+}
+
+.ui-wizard-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, #E8E4E0);
+}

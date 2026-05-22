@@ -1,0 +1,95 @@
+/* Modal.css - Design System Modal */
+
+.ui-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: ui-modal-fade-in 0.2s ease;
+}
+
+@keyframes ui-modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ui-modal {
+  background: var(--bg-card, #FFFFFF);
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+  animation: ui-modal-slide-up 0.3s ease;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-modal--lg {
+  max-width: 800px;
+}
+
+@keyframes ui-modal-slide-up {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ui-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border, #E8E4E0);
+}
+
+.ui-modal-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary, #2D2C2F);
+  margin: 0;
+}
+
+.ui-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-light, #9CA3AF);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.ui-modal-close:hover {
+  background: var(--bg-glass, rgba(245, 240, 235, 0.95));
+  color: var(--text-primary, #2D2C2F);
+}
+
+.ui-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.ui-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border, #E8E4E0);
+  background: var(--bg, #F5F0EB);
+}

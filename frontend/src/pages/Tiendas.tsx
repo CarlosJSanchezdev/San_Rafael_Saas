@@ -4,6 +4,7 @@ import api from "../api";
 import { HiOutlineShoppingBag, HiOutlinePencil, HiOutlineTrash, HiOutlineX, HiOutlineEye, HiOutlineChartBar, HiOutlineColorSwatch, HiOutlineGlobe, HiOutlineTemplate } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import Layout from "../components/Layout";
+import { ConfirmDialog } from "../components/ui";
 import { useToast } from "../context/ToastContext";
 import "./Tiendas.css";
 
@@ -52,6 +53,7 @@ export default function Tiendas() {
   const [managers, setManagers] = useState<Usuario[]>([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [editando, setEditando] = useState<Tienda | null>(null);
+  const [confirmarEliminar, setConfirmarEliminar] = useState<number | null>(null);
   const [verMetricas, setVerMetricas] = useState<Tienda | null>(null);
   const [metricas, setMetricas] = useState<MetricasTienda | null>(null);
   const [busqueda, setBusqueda] = useState("");
@@ -116,14 +118,17 @@ export default function Tiendas() {
     }
   };
 
-  const eliminarTienda = async (id: number) => {
-    if (!confirm("¿Estás seguro de desactivar esta tienda?")) return;
+  const eliminarTienda = async () => {
+    if (!confirmarEliminar) return;
+    const id = confirmarEliminar;
     try {
       await api.delete(`/admin/tiendas/${id}`);
       showToast("Tienda desactivada correctamente", "success");
       fetchTiendas();
     } catch {
       showToast("Error al eliminar tienda", "error");
+    } finally {
+      setConfirmarEliminar(null);
     }
   };
 
@@ -342,7 +347,7 @@ export default function Tiendas() {
                 </button>
                 <button 
                   className="btn-delete"
-                  onClick={() => eliminarTienda(tienda.id)}
+                  onClick={() => setConfirmarEliminar(tienda.id)}
                 >
                   <HiOutlineTrash />
                 </button>
@@ -608,6 +613,16 @@ export default function Tiendas() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <ConfirmDialog
+          isOpen={confirmarEliminar !== null}
+          onConfirm={eliminarTienda}
+          onCancel={() => setConfirmarEliminar(null)}
+          title="¿Desactivar tienda?"
+          description="Esta acción no se puede deshacer. La tienda y todos sus productos asociados se desactivarán."
+          confirmText="Desactivar tienda"
+          variant="danger"
+        />
       </div>
     </Layout>
   );

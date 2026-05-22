@@ -37,6 +37,7 @@ import {
 } from "react-icons/hi";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
+import { ConfirmDialog } from "../components/ui";
 import "./TiendaAdmin.css";
 
 interface Tienda {
@@ -117,6 +118,7 @@ export default function TiendaAdmin() {
   const [loading, setLoading] = useState(true);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [editando, setEditando] = useState<Producto | null>(null);
+  const [confirmarEliminar, setConfirmarEliminar] = useState<number | null>(null);
   const [vistaPrevia, setVistaPrevia] = useState(false);
   const [imagenPreview, setImagenPreview] = useState<string>("");
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -298,14 +300,18 @@ export default function TiendaAdmin() {
     setImagenPreview("");
   };
 
-  const eliminarProducto = async (id: number) => {
-    if (!confirm("¿Eliminar este producto?")) return;
+  const eliminarProducto = async () => {
+    if (!confirmarEliminar) return;
+    const id = confirmarEliminar;
     try {
       await api.delete(`/productos/${id}`);
       showToast("Producto eliminado", "success");
       fetchData();
-    } catch {
-      showToast("Error al eliminar", "error");
+    } catch (error) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      showToast(err.response?.data?.detail || "Error al eliminar", "error");
+    } finally {
+      setConfirmarEliminar(null);
     }
   };
 
@@ -708,7 +714,7 @@ export default function TiendaAdmin() {
                     </button>
                     <button 
                       className="btn-delete"
-                      onClick={() => eliminarProducto(producto.id)}
+                      onClick={() => setConfirmarEliminar(producto.id)}
                     >
                       <HiOutlineTrash />
                     </button>
@@ -1034,6 +1040,16 @@ export default function TiendaAdmin() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={confirmarEliminar !== null}
+        onConfirm={eliminarProducto}
+        onCancel={() => setConfirmarEliminar(null)}
+        title="¿Eliminar producto?"
+        description="Esta acción no se puede deshacer. El producto se eliminará permanentemente de la tienda."
+        confirmText="Eliminar producto"
+        variant="danger"
+      />
     </div>
   );
 }

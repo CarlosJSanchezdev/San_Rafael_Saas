@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "../api";
 import { HiOutlineUserAdd, HiOutlinePencil, HiOutlineTrash, HiOutlineX } from "react-icons/hi";
 import Layout from "../components/Layout";
+import { ConfirmDialog } from "../components/ui";
 import { useToast } from "../context/ToastContext";
 import "./Usuarios.css";
 
@@ -28,6 +29,7 @@ export default function Usuarios() {
   const [tiendas, setTiendas] = useState<Tienda[]>([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [editando, setEditando] = useState<Usuario | null>(null);
+  const [confirmarEliminar, setConfirmarEliminar] = useState<number | null>(null);
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
     nombre: "",
@@ -100,14 +102,17 @@ export default function Usuarios() {
     }
   };
 
-  const eliminarUsuario = async (id: number) => {
-    if (!confirm("¿Estás seguro de eliminar este usuario?")) return;
+  const eliminarUsuario = async () => {
+    if (!confirmarEliminar) return;
+    const id = confirmarEliminar;
     try {
       await api.delete(`/usuarios/${id}`);
       showToast("Usuario eliminado correctamente", "success");
       fetchUsuarios();
     } catch {
       showToast("Error al eliminar usuario", "error");
+    } finally {
+      setConfirmarEliminar(null);
     }
   };
 
@@ -181,7 +186,7 @@ export default function Usuarios() {
                       <button className="btn-edit" onClick={() => abrirEditar(usuario)}>
                         <HiOutlinePencil />
                       </button>
-                      <button className="btn-delete" onClick={() => eliminarUsuario(usuario.id)}>
+                      <button className="btn-delete" onClick={() => setConfirmarEliminar(usuario.id)}>
                         <HiOutlineTrash />
                       </button>
                     </div>
@@ -294,6 +299,16 @@ export default function Usuarios() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <ConfirmDialog
+          isOpen={confirmarEliminar !== null}
+          onConfirm={eliminarUsuario}
+          onCancel={() => setConfirmarEliminar(null)}
+          title="¿Eliminar usuario?"
+          description="Esta acción no se puede deshacer. El usuario perderá acceso al sistema permanentemente."
+          confirmText="Eliminar usuario"
+          variant="danger"
+        />
       </div>
     </Layout>
   );

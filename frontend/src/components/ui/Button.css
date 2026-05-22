@@ -1,0 +1,122 @@
+/* Button.css - Design System Button */
+
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.ui-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Variants */
+.ui-button--primary {
+  background: linear-gradient(135deg, #694634, #8B6B52);
+  color: white;
+  border-color: transparent;
+}
+
+.ui-button--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(105, 70, 52, 0.3);
+}
+
+.ui-button--primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ui-button--secondary {
+  background: white;
+  color: var(--text-primary, #2D2C2F);
+  border-color: var(--border, #E8E4E0);
+}
+
+.ui-button--secondary:hover:not(:disabled) {
+  background: var(--bg, #F5F0EB);
+  border-color: var(--primary-light, #A68B6F);
+}
+
+.ui-button--outline {
+  background: transparent;
+  color: var(--primary, #694634);
+  border-color: var(--primary, #694634);
+}
+
+.ui-button--outline:hover:not(:disabled) {
+  background: rgba(105, 70, 52, 0.08);
+}
+
+.ui-button--destructive {
+  background: var(--danger, #DC2626);
+  color: white;
+  border-color: transparent;
+}
+
+.ui-button--destructive:hover:not(:disabled) {
+  background: #B91C1C;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.ui-button--ghost {
+  background: transparent;
+  color: var(--text-secondary, #6B7280);
+  border-color: transparent;
+}
+
+.ui-button--ghost:hover:not(:disabled) {
+  background: var(--bg-glass, rgba(245, 240, 235, 0.95));
+  color: var(--text-primary, #2D2C2F);
+}
+
+/* Sizes */
+.ui-button--sm {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
+}
+
+.ui-button--md {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  border-radius: 10px;
+}
+
+.ui-button--lg {
+  padding: 0.875rem 1.75rem;
+  font-size: 1rem;
+  border-radius: 12px;
+}
+
+/* Loading state */
+.ui-button--loading {
+  position: relative;
+  color: transparent !important;
+}
+
+.ui-button__spinner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: ui-button-spin 0.8s linear infinite;
+}
+
+@keyframes ui-button-spin {
+  to { transform: rotate(360deg); }
+}

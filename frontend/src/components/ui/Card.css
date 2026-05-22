@@ -1,0 +1,23 @@
+/* Card.css - Design System Card */
+
+.ui-card {
+  background: var(--bg-card, #FFFFFF);
+  border: 1px solid var(--border, #E8E4E0);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.ui-card--hoverable:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-color: var(--primary-light, #A68B6F);
+  transform: translateY(-2px);
+}
+
+.ui-card--compact {
+  padding: 1rem;
+}
+
+.ui-card--comfortable {
+  padding: 1.5rem;
+}

@@ -1,0 +1,97 @@
+/* Input.css - Design System Input */
+
+.ui-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 100%;
+}
+
+.ui-input-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary, #2D2C2F);
+}
+
+.ui-input-label--required::after {
+  content: " *";
+  color: var(--danger, #DC2626);
+}
+
+.ui-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ui-input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-light, #9CA3AF);
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.ui-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--border, #E8E4E0);
+  border-radius: 10px;
+  background: var(--input-bg, #FFFFFF);
+  color: var(--input-text, #2D2C2F);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.ui-input--with-icon {
+  padding-left: 2.75rem;
+}
+
+.ui-input::placeholder {
+  color: var(--placeholder-text, #6B7280);
+}
+
+.ui-input:focus {
+  border-color: var(--primary, #694634);
+  box-shadow: 0 0 0 3px rgba(105, 70, 52, 0.15);
+}
+
+.ui-input--error {
+  border-color: var(--danger, #DC2626);
+  background: rgba(220, 38, 38, 0.03);
+}
+
+.ui-input--error:focus {
+  border-color: var(--danger, #DC2626);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.ui-input--success {
+  border-color: var(--success, #059669);
+}
+
+.ui-input--success:focus {
+  border-color: var(--success, #059669);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+.ui-input-message {
+  font-size: 0.8125rem;
+  min-height: 1.25rem;
+}
+
+.ui-input-message--error {
+  color: var(--danger, #DC2626);
+}
+
+.ui-input-message--success {
+  color: var(--success, #059669);
+}
+
+.ui-input-message--hint {
+  color: var(--text-light, #9CA3AF);
+}
