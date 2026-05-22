@@ -14,7 +14,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { HiOutlineUsers, HiOutlineCube, HiOutlineCurrencyDollar, HiOutlineShoppingCart, HiOutlineExclamation, HiOutlineUser } from "react-icons/hi";
+import { HiOutlineUsers, HiOutlineCube, HiOutlineCurrencyDollar, HiOutlineShoppingCart, HiOutlineExclamation, HiOutlineUser, HiOutlineCog } from "react-icons/hi";
 import api from "../api";
 import { useAuth } from "../context/AuthContext";
 import Layout from "../components/Layout";
@@ -70,6 +70,20 @@ export default function Dashboard() {
   const [ventasData, setVentasData] = useState<ChartData[]>([]);
   const [categoriaData, setCategoriaData] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [widgetVisibility, setWidgetVisibility] = useState(() => {
+    const saved = localStorage.getItem("dashboard_widgets");
+    return saved ? JSON.parse(saved) : {
+      quickstart: true,
+      stats: true,
+      charts: true,
+      activity: true,
+    };
+  });
+
+  useEffect(() => {
+    localStorage.setItem("dashboard_widgets", JSON.stringify(widgetVisibility));
+  }, [widgetVisibility]);
 
   useEffect(() => {
     fetchData();
@@ -159,6 +173,28 @@ export default function Dashboard() {
                 {usuario?.nombre || usuario?.email || "Usuario"}
               </span>
             </motion.div>
+            <motion.button
+              variants={item}
+              className="header-edit-btn"
+              onClick={() => setEditMode(!editMode)}
+              style={{
+                marginLeft: "1rem",
+                padding: "0.5rem 0.75rem",
+                borderRadius: 8,
+                border: `1px solid ${editMode ? "var(--primary)" : "var(--border)"}`,
+                background: editMode ? "var(--primary)" : "transparent",
+                color: editMode ? "white" : "var(--text-secondary)",
+                cursor: "pointer",
+                fontSize: "0.8125rem",
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.375rem",
+              }}
+            >
+              <HiOutlineCog size={16} />
+              {editMode ? "Listo" : "Personalizar"}
+            </motion.button>
           </div>
         </div>
 
@@ -237,6 +273,144 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
+        {editMode && (
+          <motion.div
+            variants={item}
+            style={{
+              background: "white",
+              border: "1px solid var(--border)",
+              borderRadius: 12,
+              padding: "1rem 1.5rem",
+              marginBottom: "1.5rem",
+              display: "flex",
+              gap: "1.5rem",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            <span style={{ fontWeight: 600, fontSize: "0.9375rem" }}>Mostrar secciones:</span>
+            {Object.entries(widgetVisibility).map(([key, visible]) => (
+              <label
+                key={key}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.375rem",
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                  textTransform: "capitalize",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={visible as boolean}
+                  onChange={(e) =>
+                    setWidgetVisibility((prev: Record<string, boolean>) => ({
+                      ...prev,
+                      [key]: e.target.checked,
+                    }))
+                  }
+                />
+                {key === "quickstart" ? "Acciones rápidas" : key === "stats" ? "Estadísticas" : key === "charts" ? "Gráficos" : "Actividad"}
+              </label>
+            ))}
+            <button
+              onClick={() => {
+                setWidgetVisibility({ quickstart: true, stats: true, charts: true, activity: true });
+              }}
+              style={{
+                marginLeft: "auto",
+                padding: "0.375rem 0.75rem",
+                borderRadius: 6,
+                border: "1px solid var(--border)",
+                background: "transparent",
+                color: "var(--text-secondary)",
+                fontSize: "0.8125rem",
+                cursor: "pointer",
+              }}
+            >
+              Restablecer
+            </button>
+          </motion.div>
+        )}
+
+        {widgetVisibility.quickstart && (
+          <motion.div
+            className="dashboard-quickstart"
+            variants={item}
+            style={{
+              background: "linear-gradient(135deg, rgba(105, 70, 52, 0.08), rgba(139, 107, 82, 0.04))",
+              border: "1px solid rgba(105, 70, 52, 0.15)",
+              borderRadius: 16,
+              padding: "1.5rem",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <h3 style={{ margin: "0 0 0.75rem", fontSize: "1.125rem", color: "var(--text-primary)" }}>
+              Comienza a gestionar tu negocio
+            </h3>
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+              <a
+                href="/admin/tiendas"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.625rem 1rem",
+                  background: "white",
+                  borderRadius: 10,
+                  border: "1px solid var(--border)",
+                  color: "var(--primary)",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  transition: "all 0.2s",
+                }}
+              >
+                <HiOutlineShoppingBag size={18} /> Crear Tienda
+              </a>
+              <a
+                href="/admin/productos"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.625rem 1rem",
+                  background: "white",
+                  borderRadius: 10,
+                  border: "1px solid var(--border)",
+                  color: "var(--primary)",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  transition: "all 0.2s",
+                }}
+              >
+                <HiOutlineCube size={18} /> Agregar Productos
+              </a>
+              <a
+                href="/admin/pedidos"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.625rem 1rem",
+                  background: "white",
+                  borderRadius: 10,
+                  border: "1px solid var(--border)",
+                  color: "var(--primary)",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  transition: "all 0.2s",
+                }}
+              >
+                <HiOutlineShoppingCart size={18} /> Ver Pedidos
+              </a>
+            </div>
+          </motion.div>
+        )}
+
         {stats.productos_bajo_stock > 0 && (
           <motion.div
             className="alert-stock"
@@ -253,7 +427,7 @@ export default function Dashboard() {
 
         {loading && <SkeletonDashboard />}
 
-        {!loading && (
+        {widgetVisibility.stats && !loading && (
           <motion.div className="dashboard-grid" variants={item}>
             {statsCards.map((stat) => (
               <motion.div
