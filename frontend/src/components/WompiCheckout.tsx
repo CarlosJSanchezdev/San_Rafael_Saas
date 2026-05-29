@@ -47,6 +47,8 @@ export default function WompiCheckout({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [widgetLoaded, setWidgetLoaded] = useState(false);
+  const [polling, setPolling] = useState(false);
+  const [pollingCount, setPollingCount] = useState(0);
 
   useEffect(() => {
     const loadWompiWidget = () => {
@@ -68,6 +70,35 @@ export default function WompiCheckout({
       createTransaction();
     }
   }, [widgetLoaded]);
+
+  useEffect(() => {
+    if (!polling || !wompiData) return;
+
+    if (pollingCount >= 20) {
+      setPolling(false);
+      setError("El pago está siendo procesado. Recibirás un correo de confirmación.");
+      onError("El pago está siendo procesado. Recibirás un correo de confirmación.");
+      return;
+    }
+
+    const interval = setInterval(async () => {
+      try {
+        const { data } = await api.get(`/pedidos/check-transaction/${wompiData.reference}`);
+        
+        if (data.status === "APPROVED" && data.pedidoId) {
+          setPolling(false);
+          onPaymentSuccess(data.pedidoId);
+          return;
+        }
+        
+        setPollingCount((prev) => prev + 1);
+      } catch {
+        setPollingCount((prev) => prev + 1);
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [polling, pollingCount, wompiData]);
 
   const createTransaction = async () => {
     setLoading(true);
@@ -92,8 +123,16 @@ export default function WompiCheckout({
       const { data } = await api.post("/pedidos/create-wompi-transaction", pedidoData);
       setWompiData(data);
     } catch (err) {
-      const error = err as { response?: { data?: { detail?: string } } };
-      const message = error.response?.data?.detail || "Error al inicializar el pago";
+      const error = err as { response?: { data?: { detail?: string; message?: string } | string }; request?: unknown };
+      const errorData = error.response?.data;
+      let message = "Error al inicializar el pago";
+      
+      if (typeof errorData === "string") {
+        message = errorData;
+      } else if (typeof errorData === "object" && errorData) {
+        message = errorData.detail || errorData.message || message;
+      }
+      
       setError(message);
       onError(message);
     } finally {
@@ -126,9 +165,10 @@ export default function WompiCheckout({
         const transaction = result.transaction;
         
         if (transaction.status === "APPROVED") {
-          onPaymentSuccess(1);
+          setPolling(true);
+          setPollingCount(0);
         } else if (transaction.status === "DECLINED") {
-          setError("El pago fue declined");
+          setError("El pago fue rechazado");
           onError("El pago fue rechazado");
         } else if (transaction.status === "PENDING") {
           setError("El pago está pendiente");
@@ -139,6 +179,16 @@ export default function WompiCheckout({
       }
     });
   };
+
+  if (polling) {
+    return (
+      <div className="wompi-loading">
+        <div className="wompi-spinner"></div>
+        <p>Procesando tu pago...</p>
+        <p className="wompi-polling-text">Confirmando con Wompi</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

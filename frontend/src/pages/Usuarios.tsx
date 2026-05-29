@@ -97,8 +97,16 @@ export default function Usuarios() {
       fetchUsuarios();
       fetchTiendas();
       cerrarModal();
-    } catch {
-      showToast("Error al guardar usuario", "error");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string | { msg: string }[] } } };
+      const errorData = error.response?.data;
+      let message = "Error al guardar usuario";
+      if (typeof errorData?.detail === "string") {
+        message = errorData.detail;
+      } else if (Array.isArray(errorData?.detail)) {
+        message = errorData.detail.map((e) => e.msg).join(", ");
+      }
+      showToast(message, "error");
     }
   };
 

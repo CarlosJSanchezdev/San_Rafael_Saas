@@ -61,6 +61,22 @@ class Tienda(Base):
     wompi_integrity_secret = Column(String, nullable=True)
     wompi_activo = Column(Boolean, default=False)
 
+
+class TransaccionWompi(Base):
+    __tablename__ = "transacciones_wompi"
+
+    id = Column(Integer, primary_key=True, index=True)
+    reference = Column(String, unique=True, nullable=False, index=True)
+    tienda_id = Column(Integer, ForeignKey("tiendas.id"), nullable=False, index=True)
+    estado = Column(String, default="pendiente")  # pendiente, completada, fallida
+    datos_cliente = Column(JSON)  # {email, nombre, telefono}
+    items_json = Column(JSON)  # [{producto_id, nombre, precio, cantidad}]
+    total = Column(Integer, nullable=False)  # en centavos
+    pedido_id = Column(Integer, ForeignKey("pedidos.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 class PlantillaProducto(Base):
     __tablename__ = "plantillas_productos"
 

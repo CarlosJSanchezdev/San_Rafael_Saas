@@ -55,7 +55,7 @@ export default function Contacto() {
             </div>
             <div className="info-content">
               <h3>Dirección</h3>
-              <p>San Rafael, Antioquia</p>
+              <p>Santiago de Cali, Valle del Cauca</p>
               <p>Colombia</p>
             </div>
           </div>
@@ -66,8 +66,8 @@ export default function Contacto() {
             </div>
             <div className="info-content">
               <h3>Teléfono</h3>
-              <p>+57 300 123 4567</p>
-              <p>+57 4 123 4567</p>
+              <p>+57 3176913321</p>
+              <p>+57 6023231279</p>
             </div>
           </div>
 
@@ -77,8 +77,8 @@ export default function Contacto() {
             </div>
             <div className="info-content">
               <h3>Email</h3>
-              <p>contacto@sanrafael.com</p>
-              <p>ventas@sanrafael.com</p>
+              <p>contactodesarrollosanrafael@srf.com</p>
+              <p>ventasdesarrollosanrafael@srf.com</p>
             </div>
           </div>
 
@@ -180,9 +180,15 @@ export default function Contacto() {
         transition={{ delay: 0.4 }}
       >
         <h2>Nuestra Ubicación</h2>
-        <div className="mapa-placeholder">
-          <HiOutlineLocationMarker />
-          <p>San Rafael, Antioquia, Colombia</p>
+        <div className="mapa-contenedor">
+          <iframe
+            title="Ubicación en Google Maps"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3982.8!2d-76.5199!3d3.430528!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM8KwMicJzI2LjgiTiA3NsKwMzEnMDYuNiJX!5e0!3m2!1ses!2sco!4v1&hl=es"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowFullScreen
+            className="mapa-iframe"
+          />
         </div>
       </motion.div>
     </div>

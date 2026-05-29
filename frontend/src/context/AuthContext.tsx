@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
       validandoRef.current = false;
       return true;
-    } catch (error) {
+    } catch {
       sessionStorage.removeItem("userToken");
       sessionStorage.removeItem("userEmail");
       setUsuario(null);
