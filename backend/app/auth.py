@@ -7,6 +7,7 @@ from . import schemas, crud, models
 from .database import get_db, SessionLocal
 import bcrypt
 import secrets
+import time
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import datetime
 from typing import Optional
@@ -21,6 +22,12 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 limiter = Limiter(key_func=get_remote_address)
+
+# In-memory brute-force protection
+# Track failed login attempts by IP: {ip: {"count": n, "last_attempt": timestamp}}
+failed_attempts: dict = {}
+MAX_FAILED_ATTEMPTS = 5
+LOCKOUT_DURATION_SECONDS = 15 * 60  # 15 minutes
 
 
 def send_recovery_email(email: str, token: str, frontend_url: str) -> bool:
@@ -176,10 +183,36 @@ def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
+    client_ip = request.client.host if request and request.client else "0.0.0.0"
+    current_time = time.time()
+
+    # Check if IP is locked out
+    if client_ip in failed_attempts:
+        attempt_data = failed_attempts[client_ip]
+        if current_time - attempt_data["last_attempt"] < LOCKOUT_DURATION_SECONDS:
+            if attempt_data["count"] >= MAX_FAILED_ATTEMPTS:
+                remaining_time = int(LOCKOUT_DURATION_SECONDS - (current_time - attempt_data["last_attempt"]))
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail=f"Demasiados intentos fallidos. Intenta de nuevo en {remaining_time // 60} minutos"
+                )
+        else:
+            # Lockout expired, reset counter
+            del failed_attempts[client_ip]
+
     user = crud.get_user_by_email(db, form_data.username)
     if not user or not verify_password(form_data.password, user.password):
+        # Record failed attempt
+        if client_ip not in failed_attempts:
+            failed_attempts[client_ip] = {"count": 0, "last_attempt": current_time}
+        failed_attempts[client_ip]["count"] += 1
+        failed_attempts[client_ip]["last_attempt"] = current_time
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales inválidas")
-    
+
+    # Successful login - reset failed attempts
+    if client_ip in failed_attempts:
+        del failed_attempts[client_ip]
+
     sesiones_anteriores = db.query(models.Sesion).filter(
         models.Sesion.usuario_id == user.id,
         models.Sesion.activa == True
@@ -187,9 +220,9 @@ def login(
     for sesion in sesiones_anteriores:
         sesion.activa = False
     db.commit()
-    
+
     token = secrets.token_urlsafe(32)
-    
+
     sesion = models.Sesion(
         usuario_id=user.id,
         token=token,
@@ -198,11 +231,11 @@ def login(
     )
     db.add(sesion)
     db.commit()
-    
+
     response = JSONResponse(
         content={"mensaje": "Inicio de sesión exitoso", "usuario": user.email, "token": token}
     )
-    
+
     response.set_cookie(
         key="session_token",
         value=token,
@@ -211,7 +244,7 @@ def login(
         max_age=60 * 60 * 24 * 7,
         path="/"
     )
-    
+
     return response
 
 @router.post("/auth/recuperar-password")

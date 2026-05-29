@@ -1,8 +1,10 @@
 import os
 import hashlib
+import hmac
 import uuid
 import json
-from fastapi import APIRouter, Depends, HTTPException, Request
+import logging
+from fastapi import APIRouter, Depends, HTTPException, Request, Header
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
@@ -12,6 +14,8 @@ from typing import Optional
 from pydantic import BaseModel
 import html
 import re
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -35,6 +39,26 @@ def generate_wompi_signature(reference: str, amount_in_cents: int, currency: str
 def generate_reference() -> str:
     """Genera una referencia única para la transacción"""
     return f"WOMPI-{uuid.uuid4().hex[:12].upper()}"
+
+
+def verify_wompi_signature(payload: bytes, signature_header: str) -> bool:
+    """
+    Valida la firma HMAC-SHA256 del webhook de Wompi.
+    Returns True si la firma es válida, False si no.
+    Si WOMPI_EVENTS_KEY no está configurada, retorna False (fail-safe).
+    """
+    events_key = os.getenv("WOMPI_EVENTS_KEY")
+    if not events_key or events_key == "tu_wompi_events_key_aqui":
+        logger.warning("WOMPI_EVENTS_KEY no configurada - webhook signature validation deshabilitada")
+        return False
+
+    expected_signature = hmac.new(
+        events_key.encode(),
+        payload,
+        hashlib.sha256
+    ).hexdigest()
+
+    return hmac.compare_digest(expected_signature, signature_header)
 
 
 @router.post("/create-wompi-transaction")
@@ -144,24 +168,38 @@ class WompiWebhookData(BaseModel):
 
 
 @router.post("/webhooks/wompi")
-async def webhook_wompi(request: Request, db: Session = Depends(get_db)):
+async def webhook_wompi(
+    request: Request,
+    x_wompi_signature: Optional[str] = Header(None, alias="x-wompi-signature"),
+    db: Session = Depends(get_db)
+):
     """
     Webhook que Wompi llama para notificar eventos de pago.
-    IMPORTANTE: No se valida firma HMAC porque no tenemos EVENTS_KEY.
-    Por seguridad, buscamos la transacción por reference en BD.
+    Valida firma HMAC-SHA256 si WOMPI_EVENTS_KEY está configurada.
     """
     try:
-        payload = await request.json()
+        payload = await request.body()
     except Exception:
         return {"status": "error", "message": "Payload inválido"}
 
-    event = payload.get("event")
-    transaction_data = payload.get("data", {})
+    # Validar firma HMAC si está configurada
+    if x_wompi_signature:
+        if not verify_wompi_signature(payload, x_wompi_signature):
+            logger.warning(f"Webhook signature validation failed")
+            return {"status": "error", "message": "Firma inválida"}
+
+    try:
+        payload_dict = json.loads(payload)
+    except Exception:
+        return {"status": "error", "message": "Payload JSON inválido"}
+
+    event = payload_dict.get("event")
+    transaction_data = payload_dict.get("data", {})
     transaction_id = transaction_data.get("id")
     reference = transaction_data.get("reference")
     status = transaction_data.get("status")
 
-    print(f"Wompi webhook recibido: event={event}, transaction_id={transaction_id}, reference={reference}, status={status}")
+    logger.info(f"Wompi webhook received: event={event}, transaction_id={transaction_id}, reference={reference}, status={status}")
 
     # Solo procesar eventos de transacciones actualizadas a APPROVED
     if event != "transaction.updated" or status != "APPROVED":
@@ -254,7 +292,8 @@ async def webhook_wompi(request: Request, db: Session = Depends(get_db)):
     transaccion.pedido_id = db_pedido.id
 
     db.commit()
-    print(f"Pedido creado exitosamente: {db_pedido.id} (transacción: {reference})")
+
+    logger.info(f"Pedido created successfully: {db_pedido.id} (transaction: {reference})")
 
     return {"status": "success", "pedido_id": db_pedido.id}
 

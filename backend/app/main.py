@@ -80,17 +80,40 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 
 # ---------------------------------------------------------------------------
+# Request Size Limit Middleware
+# ---------------------------------------------------------------------------
+MAX_REQUEST_SIZE = 10 * 1024 * 1024  # 10MB
+
+class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        content_length = request.headers.get("content-length")
+        if content_length and int(content_length) > MAX_REQUEST_SIZE:
+            return Response(
+                content="Request too large",
+                status_code=413,
+                headers={"Content-Type": "text/plain"}
+            )
+        response = await call_next(request)
+        return response
+
+app.add_middleware(RequestSizeLimitMiddleware)
+
+
+# ---------------------------------------------------------------------------
 # CORS — nunca usar "*" junto con allow_credentials=True
 # ---------------------------------------------------------------------------
+# SECURITY NOTE: Wildcard domains (*.ngrok-free.dev, *.ngrok.io, *.localtunnel.me)
+# are allowed because ngrok URLs change frequently. In production, replace with
+# exact domain list for better security.
 _raw_origins = os.getenv(
     "ALLOWED_ORIGINS",
     "http://localhost:5173,http://localhost:4173"
 )
 ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
-# Agregar dominios de ngrok para desarrollo online
+# Wildcards necesarios para túneles temporales (ngrok, localtunnel)
+# En producción, usar solo dominios exactos
 ALLOWED_ORIGINS.extend([
-    "https://sloppy-nonerosive-teresia.ngrok-free.dev",
     "https://*.ngrok-free.dev",
     "https://*.ngrok.io",
     "https://*.localtunnel.me",
