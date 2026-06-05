@@ -897,26 +897,172 @@ export default function TiendaAdmin() {
                   </div>
                 </div>
               </div>
-            )}
+)}
           </div>
         )}
 
-        {!vistaPrevia && currentView === "metricas" && (
-          <div className="metricas-view">
-            <h2>Métricas de {tienda?.nombre}</h2>
-            
-            <div className="metricas-grid">
-              <div className="metrica-card">
-                <span className="metrica-value">{metricas?.total_visitas || 0}</span>
-                <span className="metrica-label">Total Visitas</span>
+        {!vistaPrevia && currentView === "inventario" && (
+          <div className="inventario-view">
+            <div className="inventario-header">
+              <h2>Inventario de {tienda?.nombre}</h2>
+              <div className="inventario-actions">
+                <button className="btn-primary btn-success" onClick={() => { setTipoMovimiento("entrada"); setMostrarModalInventario(true); }}>
+                  <HiOutlineTrendingUp /> Entrada
+                </button>
+                <button className="btn-primary btn-danger" onClick={() => { setTipoMovimiento("salida"); setMostrarModalInventario(true); }}>
+                  <HiOutlineTrendingDown /> Salida
+                </button>
               </div>
-              <div className="metrica-card">
-                <span className="metrica-value">{metricas?.visitantes_unicos || 0}</span>
-                <span className="metrica-label">Visitantes Únicos</span>
+            </div>
+
+            {inventarioStock.length > 0 && (
+              <div className="stock-table-container">
+                <table className="stock-table">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Stock Actual</th>
+                      <th>Estado</th>
+                      <th>Movimientos</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {inventarioStock.map((item: any) => (
+                      <tr key={item.producto_id}>
+                        <td>
+                          <div className="stock-producto">
+                            <strong>{item.nombre}</strong>
+                            <span>{item.categoria}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`stock-value ${item.stock === 0 ? "cero" : item.stock < 10 ? "alerta" : "positivo"}`}>
+                            {item.stock}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`stock-badge ${item.stock === 0 ? "agotado" : item.stock < 10 ? "bajo" : "disponible"}`}>
+                            {item.stock === 0 ? "Agotado" : item.stock < 10 ? "Bajo" : "Disponible"}
+                          </span>
+                        </td>
+                        <td>
+                          <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                            ↑ {item.movimientos_entrada} ↓ {item.movimientos_salida}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <div className="metrica-card">
-                <span className="metrica-value">{metricas?.tiempo_promedio_segundos || 0}s</span>
-                <span className="metrica-label">Tiempo Promedio</span>
+            )}
+
+            {inventarioStock.length === 0 && (
+              <p className="no-data">No hay productos con movimientos registrados</p>
+            )}
+
+            <div className="historial-section" style={{ marginTop: "1.5rem" }}>
+              <h3><HiOutlineDocumentText /> Historial de Movimientos</h3>
+              <div className="movimientos-list">
+                {inventarioMovimientos.length > 0 ? (
+                  inventarioMovimientos.slice(0, 20).map((m: any) => (
+                    <div key={m.id} className="movimiento-item">
+                      <div className={`movimiento-icon ${m.tipo}`}>
+                        {m.tipo === "entrada" ? "↓" : "↑"}
+                      </div>
+                      <div className="movimiento-info">
+                        <strong>{m.producto_nombre || "General"}</strong>
+                        <span className="movimiento-justificacion">{m.motivo}</span>
+                      </div>
+                      <div className="movimiento-meta">
+                        <span className={`cantidad ${m.tipo === "entrada" ? "positiva" : "negativa"}`}>
+                          {m.tipo === "entrada" ? "+" : "-"}{m.cantidad}
+                        </span>
+                        <span className="fecha">
+                          {new Date(m.fecha_creacion).toLocaleDateString("es-ES")}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-data">Sin movimientos registrados</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!vistaPrevia && currentView === "finanzas" && (
+          <div className="finanzas-view">
+            <div className="finanzas-header">
+              <h2>Finanzas de {tienda?.nombre}</h2>
+              <div className="inventario-actions">
+                <button className="btn-primary btn-success" onClick={() => setMostrarModalIngreso(true)}>
+                  <HiOutlineTrendingUp /> Ingreso
+                </button>
+                <button className="btn-primary btn-danger" onClick={() => setMostrarModalEgreso(true)}>
+                  <HiOutlineTrendingDown /> Egreso
+                </button>
+              </div>
+            </div>
+
+            {finanzasResumen && (
+              <div className="balance-cards">
+                <div className="balance-card ingresos">
+                  <h4>Ingresos Totales</h4>
+                  <p className="monto positivo">${finanzasResumen.totales?.ingresos?.toFixed(2) || "0.00"}</p>
+                  <span className="meta">Este mes: ${finanzasResumen.ultimo_mes?.ingresos?.toFixed(2) || "0.00"}</span>
+                </div>
+                <div className="balance-card egresos">
+                  <h4>Egresos Totales</h4>
+                  <p className="monto negativo">${finanzasResumen.totales?.egresos?.toFixed(2) || "0.00"}</p>
+                  <span className="meta">Este mes: ${finanzasResumen.ultimo_mes?.egresos?.toFixed(2) || "0.00"}</span>
+                </div>
+                <div className="balance-card balance">
+                  <h4>Balance Neto</h4>
+                  <p className={`monto ${(finanzasResumen.totales?.balance_neto || 0) >= 0 ? "positivo" : "negativo"}`}>
+                    ${finanzasResumen.totales?.balance_neto?.toFixed(2) || "0.00"}
+                  </p>
+                  <span className="meta">Este mes: ${finanzasResumen.ultimo_mes?.balance?.toFixed(2) || "0.00"}</span>
+                </div>
+              </div>
+            )}
+
+            <div className="transacciones-section">
+              <div className="transacciones-list">
+                <h3 className="ingresos-title"><HiOutlineTrendingUp /> Ingresos</h3>
+                {finanzasIngresos.length > 0 ? (
+                  finanzasIngresos.map((i: any) => (
+                    <div key={i.id} className="transaccion-item">
+                      <div className="transaccion-icon ingreso">+</div>
+                      <div className="transaccion-info">
+                        <strong>{i.descripcion}</strong>
+                        <span>{i.tipo} • {new Date(i.fecha_creacion).toLocaleDateString("es-ES")}</span>
+                      </div>
+                      <span className="transaccion-monto ingreso">+${i.monto.toFixed(2)}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-data" style={{ padding: "1rem" }}>Sin ingresos registrados</p>
+                )}
+              </div>
+
+              <div className="transacciones-list">
+                <h3 className="egresos-title"><HiOutlineTrendingDown /> Egresos</h3>
+                {finanzasEgresos.length > 0 ? (
+                  finanzasEgresos.map((e: any) => (
+                    <div key={e.id} className="transaccion-item">
+                      <div className="transaccion-icon egreso">−</div>
+                      <div className="transaccion-info">
+                        <strong>{e.descripcion}</strong>
+                        <span>{e.tipo} • {new Date(e.fecha_creacion).toLocaleDateString("es-ES")}</span>
+                      </div>
+                      <span className="transaccion-monto egreso">−${e.monto.toFixed(2)}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-data" style={{ padding: "1rem" }}>Sin egresos registrados</p>
+                )}
               </div>
             </div>
           </div>
