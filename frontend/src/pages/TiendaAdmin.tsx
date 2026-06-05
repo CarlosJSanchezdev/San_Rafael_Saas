@@ -144,6 +144,8 @@ export default function TiendaAdmin() {
   const [tipoMovimiento, setTipoMovimiento] = useState<"entrada" | "salida">("entrada");
   const [mostrarModalEgreso, setMostrarModalEgreso] = useState(false);
   const [mostrarModalIngreso, setMostrarModalIngreso] = useState(false);
+  const [dashFinanzasResumen, setDashFinanzasResumen] = useState<any>(null);
+  const [dashStock, setDashStock] = useState<any[]>([]);
   const { showToast } = useToast();
   const { logout, usuario: usuarioActual } = useAuth();
 
@@ -230,14 +232,18 @@ export default function TiendaAdmin() {
       setTienda(tiendaRes.data);
 
       if (currentView === "dashboard" || currentView === tiendaId) {
-        const [pedidosRes, metricasRes, productosRes] = await Promise.all([
+        const [pedidosRes, metricasRes, productosRes, resumenRes, stockRes] = await Promise.all([
           api.get(`/pedidos?tienda_id=${tiendaId}&limit=10`),
           api.get(`/admin/tiendas/${tiendaId}/metricas`),
           api.get(`/productos?tienda_id=${tiendaId}`),
+          api.get(`/admin/tienda/${tiendaId}/finanzas/resumen`),
+          api.get(`/admin/tienda/${tiendaId}/inventario/stock`),
         ]);
         setPedidos(pedidosRes.data);
         setMetricas(metricasRes.data);
         setProductos(productosRes.data);
+        setDashFinanzasResumen(resumenRes.data);
+        setDashStock(stockRes.data);
       } else if (currentView === "productos") {
         const productosRes = await api.get(`/productos?tienda_id=${tiendaId}`);
         setProductos(productosRes.data);
@@ -529,7 +535,7 @@ export default function TiendaAdmin() {
               </div>
             </div>
 
-            {productos.filter(p => p.stock < 5).length > 0 && (
+            {dashStock.filter((p: any) => p.stock < 5).length > 0 && (
               <motion.div 
                 className="alert-stock glass-card"
                 variants={item}
@@ -538,7 +544,7 @@ export default function TiendaAdmin() {
               >
                 <HiOutlineExclamation />
                 <span>
-                  <strong>{productos.filter(p => p.stock < 5).length}</strong> productos con stock bajo
+                  <strong>{dashStock.filter((p: any) => p.stock < 5).length}</strong> productos con stock bajo
                 </span>
               </motion.div>
             )}
@@ -549,7 +555,9 @@ export default function TiendaAdmin() {
                 { icon: HiOutlineUsers, label: "Visitantes", value: metricas?.visitantes_unicos || 0, color: "amber" },
                 { icon: HiOutlineShoppingCart, label: "Pedidos", value: pedidos.length, color: "cyan" },
                 { icon: HiOutlineClock, label: "Tiempo", value: `${metricas?.tiempo_promedio_segundos || 0}s`, color: "purple" },
-                { icon: HiOutlineCurrencyDollar, label: "Ingresos", value: `$${pedidos.reduce((sum, p) => sum + p.total, 0).toFixed(2)}`, color: "green" },
+                { icon: HiOutlineTrendingUp, label: "Ingresos ERP", value: `$${dashFinanzasResumen?.ultimo_mes?.ingresos?.toFixed(2) || "0.00"}`, color: "green" },
+                { icon: HiOutlineTrendingDown, label: "Egresos ERP", value: `$${dashFinanzasResumen?.ultimo_mes?.egresos?.toFixed(2) || "0.00"}`, color: "red" },
+                { icon: HiOutlineCurrencyDollar, label: "Balance", value: `$${dashFinanzasResumen?.ultimo_mes?.balance?.toFixed(2) || "0.00"}`, color: dashFinanzasResumen?.ultimo_mes?.balance >= 0 ? "green" : "red" },
                 { icon: HiOutlineCube, label: "Productos", value: productos.length, color: "orange" },
               ].map((stat) => (
                 <motion.div
