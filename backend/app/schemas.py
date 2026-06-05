@@ -277,3 +277,98 @@ class PedidoOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ERP Schemas - Inventario
+
+class MovimientoInventarioBase(BaseModel):
+    producto_id: Optional[int] = None
+    tipo: str  # entrada, salida
+    cantidad: int
+    motivo: str
+    referencia_id: Optional[int] = None
+
+
+class MovimientoInventarioCrear(MovimientoInventarioBase):
+    pass
+
+
+class MovimientoInventarioOut(MovimientoInventarioBase):
+    id: int
+    tienda_id: int
+    usuario_id: Optional[int] = None
+    fecha_creacion: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class StockProductoOut(BaseModel):
+    producto_id: int
+    nombre: str
+    categoria: Optional[str] = None
+    precio: float
+    stock: int
+    movimientos_entrada: int = 0
+    movimientos_salida: int = 0
+
+
+# ERP Schemas - Finanzas
+
+class IngresoBase(BaseModel):
+    tipo: str  # venta, manual
+    pedido_id: Optional[int] = None
+    monto: float
+    descripcion: str
+
+
+class IngresoCrear(IngresoBase):
+    pass
+
+
+class IngresoOut(IngresoBase):
+    id: int
+    tienda_id: int
+    fecha_creacion: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class EgresoBase(BaseModel):
+    tipo: str  # devolucion, alquiler, servicios, insumos
+    monto: float
+    descripcion: str
+
+
+class EgresoCrear(EgresoBase):
+    pass
+
+
+class EgresoOut(EgresoBase):
+    id: int
+    tienda_id: int
+    fecha_creacion: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class BalanceSemanal(BaseModel):
+    semana: str  # YYYY-WW format
+    ingresos: float
+    egresos: float
+    balance: float
+    detalle_ingresos: int = 0
+    detalle_egresos: int = 0
+
+
+class ReporteFinanciero(BaseModel):
+    tienda_id: int
+    tienda_nombre: str
+    periodo: str
+    fecha_generacion: datetime
+    totales: dict  # {ingresos_total, egresos_total, balance_neto}
+    balance_semanal: list[BalanceSemanal]
+    ingresos_por_tipo: dict  # {venta: X, manual: Y}
+    egresos_por_tipo: dict  # {devolucion: A, alquiler: B, servicios: C, insumos: D}

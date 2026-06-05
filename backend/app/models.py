@@ -151,3 +151,40 @@ class PedidoItem(Base):
     producto_nombre = Column(String, nullable=False)
     precio = Column(Float, nullable=False)
     cantidad = Column(Integer, nullable=False)
+
+
+class MovimientoInventario(Base):
+    __tablename__ = "movimientos_inventario"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tienda_id = Column(Integer, ForeignKey("tiendas.id"), nullable=False, index=True)
+    producto_id = Column(Integer, ForeignKey("productos.id"), nullable=True, index=True)
+    tipo = Column(String, nullable=False)  # entrada, salida
+    cantidad = Column(Integer, nullable=False)
+    motivo = Column(String, nullable=False)  # Venta #45, Compra #123, Ajuste manual, Devolucion
+    referencia_id = Column(Integer, nullable=True)  # pedido_id si es automático
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
+    fecha_creacion = Column(DateTime, default=datetime.utcnow, index=True)
+
+
+class Ingreso(Base):
+    __tablename__ = "ingresos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tienda_id = Column(Integer, ForeignKey("tiendas.id"), nullable=False, index=True)
+    tipo = Column(String, nullable=False)  # venta, manual
+    pedido_id = Column(Integer, ForeignKey("pedidos.id"), nullable=True)
+    monto = Column(Float, nullable=False)
+    descripcion = Column(String, nullable=False)
+    fecha_creacion = Column(DateTime, default=datetime.utcnow, index=True)
+
+
+class Egreso(Base):
+    __tablename__ = "egresos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tienda_id = Column(Integer, ForeignKey("tiendas.id"), nullable=False, index=True)
+    tipo = Column(String, nullable=False)  # devolucion, alquiler, servicios, insumos
+    monto = Column(Float, nullable=False)
+    descripcion = Column(String, nullable=False)
+    fecha_creacion = Column(DateTime, default=datetime.utcnow, index=True)

@@ -33,7 +33,10 @@ import {
   HiOutlineClock,
   HiOutlineMenu,
   HiOutlineX,
-  HiOutlineUser
+  HiOutlineUser,
+  HiOutlineTrendingUp,
+  HiOutlineTrendingDown,
+  HiOutlineDocumentText
 } from "react-icons/hi";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
@@ -131,6 +134,16 @@ export default function TiendaAdmin() {
     wompi_activo: false
   });
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState<Pedido | null>(null);
+  const [inventarioStock, setInventarioStock] = useState<any[]>([]);
+  const [inventarioMovimientos, setInventarioMovimientos] = useState<any[]>([]);
+  const [finanzasResumen, setFinanzasResumen] = useState<any>(null);
+  const [finanzasIngresos, setFinanzasIngresos] = useState<any[]>([]);
+  const [finanzasEgresos, setFinanzasEgresos] = useState<any[]>([]);
+  const [finanzasBalance, setFinanzasBalance] = useState<any[]>([]);
+  const [mostrarModalInventario, setMostrarModalInventario] = useState(false);
+  const [tipoMovimiento, setTipoMovimiento] = useState<"entrada" | "salida">("entrada");
+  const [mostrarModalEgreso, setMostrarModalEgreso] = useState(false);
+  const [mostrarModalIngreso, setMostrarModalIngreso] = useState(false);
   const { showToast } = useToast();
   const { logout, usuario: usuarioActual } = useAuth();
 
@@ -242,6 +255,24 @@ export default function TiendaAdmin() {
           wompi_integrity_secret: tiendaRes.data.wompi_integrity_secret || "",
           wompi_activo: tiendaRes.data.wompi_activo || false
         });
+      } else if (currentView === "inventario") {
+        const [stockRes, movimientosRes] = await Promise.all([
+          api.get(`/admin/tienda/${tiendaId}/inventario/stock`),
+          api.get(`/admin/tienda/${tiendaId}/inventario/movimientos?limit=50`),
+        ]);
+        setInventarioStock(stockRes.data);
+        setInventarioMovimientos(movimientosRes.data);
+      } else if (currentView === "finanzas") {
+        const [resumenRes, ingresosRes, egresosRes, balanceRes] = await Promise.all([
+          api.get(`/admin/tienda/${tiendaId}/finanzas/resumen`),
+          api.get(`/admin/tienda/${tiendaId}/finanzas/ingresos?limit=50`),
+          api.get(`/admin/tienda/${tiendaId}/finanzas/egresos?limit=50`),
+          api.get(`/admin/tienda/${tiendaId}/finanzas/balance?semanas=8`),
+        ]);
+        setFinanzasResumen(resumenRes.data);
+        setFinanzasIngresos(ingresosRes.data);
+        setFinanzasEgresos(egresosRes.data);
+        setFinanzasBalance(balanceRes.data);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -255,6 +286,8 @@ export default function TiendaAdmin() {
     { to: `/admin/tiendas/${tiendaId}/preview`, icon: HiOutlineEye, label: "Vista Previa", isPreview: true },
     { to: `/admin/tiendas/${tiendaId}/productos`, icon: HiOutlineCube, label: "Productos" },
     { to: `/admin/tiendas/${tiendaId}/pedidos`, icon: HiOutlineShoppingCart, label: "Pedidos" },
+    { to: `/admin/tiendas/${tiendaId}/inventario`, icon: HiOutlineTrendingUp, label: "Inventario" },
+    { to: `/admin/tiendas/${tiendaId}/finanzas`, icon: HiOutlineCurrencyDollar, label: "Finanzas" },
     { to: `/admin/tiendas/${tiendaId}/metricas`, icon: HiOutlineChartBar, label: "Métricas" },
     { to: `/admin/tiendas/${tiendaId}/pagos`, icon: HiOutlineCurrencyDollar, label: "Pagos" },
   ];
@@ -1050,6 +1083,161 @@ export default function TiendaAdmin() {
         confirmText="Eliminar producto"
         variant="danger"
       />
+
+      {mostrarModalInventario && (
+        <div className="modal-overlay" onClick={() => setMostrarModalInventario(false)}>
+          <div className="modal glass-card" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{tipoMovimiento === "entrada" ? "Registrar Entrada" : "Registrar Salida"}</h2>
+              <button className="btn-close" onClick={() => setMostrarModalInventario(false)}>
+                <HiOutlineX />
+              </button>
+            </div>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const cantidad = parseInt(formData.get("cantidad") as string);
+              const motivo = formData.get("motivo") as string;
+              const productoId = parseInt(formData.get("producto_id") as string) || undefined;
+              
+              try {
+                if (tipoMovimiento === "entrada") {
+                  await api.post(`/admin/tienda/${tiendaId}/inventario/entrada`, {
+                    producto_id: productoId,
+                    cantidad,
+                    motivo
+                  });
+                } else {
+                  await api.post(`/admin/tienda/${tiendaId}/inventario/salida`, {
+                    producto_id: productoId,
+                    cantidad,
+                    motivo
+                  });
+                }
+                showToast(`${tipoMovimiento === "entrada" ? "Entrada" : "Salida"} registrada`, "success");
+                setMostrarModalInventario(false);
+                fetchData();
+              } catch (err: any) {
+                showToast(err.response?.data?.detail || "Error al registrar movimiento", "error");
+              }
+            }}>
+              <div className="form-group">
+                <label>Producto (opcional)</label>
+                <select name="producto_id">
+                  <option value="">General (sin producto específico)</option>
+                  {inventarioStock.map((p: any) => (
+                    <option key={p.producto_id} value={p.producto_id}>{p.nombre} (Stock: {p.stock})</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Cantidad</label>
+                <input name="cantidad" type="number" min="1" required />
+              </div>
+              <div className="form-group">
+                <label>Motivo</label>
+                <input name="motivo" type="text" placeholder="Ej: Compra de insumos, Venta, Devolución" required />
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn-cancel" onClick={() => setMostrarModalInventario(false)}>Cancelar</button>
+                <button type="submit" className="btn-save">Registrar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {mostrarModalEgreso && (
+        <div className="modal-overlay" onClick={() => setMostrarModalEgreso(false)}>
+          <div className="modal glass-card" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Registrar Egreso</h2>
+              <button className="btn-close" onClick={() => setMostrarModalEgreso(false)}>
+                <HiOutlineX />
+              </button>
+            </div>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const tipo = formData.get("tipo") as string;
+              const monto = parseFloat(formData.get("monto") as string);
+              const descripcion = formData.get("descripcion") as string;
+              
+              try {
+                await api.post(`/admin/tienda/${tiendaId}/finanzas/egreso`, { tipo, monto, descripcion });
+                showToast("Egreso registrado", "success");
+                setMostrarModalEgreso(false);
+                fetchData();
+              } catch (err: any) {
+                showToast(err.response?.data?.detail || "Error al registrar egreso", "error");
+              }
+            }}>
+              <div className="form-group">
+                <label>Tipo</label>
+                <select name="tipo" required>
+                  <option value="alquiler">Alquiler</option>
+                  <option value="servicios">Servicios</option>
+                  <option value="insumos">Insumos</option>
+                  <option value="devolucion">Devolución</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Monto</label>
+                <input name="monto" type="number" step="0.01" min="0.01" required />
+              </div>
+              <div className="form-group">
+                <label>Descripción</label>
+                <input name="descripcion" type="text" required />
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn-cancel" onClick={() => setMostrarModalEgreso(false)}>Cancelar</button>
+                <button type="submit" className="btn-save">Registrar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {mostrarModalIngreso && (
+        <div className="modal-overlay" onClick={() => setMostrarModalIngreso(false)}>
+          <div className="modal glass-card" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Registrar Ingreso Manual</h2>
+              <button className="btn-close" onClick={() => setMostrarModalIngreso(false)}>
+                <HiOutlineX />
+              </button>
+            </div>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const monto = parseFloat(formData.get("monto") as string);
+              const descripcion = formData.get("descripcion") as string;
+              
+              try {
+                await api.post(`/admin/tienda/${tiendaId}/finanzas/ingreso`, { monto, descripcion });
+                showToast("Ingreso registrado", "success");
+                setMostrarModalIngreso(false);
+                fetchData();
+              } catch (err: any) {
+                showToast(err.response?.data?.detail || "Error al registrar ingreso", "error");
+              }
+            }}>
+              <div className="form-group">
+                <label>Monto</label>
+                <input name="monto" type="number" step="0.01" min="0.01" required />
+              </div>
+              <div className="form-group">
+                <label>Descripción</label>
+                <input name="descripcion" type="text" required />
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn-cancel" onClick={() => setMostrarModalIngreso(false)}>Cancelar</button>
+                <button type="submit" className="btn-save">Registrar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

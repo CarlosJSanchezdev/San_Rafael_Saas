@@ -1251,3 +1251,648 @@
 .estado-select.enviado { color: #694634; }
 .estado-select.completado { color: #059669; }
 .estado-select.cancelado { color: #DC2626; }
+
+/* ERP Stats Cards */
+.erp-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.erp-stat-card {
+  background: var(--bg-card);
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.erp-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.erp-stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.erp-stat-icon.red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.erp-stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.erp-stat-icon.purple { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+
+.erp-stat-info h4 {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.erp-stat-info p {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Inventario View */
+.inventario-view h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.inventario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.inventario-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #F1F5F9;
+  border-color: var(--primary);
+}
+
+.btn-success {
+  background: #059669;
+}
+
+.btn-success:hover {
+  background: #047857;
+}
+
+.btn-danger {
+  background: #DC2626;
+}
+
+.btn-danger:hover {
+  background: #B91C1C;
+}
+
+/* Stock Table */
+.stock-table-container {
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-table th {
+  background: #F8FAFC;
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stock-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.875rem;
+}
+
+.stock-table tr:last-child td {
+  border-bottom: none;
+}
+
+.stock-table tr:hover {
+  background: #F8FAFC;
+}
+
+.stock-producto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stock-producto strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.stock-producto span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.stock-value {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.stock-value.positivo { color: #059669; }
+.stock-value.alerta { color: #f59e0b; }
+.stock-value.cero { color: #ef4444; }
+
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.stock-badge.disponible { background: #D1FAE5; color: #059669; }
+.stock-badge.bajo { background: #FEF3C7; color: #B45309; }
+.stock-badge.agotado { background: #FEE2E2; color: #DC2626; }
+
+/* Historial Movimientos */
+.historial-section {
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+}
+
+.historial-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.movimientos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.movimiento-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.movimiento-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.movimiento-icon.entrada { background: #D1FAE5; color: #059669; }
+.movimiento-icon.salida { background: #FEE2E2; color: #DC2626; }
+
+.movimiento-info {
+  flex: 1;
+}
+
+.movimiento-info strong {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.movimiento-info span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.movimiento-meta {
+  text-align: right;
+}
+
+.movimiento-meta .cantidad {
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.movimiento-meta .cantidad.positiva { color: #059669; }
+.movimiento-meta .cantidad.negativa { color: #DC2626; }
+
+.movimiento-meta .fecha {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.movimiento-justificacion {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+/* Finanzas View */
+.finanzas-view h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.finanzas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.balance-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.balance-card {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.balance-card.ingresos { border-left: 4px solid #059669; }
+.balance-card.egresos { border-left: 4px solid #DC2626; }
+.balance-card.balance { border-left: 4px solid var(--primary); }
+
+.balance-card h4 {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.balance-card .monto {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.balance-card .monto.positivo { color: #059669; }
+.balance-card .monto.negativo { color: #DC2626; }
+
+.balance-card .meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+/* Transacciones List */
+.transacciones-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.transacciones-list {
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.transacciones-list h3 {
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.transacciones-list h3 svg {
+  width: 20px;
+  height: 20px;
+}
+
+.transacciones-list h3.ingresos-title { color: #059669; }
+.transacciones-list h3.egresos-title { color: #DC2626; }
+
+.transaccion-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.transaccion-item:last-child {
+  border-bottom: none;
+}
+
+.transaccion-item:hover {
+  background: #F8FAFC;
+}
+
+.transaccion-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.transaccion-icon.ingreso { background: rgba(5, 150, 105, 0.1); color: #059669; }
+.transaccion-icon.egreso { background: rgba(220, 38, 38, 0.1); color: #DC2626; }
+
+.transaccion-info {
+  flex: 1;
+}
+
+.transaccion-info strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.transaccion-info span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.transaccion-monto {
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+.transaccion-monto.ingreso { color: #059669; }
+.transaccion-monto.egreso { color: #DC2626; }
+
+.transaccion-categoria {
+  display: inline-flex;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #F1F5F9;
+  color: var(--text-secondary);
+}
+
+/* Modal Forms */
+.modal-form-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-form {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+.modal-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-form-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-form-header h2.entrada { color: #059669; }
+.modal-form-header h2.salida { color: #DC2626; }
+.modal-form-header h2.ingreso { color: #059669; }
+.modal-form-header h2.egreso { color: #DC2626; }
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-cerrar:hover {
+  background: #F1F5F9;
+  color: #1E293B;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(105, 70, 52, 0.15);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancelar {
+  background: #F1F5F9;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-cancelar:hover {
+  background: #E2E8F0;
+}
+
+.btn-submit {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+
+.btn-submit:hover {
+  background: var(--primary-light);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--text-secondary);
+}
+
+.empty-state svg {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 0.9375rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .erp-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .inventario-header,
+  .finanzas-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .inventario-actions {
+    flex-wrap: wrap;
+  }
+  
+  .stock-table-container {
+    overflow-x: auto;
+  }
+  
+  .stock-table {
+    min-width: 500px;
+  }
+  
+  .transacciones-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .balance-cards {
+    grid-template-columns: 1fr;
+  }
+}

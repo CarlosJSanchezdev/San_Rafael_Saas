@@ -19,6 +19,8 @@ from .metricas import router as metricas_router, router_admin as metricas_admin_
 from .plantillas import router as plantillas_router
 from .pedidos import router as pedidos_router
 from .wompi_payment import router as wompi_router
+from .inventario import router as inventario_router
+from .finanzas import router as finanzas_router
 from .database import engine, Base
 
 app = FastAPI(title="SRF Web API", version="1.0.0")
@@ -151,6 +153,8 @@ app.include_router(plantillas_router,    dependencies=_auth_dep)
 app.include_router(pedidos_router)
 app.include_router(tiendas_admin_router, dependencies=_auth_dep)  # /admin/tiendas/*
 app.include_router(metricas_admin_router, dependencies=_auth_dep) # /admin/.../metricas
+app.include_router(inventario_router, dependencies=_auth_dep)  # /admin/tienda/{id}/inventario/*
+app.include_router(finanzas_router, dependencies=_auth_dep)  # /admin/tienda/{id}/finanzas/*
 
 Base.metadata.create_all(bind=engine)
 
