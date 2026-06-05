@@ -286,8 +286,8 @@ export default function TiendaAdmin() {
     { to: `/admin/tiendas/${tiendaId}/preview`, icon: HiOutlineEye, label: "Vista Previa", isPreview: true },
     { to: `/admin/tiendas/${tiendaId}/productos`, icon: HiOutlineCube, label: "Productos" },
     { to: `/admin/tiendas/${tiendaId}/pedidos`, icon: HiOutlineShoppingCart, label: "Pedidos" },
-    { to: `/admin/tienda/${tiendaId}/inventario`, icon: HiOutlineTrendingUp, label: "Inventario" },
-    { to: `/admin/tienda/${tiendaId}/finanzas`, icon: HiOutlineCurrencyDollar, label: "Finanzas" },
+    { to: `/admin/tiendas/${tiendaId}/inventario`, icon: HiOutlineTrendingUp, label: "Inventario" },
+    { to: `/admin/tiendas/${tiendaId}/finanzas`, icon: HiOutlineCurrencyDollar, label: "Finanzas" },
     { to: `/admin/tiendas/${tiendaId}/metricas`, icon: HiOutlineChartBar, label: "Métricas" },
     { to: `/admin/tiendas/${tiendaId}/pagos`, icon: HiOutlineCurrencyDollar, label: "Pagos" },
   ];

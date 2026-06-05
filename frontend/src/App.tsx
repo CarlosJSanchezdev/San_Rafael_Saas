@@ -135,6 +135,22 @@ function App() {
               } 
             />
             <Route 
+              path="/admin/tiendas/:tiendaId/inventario" 
+              element={
+                <ProtectedRoute>
+                  <TiendaAdmin />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/tiendas/:tiendaId/finanzas" 
+              element={
+                <ProtectedRoute>
+                  <TiendaAdmin />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/admin/usuarios" 
               element={
                 <ProtectedRoute>
