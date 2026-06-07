@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   AreaChart,
   Area,
@@ -376,6 +378,83 @@ export default function TiendaAdmin() {
 
   const cerrarDetallePedido = () => {
     setPedidoSeleccionado(null);
+  };
+
+  const exportarFinanzasPDF = () => {
+    if (!finanzasResumen || !tienda) {
+      showToast("No hay datos para exportar", "error");
+      return;
+    }
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    doc.setFontSize(18);
+    doc.setTextColor(105, 70, 52);
+    doc.text("Reporte Financiero", pageWidth / 2, 20, { align: "center" });
+    
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text(tienda.nombre, pageWidth / 2, 28, { align: "center" });
+    doc.text(`Fecha: ${new Date().toLocaleDateString("es-ES")}`, pageWidth / 2, 34, { align: "center" });
+
+    doc.setFontSize(14);
+    doc.setTextColor(40);
+    doc.text("Resumen General", 14, 48);
+
+    doc.setFontSize(11);
+    doc.text(`Ingresos Totales: $${finanzasResumen.totales?.ingresos?.toFixed(2) || "0.00"}`, 14, 56);
+    doc.text(`Egresos Totales: $${finanzasResumen.totales?.egresos?.toFixed(2) || "0.00"}`, 14, 62);
+    doc.text(`Balance Neto: $${finanzasResumen.totales?.balance_neto?.toFixed(2) || "0.00"}`, 14, 68);
+
+    doc.setFontSize(14);
+    doc.text("Este Mes", 14, 80);
+    doc.setFontSize(11);
+    doc.text(`Ingresos: $${finanzasResumen.ultimo_mes?.ingresos?.toFixed(2) || "0.00"}`, 14, 88);
+    doc.text(`Egresos: $${finanzasResumen.ultimo_mes?.egresos?.toFixed(2) || "0.00"}`, 14, 94);
+    doc.text(`Balance: $${finanzasResumen.ultimo_mes?.balance?.toFixed(2) || "0.00"}`, 14, 100);
+
+    if (finanzasIngresos.length > 0) {
+      doc.setFontSize(14);
+      doc.setTextColor(40);
+      doc.text("Ingresos Registrados", 14, 114);
+      
+      autoTable(doc, {
+        startY: 118,
+        head: [["Fecha", "Tipo", "Descripción", "Monto"]],
+        body: finanzasIngresos.map((i: any) => [
+          new Date(i.fecha_creacion).toLocaleDateString("es-ES"),
+          i.tipo,
+          i.descripcion,
+          `$${i.monto.toFixed(2)}`
+        ]),
+        theme: "striped",
+        headStyles: { fillColor: [5, 150, 105] },
+      });
+    }
+
+    if (finanzasEgresos.length > 0) {
+      const finalY = (doc as any).lastAutoTable?.finalY || 118;
+      doc.setFontSize(14);
+      doc.setTextColor(40);
+      doc.text("Egresos Registrados", 14, finalY + 10);
+      
+      autoTable(doc, {
+        startY: finalY + 14,
+        head: [["Fecha", "Tipo", "Descripción", "Monto"]],
+        body: finanzasEgresos.map((e: any) => [
+          new Date(e.fecha_creacion).toLocaleDateString("es-ES"),
+          e.tipo,
+          e.descripcion,
+          `$${e.monto.toFixed(2)}`
+        ]),
+        theme: "striped",
+        headStyles: { fillColor: [220, 38, 38] },
+      });
+    }
+
+    doc.save(`reporte_financiero_${tienda.nombre}_${new Date().toISOString().split("T")[0]}.pdf`);
+    showToast("Reporte PDF exportado", "success");
   };
 
   if (loading) {
@@ -1025,6 +1104,9 @@ export default function TiendaAdmin() {
             <div className="finanzas-header">
               <h2>Finanzas de {tienda?.nombre}</h2>
               <div className="inventario-actions">
+                <button className="btn-primary" onClick={exportarFinanzasPDF}>
+                  <HiOutlineDocumentText /> Exportar PDF
+                </button>
                 <button className="btn-primary btn-success" onClick={() => setMostrarModalIngreso(true)}>
                   <HiOutlineTrendingUp /> Ingreso
                 </button>
