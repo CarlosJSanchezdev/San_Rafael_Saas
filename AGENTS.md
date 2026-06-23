@@ -19,135 +19,106 @@ cd frontend && npm run dev
 | DB | SQLite + SQLAlchemy |
 
 - **Rutas `/admin/*`**: Frontend React (protegidas por ProtectedRoute)
-- **API del backend**: `/auth/*`, `/usuarios/*`, `/productos/*`, `/clientes/*`, `/pedidos/*`, `/tiendas/*`, `/metricas/*`
-- **Rutas públicas**: `/`, `/tienda/*`, `/t/:subdominio/*`, `/contacto/*`
-
-## CSS Theme Isolation
-
-### Regla fundamental
-NUNCA uses `:root` junto con clases con alcance en el mismo archivo CSS.
-
-### Estructura actual de temas
-- **Admin**: `.admin-theme` → Chocolate Cremoso `#694634` (Layout.css)
-- **Tiendas**: `.store-theme` → Colores dinámicos de cada tienda (style_1.css)
-- **Default**: `:root` en index.css usa colores del admin (login, registro, etc.)
-
-### Patrón de uso
-```css
-/* ✅ CORRECTO - archivo scoped */
-.admin-theme {
-  --primary: #694634;
-}
-
-/* ❌ INCORRECTO - mezcla global con scoped */
-:root, .admin-theme {
-  --primary: #694634;
-}
-```
+- **API backend pública**: `/auth/*`, `/tienda/*`, `/tiendas/*`, `/pedidos/*`, `/metricas/visita`
+- **API backend protegida**: `/usuarios/*`, `/productos/*`, `/clientes/*`, `/admin/tiendas/*`, `/admin/metricas/*`, `/admin/tienda/{id}/inventario/*`, `/admin/tienda/{id}/finanzas/*`
+- **Rutas públicas frontend**: `/`, `/tienda/*`, `/t/:subdominio/*`, `/contacto/*`
 
 ## Vite Proxy (vite.config.ts)
 
-### Regla crítica
-Las rutas `/admin/*` son del **frontend React**, no del backend.
+El proxy `/admin` existe con bypass para HTML (el navegador recibe frontend, las llamadas JSON van al backend). **NO agregar `/admin` como prefijo de API en el frontend**.
 
-Cuando agregues nuevas rutas de API del backend, **NO uses** el prefijo `/admin` en el proxy. Usa otros prefijos como `/api/`, `/v1/`, etc.
-
-### Configuración actual
 ```typescript
 proxy: {
+  '/api':  { target: 'http://localhost:8000', rewrite: (path) => path.replace(/^\/api/, '') },
   '/auth': { target: 'http://localhost:8000' },
+  '/stats': { target: 'http://localhost:8000' },
   '/usuarios': { target: 'http://localhost:8000' },
   '/productos': { target: 'http://localhost:8000' },
   '/clientes': { target: 'http://localhost:8000' },
   '/pedidos': { target: 'http://localhost:8000' },
   '/tiendas': { target: 'http://localhost:8000' },
   '/metricas': { target: 'http://localhost:8000' },
-  // /admin NO está en el proxy - es ruta del frontend
+  '/tienda': { target: 'http://localhost:8000' },
+  '/wompi': { target: 'http://localhost:8000' },
+  '^/admin(/.*)?': {
+    target: 'http://localhost:8000',
+    bypass(req) { return req.headers.accept?.includes('text/html') ? req.url : undefined; }
+  },
 }
 ```
 
-## Autenticación
+## CSS Theme Isolation
 
-- **Token**: Guardado en `sessionStorage` (clave: `userToken`)
-- **Cookie**: Backend configura cookie HttpOnly `session_token`
-- **Duración**: 7 días (cookie max_age)
-- **Validación**: `api.get("/auth/validar-token")`
-- **Logout**: Limpia sessionStorage y cookie
+NUNCA usar `:root` junto con clases scoped en el mismo archivo CSS.
 
-### Protecciones
-- **Frontend**: `ProtectedRoute` component en App.tsx
-- **Backend**: `Depends(get_current_user)` en FastAPI
+```css
+/* ✅ CORRECTO */
+.admin-theme { --primary: #694634; }
 
-## Errores comunes y soluciones
-
-### 1. "tiendas.filter is not a function"
-La API puede devolver un objeto en lugar de un array.
-```typescript
-const data = response.data;
-setTiendas(Array.isArray(data) ? data : []);
+/* ❌ INCORRECTO */
+:root, .admin-theme { --primary: #694634; }
 ```
 
-### 2. Rutas admin mostrando JSON
-Si el proxy envía requests `/admin/*` al backend, el navegador verá JSON en vez de la UI.
-**Solución**: No agregar `/admin` al proxy de Vite.
+- **Admin**: `.admin-theme` → Chocolate Cremoso `#694634`
+- **Tiendas**: `.store-theme` → colores dinámicos de cada tienda
+- **Default** (login, registro): `:root` en index.css usa colores del admin
+- `style_1.css` solo importar en `TiendaPublica.tsx`, `ProductoDetalle.tsx`, `CheckoutTienda.tsx`
 
-### 3. Colores púrpura en admin
-Si `style_1.css` importa estáticamente en páginas no-tienda, los colores se mezclan.
-**Solución**: Solo importar en `TiendaPublica.tsx`, `ProductoDetalle.tsx`, `CheckoutTienda.tsx`.
+## Autenticación
 
-### 4. "magnetic-field" en Permissions-Policy
-Firefox rechaza esta feature no reconocida.
-**Solución**: Eliminar `magnetic-field` de `backend/app/main.py`.
+- **Token**: `sessionStorage` (clave: `userToken`)
+- **Cookie**: HttpOnly `session_token`, 7 días
+- **Validación**: `api.get("/auth/validar-token")`
+- **Logout**: limpia sessionStorage y cookie
+- **Frontend**: `ProtectedRoute` en App.tsx
+- **Backend**: `Depends(get_current_user)` en cada router protegido
+
+## Errores comunes
+
+1. **"tiendas.filter is not a function"**: la API puede devolver un objeto, no array.
+   ```typescript
+   setTiendas(Array.isArray(data) ? data : []);
+   ```
+2. **Colores púrpura en admin**: `style_1.css` importado en páginas no-tienda. Solo en `TiendaPublica`, `ProductoDetalle`, `CheckoutTienda`.
+3. **"magnetic-field" en Permissions-Policy**: Firefox lo rechaza. Remover de `main.py`.
 
 ## Componentes de Tienda
 
-### Colores dinámicos
-El componente `TiendaStyle` inyecta colores vía JavaScript según la tienda.
-```typescript
-// Si la tienda tiene color_primario="#ffa348", TiendaStyle setea:
-root.style.setProperty('--primary', '#ffa348');
-```
+- `TiendaStyle`: inyecta `--primary` dinámico según la tienda
+- Plantillas: `style_1` (Clásico Lavanda), `style_2` (Midnight Dark)
 
-### Plantillas disponibles
-- `style_1`: Clásico Lavanda (usado por defecto)
-- `style_2`: Midnight Dark
-
-## Comandos útiles
+## Comandos
 
 ```bash
-# Build frontend
-npm run build
-
-# Verificar TypeScript
-npx tsc --noEmit --skipLibCheck
-
-# Lint
-npm run lint
-
-# Preview build
-npm run preview
+cd frontend
+npm run build        # build + typecheck
+npx tsc --noEmit     # solo typecheck
+npm run lint         # linter
+npm run preview      # preview build
 ```
 
-## Estructura de directorios
+## Backend modules (app/)
 
 ```
-Srf-web/
-├── backend/
-│   └── app/
-│       ├── main.py          # FastAPI entry point
-│       ├── auth.py          # Autenticación, sesiones
-│       ├── tiendas.py       # CRUD tiendas
-│       ├── productos.py     # CRUD productos
-│       └── schemas.py       # Modelos Pydantic
-├── frontend/
-│   └── src/
-│       ├── pages/           # Componentes de página
-│       ├── components/      # Componentes reutilizables
-│       ├── context/         # Contextos (Auth, Carrito, Toast)
-│       ├── styles/
-│       │   └── tienda/      # style_1.css, style_2.css
-│       └── api.ts           # Cliente HTTP (axios)
-└── stitch/                  # Archivos de diseño (referencia)
+main.py          # FastAPI entry, middleware, routers
+auth.py          # autenticación, get_current_user
+usuarios.py      # CRUD usuarios
+productos.py     # CRUD productos
+clientes.py      # CRUD clientes
+tiendas.py       # CRUD tiendas + router_admin /admin/tiendas/*
+pedidos.py       # pedidos
+tienda.py        # /tienda (demo/home pública)
+stats.py         # estadísticas
+metricas.py      # metricas público + router_admin /admin/.../metricas
+plantillas.py    # plantillas de tienda
+wompi_payment.py # integración Wompi /pedidos/create-wompi-transaction, /webhooks/wompi
+inventario.py    # /admin/tienda/{id}/inventario/*
+finanzas.py      # /admin/tienda/{id}/finanzas/*
+database.py      # SQLAlchemy engine, Base
+models.py        # modelos DB
+schemas.py       # esquemas Pydantic
+crud.py          # operaciones CRUD genéricas
+security_logging.py  # logging de eventos de seguridad (login, access denied, etc.)
 ```
 
 ## Reglas generales
@@ -155,4 +126,4 @@ Srf-web/
 1. **Nunca hacer commit** hasta que el usuario lo indique
 2. **Modo plan** durante diseño, **modo build** solo con confirmación
 3. **Responder en español** siempre
-4. **Usar `!important`** solo cuando sea estrictamente necesario para sobrescribir CSS
+4. **Usar `!important`** solo cuando sea estrictamente necesario

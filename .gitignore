@@ -1,7 +1,10 @@
 # Dependencies
 node_modules/
 venv/
+# Environment files
 .env
+.env.*
+!.env.example
 
 # Build outputs
 dist/
