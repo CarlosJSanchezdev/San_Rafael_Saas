@@ -95,6 +95,68 @@ interface ChartData {
   value: number;
 }
 
+interface InventarioStockItem {
+  producto_id: number;
+  nombre: string;
+  categoria: string;
+  precio: number;
+  stock: number;
+  movimientos_entrada: number;
+  movimientos_salida: number;
+}
+
+interface MovimientoInventario {
+  id: number;
+  producto_id: number | null;
+  producto_nombre: string | null;
+  tipo: "entrada" | "salida";
+  cantidad: number;
+  motivo: string;
+  referencia_id: number | null;
+  fecha_creacion: string;
+}
+
+interface Ingreso {
+  id: number;
+  tipo: string;
+  pedido_id: number | null;
+  monto: number;
+  descripcion: string;
+  fecha_creacion: string;
+}
+
+interface Egreso {
+  id: number;
+  tipo: string;
+  monto: number;
+  descripcion: string;
+  fecha_creacion: string;
+}
+
+interface BalanceSemanal {
+  semana: string;
+  ingresos: number;
+  egresos: number;
+  balance: number;
+  detalle_ingresos: number;
+  detalle_egresos: number;
+}
+
+interface FinanzasResumen {
+  totales: {
+    ingresos: number;
+    egresos: number;
+    balance_neto: number;
+  };
+  ingresos_por_tipo: Record<string, number>;
+  egresos_por_tipo: Record<string, number>;
+  ultimo_mes: {
+    ingresos: number;
+    egresos: number;
+    balance: number;
+  };
+}
+
 const COLORS = ["#0ea5e9", "#f59e0b", "#0284c7", "#d97706", "#60a5fa", "#fbbf24"];
 
 const container = {
@@ -136,28 +198,20 @@ export default function TiendaAdmin() {
     wompi_activo: false
   });
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState<Pedido | null>(null);
-  const [inventarioStock, setInventarioStock] = useState<any[]>([]);
-  const [inventarioMovimientos, setInventarioMovimientos] = useState<any[]>([]);
-  const [finanzasResumen, setFinanzasResumen] = useState<any>(null);
-  const [finanzasIngresos, setFinanzasIngresos] = useState<any[]>([]);
-  const [finanzasEgresos, setFinanzasEgresos] = useState<any[]>([]);
-  const [finanzasBalance, setFinanzasBalance] = useState<any[]>([]);
+  const [inventarioStock, setInventarioStock] = useState<InventarioStockItem[]>([]);
+  const [inventarioMovimientos, setInventarioMovimientos] = useState<MovimientoInventario[]>([]);
+  const [finanzasResumen, setFinanzasResumen] = useState<FinanzasResumen | null>(null);
+  const [finanzasIngresos, setFinanzasIngresos] = useState<Ingreso[]>([]);
+  const [finanzasEgresos, setFinanzasEgresos] = useState<Egreso[]>([]);
+  const [finanzasBalance, setFinanzasBalance] = useState<BalanceSemanal[]>([]);
   const [mostrarModalInventario, setMostrarModalInventario] = useState(false);
   const [tipoMovimiento, setTipoMovimiento] = useState<"entrada" | "salida">("entrada");
   const [mostrarModalEgreso, setMostrarModalEgreso] = useState(false);
   const [mostrarModalIngreso, setMostrarModalIngreso] = useState(false);
-  const [dashFinanzasResumen, setDashFinanzasResumen] = useState<any>(null);
-  const [dashStock, setDashStock] = useState<any[]>([]);
+  const [dashFinanzasResumen, setDashFinanzasResumen] = useState<FinanzasResumen | null>(null);
+  const [dashStock, setDashStock] = useState<InventarioStockItem[]>([]);
   const { showToast } = useToast();
   const { logout, usuario: usuarioActual } = useAuth();
-
-  if (!tiendaId) {
-    return (
-      <div className="tienda-admin-container" style={{ padding: "2rem", textAlign: "center" }}>
-        <p>Cargando...</p>
-      </div>
-    );
-  }
 
   const puedeEditar = usuarioActual?.rol === "admin" || usuarioActual?.tienda_id === parseInt(tiendaId || "0");
 
@@ -197,36 +251,8 @@ export default function TiendaAdmin() {
   const pathParts = location.pathname.split("/");
   const currentView = pathParts[pathParts.length - 1];
 
-  useEffect(() => {
-    if (tiendaId) {
-      fetchData();
-    }
-  }, [tiendaId, currentView]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    setSidebarAbierto(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (productos.length > 0) {
-      const categorias = productos.reduce((acc: Record<string, number>, p) => {
-        const cat = p.categoria || "Sin categoría";
-        acc[cat] = (acc[cat] || 0) + 1;
-        return acc;
-      }, {});
-      const data = Object.entries(categorias).map(([name, value]) => ({ name, value }));
-      setCategoriaData(data);
-    }
-  }, [productos]);
-
   const fetchData = async () => {
+    if (!tiendaId) return;
     try {
       const [tiendaRes] = await Promise.all([
         api.get(`/admin/tiendas/${tiendaId}`),
@@ -288,6 +314,43 @@ export default function TiendaAdmin() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (tiendaId) {
+      fetchData();
+    }
+  }, [tiendaId, currentView]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    setSidebarAbierto(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (productos.length > 0) {
+      const categorias = productos.reduce((acc: Record<string, number>, p) => {
+        const cat = p.categoria || "Sin categoría";
+        acc[cat] = (acc[cat] || 0) + 1;
+        return acc;
+      }, {});
+      const data = Object.entries(categorias).map(([name, value]) => ({ name, value }));
+      setCategoriaData(data);
+    }
+  }, [productos]);
+
+  if (!tiendaId) {
+    return (
+      <div className="tienda-admin-container" style={{ padding: "2rem", textAlign: "center" }}>
+        <p>Cargando...</p>
+      </div>
+    );
+  }
 
   const navItems = [
     { to: `/admin/tiendas/${tiendaId}/dashboard`, icon: HiOutlineHome, label: "Dashboard" },
@@ -422,7 +485,7 @@ export default function TiendaAdmin() {
       autoTable(doc, {
         startY: 118,
         head: [["Fecha", "Tipo", "Descripción", "Monto"]],
-        body: finanzasIngresos.map((i: any) => [
+        body: finanzasIngresos.map((i) => [
           new Date(i.fecha_creacion).toLocaleDateString("es-ES"),
           i.tipo,
           i.descripcion,
@@ -442,7 +505,7 @@ export default function TiendaAdmin() {
       autoTable(doc, {
         startY: finalY + 14,
         head: [["Fecha", "Tipo", "Descripción", "Monto"]],
-        body: finanzasEgresos.map((e: any) => [
+        body: finanzasEgresos.map((e) => [
           new Date(e.fecha_creacion).toLocaleDateString("es-ES"),
           e.tipo,
           e.descripcion,
@@ -614,7 +677,7 @@ export default function TiendaAdmin() {
               </div>
             </div>
 
-            {dashStock.filter((p: any) => p.stock < 5).length > 0 && (
+            {dashStock.filter((p) => p.stock < 5).length > 0 && (
               <motion.div 
                 className="alert-stock glass-card"
                 variants={item}
@@ -623,7 +686,7 @@ export default function TiendaAdmin() {
               >
                 <HiOutlineExclamation />
                 <span>
-                  <strong>{dashStock.filter((p: any) => p.stock < 5).length}</strong> productos con stock bajo
+                  <strong>{dashStock.filter((p) => p.stock < 5).length}</strong> productos con stock bajo
                 </span>
               </motion.div>
             )}
@@ -1034,7 +1097,7 @@ export default function TiendaAdmin() {
                     </tr>
                   </thead>
                   <tbody>
-                    {inventarioStock.map((item: any) => (
+                    {inventarioStock.map((item) => (
                       <tr key={item.producto_id}>
                         <td>
                           <div className="stock-producto">
@@ -1072,7 +1135,7 @@ export default function TiendaAdmin() {
               <h3><HiOutlineDocumentText /> Historial de Movimientos</h3>
               <div className="movimientos-list">
                 {inventarioMovimientos.length > 0 ? (
-                  inventarioMovimientos.slice(0, 20).map((m: any) => (
+                  inventarioMovimientos.slice(0, 20).map((m) => (
                     <div key={m.id} className="movimiento-item">
                       <div className={`movimiento-icon ${m.tipo}`}>
                         {m.tipo === "entrada" ? "↓" : "↑"}
@@ -1138,11 +1201,41 @@ export default function TiendaAdmin() {
               </div>
             )}
 
+            {finanzasBalance.length > 0 && (
+              <div className="balance-semanal-section" style={{ marginBottom: "1.5rem" }}>
+                <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: "1rem" }}>Balance Semanal</h3>
+                <div className="stock-table-container">
+                  <table className="stock-table">
+                    <thead>
+                      <tr>
+                        <th>Semana</th>
+                        <th>Ingresos</th>
+                        <th>Egresos</th>
+                        <th>Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {finanzasBalance.map((b, idx: number) => (
+                        <tr key={idx}>
+                          <td><strong>{b.semana}</strong></td>
+                          <td style={{ color: "#059669" }}>${b.ingresos.toFixed(2)}</td>
+                          <td style={{ color: "#DC2626" }}>${b.egresos.toFixed(2)}</td>
+                          <td style={{ color: b.balance >= 0 ? "#059669" : "#DC2626", fontWeight: 700 }}>
+                            ${b.balance.toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             <div className="transacciones-section">
               <div className="transacciones-list">
                 <h3 className="ingresos-title"><HiOutlineTrendingUp /> Ingresos</h3>
                 {finanzasIngresos.length > 0 ? (
-                  finanzasIngresos.map((i: any) => (
+                  finanzasIngresos.map((i) => (
                     <div key={i.id} className="transaccion-item">
                       <div className="transaccion-icon ingreso">+</div>
                       <div className="transaccion-info">
@@ -1160,7 +1253,7 @@ export default function TiendaAdmin() {
               <div className="transacciones-list">
                 <h3 className="egresos-title"><HiOutlineTrendingDown /> Egresos</h3>
                 {finanzasEgresos.length > 0 ? (
-                  finanzasEgresos.map((e: any) => (
+                  finanzasEgresos.map((e) => (
                     <div key={e.id} className="transaccion-item">
                       <div className="transaccion-icon egreso">−</div>
                       <div className="transaccion-info">
@@ -1373,15 +1466,16 @@ export default function TiendaAdmin() {
                 showToast(`${tipoMovimiento === "entrada" ? "Entrada" : "Salida"} registrada`, "success");
                 setMostrarModalInventario(false);
                 fetchData();
-              } catch (err: any) {
-                showToast(err.response?.data?.detail || "Error al registrar movimiento", "error");
+              } catch (err: unknown) {
+                const e = err as { response?: { data?: { detail?: string } } };
+                showToast(e.response?.data?.detail || "Error al registrar movimiento", "error");
               }
             }}>
               <div className="form-group">
                 <label>Producto (opcional)</label>
                 <select name="producto_id">
                   <option value="">General (sin producto específico)</option>
-                  {inventarioStock.map((p: any) => (
+                  {inventarioStock.map((p) => (
                     <option key={p.producto_id} value={p.producto_id}>{p.nombre} (Stock: {p.stock})</option>
                   ))}
                 </select>
@@ -1424,8 +1518,9 @@ export default function TiendaAdmin() {
                 showToast("Egreso registrado", "success");
                 setMostrarModalEgreso(false);
                 fetchData();
-              } catch (err: any) {
-                showToast(err.response?.data?.detail || "Error al registrar egreso", "error");
+              } catch (err: unknown) {
+                const e = err as { response?: { data?: { detail?: string } } };
+                showToast(e.response?.data?.detail || "Error al registrar egreso", "error");
               }
             }}>
               <div className="form-group">
@@ -1474,8 +1569,9 @@ export default function TiendaAdmin() {
                 showToast("Ingreso registrado", "success");
                 setMostrarModalIngreso(false);
                 fetchData();
-              } catch (err: any) {
-                showToast(err.response?.data?.detail || "Error al registrar ingreso", "error");
+              } catch (err: unknown) {
+                const e = err as { response?: { data?: { detail?: string } } };
+                showToast(e.response?.data?.detail || "Error al registrar ingreso", "error");
               }
             }}>
               <div className="form-group">
