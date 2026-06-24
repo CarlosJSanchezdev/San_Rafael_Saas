@@ -40,8 +40,10 @@ function useSubdominio(): string | undefined {
   const params = useParams<{ subdominio: string }>();
   const host = window.location.host;
   const dominioBase = import.meta.env.VITE_DOMINIO_BASE || "localhost:5173";
-  if (host !== dominioBase && host.includes(dominioBase)) {
-    const sub = host.replace(`.${dominioBase}`, "");
+  const dominioClean = dominioBase.split(":")[0];
+  const hostClean = host.split(":")[0];
+  if (hostClean !== dominioClean && hostClean.includes(dominioClean)) {
+    const sub = hostClean.replace(`.${dominioClean}`, "");
     if (sub && sub !== "www") return sub;
   }
   return params.subdominio;

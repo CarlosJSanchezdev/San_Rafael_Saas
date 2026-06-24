@@ -27,8 +27,10 @@ import Home from './pages/Home';
 function obtenerSubdominioDeHost(): string | null {
   const host = window.location.host;
   const dominioBase = import.meta.env.VITE_DOMINIO_BASE || "localhost:5173";
-  if (host === dominioBase || !host.includes(dominioBase)) return null;
-  const sub = host.replace(`.${dominioBase}`, "");
+  const dominioClean = dominioBase.split(":")[0];
+  const hostClean = host.split(":")[0];
+  if (hostClean === dominioClean || !hostClean.includes(dominioClean)) return null;
+  const sub = hostClean.replace(`.${dominioClean}`, "");
   if (!sub || sub === "www") return null;
   return sub;
 }

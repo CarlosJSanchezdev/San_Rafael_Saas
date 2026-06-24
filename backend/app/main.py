@@ -13,9 +13,10 @@ def extraer_subdominio(host: str, dominio_base: str):
     if not host:
         return None
     host_clean = host.split(":")[0]
-    if not host_clean.endswith(dominio_base):
+    dominio_clean = dominio_base.split(":")[0]
+    if not host_clean.endswith(dominio_clean):
         return None
-    prefix = host_clean[: -len(dominio_base)].rstrip(".")
+    prefix = host_clean[: -len(dominio_clean)].rstrip(".")
     if not prefix or prefix == "www":
         return None
     if not re.match(r"^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$", prefix):
@@ -37,7 +38,6 @@ class SubdomainMiddleware(BaseHTTPMiddleware):
                     "/docs",
                     "/openapi.json",
                     "/redoc",
-                    "/tiendas",
                     "/metricas",
                     "/productos",
                     "/pedidos",
@@ -49,6 +49,10 @@ class SubdomainMiddleware(BaseHTTPMiddleware):
                 )
             )
             or path == "/"
+            or path.startswith("/tiendas/por-")
+            or path.startswith("/tiendas/sectores")
+            or path.startswith("/tiendas/")
+            or path == "/tiendas"
         ):
             return await call_next(request)
         host = request.headers.get("X-Forwarded-Host") or request.headers.get(
