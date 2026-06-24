@@ -1,6 +1,21 @@
 from pydantic import BaseModel, EmailStr, validator
 from typing import Optional
 from datetime import datetime
+import re
+
+
+def _normalizar_subdominio(v: str) -> str:
+    """Normaliza y valida el formato de un subdominio/slug."""
+    if not v:
+        raise ValueError("El subdominio es obligatorio")
+    v = v.lower().strip()
+    if not re.match(r"^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$", v):
+        raise ValueError(
+            "Subdominio inválido: usar solo minúsculas, números y guiones "
+            "(2-32 chars, sin empezar/terminar en guion)"
+        )
+    return v
+
 
 class UsuarioBase(BaseModel):
     nombre: str
@@ -9,20 +24,22 @@ class UsuarioBase(BaseModel):
     rol: str = "usuario"
     tienda_id: Optional[int] = None
 
+
 class UsuarioCrear(UsuarioBase):
     password: str
-    
-    @validator('password')
+
+    @validator("password")
     def password_strength(cls, v):
         if len(v) < 8:
-            raise ValueError('La contraseña debe tener al menos 8 caracteres')
+            raise ValueError("La contraseña debe tener al menos 8 caracteres")
         if not any(c.isupper() for c in v):
-            raise ValueError('La contraseña debe tener al menos una mayúscula')
+            raise ValueError("La contraseña debe tener al menos una mayúscula")
         if not any(c.islower() for c in v):
-            raise ValueError('La contraseña debe tener al menos una minúscula')
+            raise ValueError("La contraseña debe tener al menos una minúscula")
         if not any(c.isdigit() for c in v):
-            raise ValueError('La contraseña debe tener al menos un número')
+            raise ValueError("La contraseña debe tener al menos un número")
         return v
+
 
 class UsuarioUpdate(BaseModel):
     nombre: Optional[str] = None
@@ -32,11 +49,13 @@ class UsuarioUpdate(BaseModel):
     rol: Optional[str] = None
     tienda_id: Optional[int] = None
 
+
 class UsuarioOut(UsuarioBase):
     id: int
 
     class Config:
         from_attributes = True
+
 
 class TiendaBase(BaseModel):
     nombre: str
@@ -56,6 +75,7 @@ class TiendaBase(BaseModel):
     wompi_public_key: Optional[str] = None
     wompi_integrity_secret: Optional[str] = None
     wompi_activo: bool = False
+
 
 class TiendaCrear(BaseModel):
     nombre: str
@@ -77,6 +97,11 @@ class TiendaCrear(BaseModel):
     wompi_integrity_secret: Optional[str] = None
     wompi_activo: bool = False
 
+    @validator("subdominio", "slug")
+    def validar_subdominio(cls, v):
+        return _normalizar_subdominio(v)
+
+
 class TiendaUpdate(BaseModel):
     nombre: Optional[str] = None
     subdominio: Optional[str] = None
@@ -88,6 +113,13 @@ class TiendaUpdate(BaseModel):
     color_primario: Optional[str] = None
     color_secundario: Optional[str] = None
     plantilla: Optional[str] = None
+
+    @validator("subdominio", "slug")
+    def validar_subdominio_update(cls, v):
+        if v is None:
+            return v
+        return _normalizar_subdominio(v)
+
     telefono: Optional[str] = None
     email: Optional[str] = None
     direccion: Optional[str] = None
@@ -95,6 +127,7 @@ class TiendaUpdate(BaseModel):
     wompi_public_key: Optional[str] = None
     wompi_integrity_secret: Optional[str] = None
     wompi_activo: Optional[bool] = None
+
 
 class TiendaOut(TiendaBase):
     id: int
@@ -106,6 +139,7 @@ class TiendaOut(TiendaBase):
 
     class Config:
         from_attributes = True
+
 
 class TiendaPublicaOut(BaseModel):
     id: int
@@ -127,6 +161,7 @@ class TiendaPublicaOut(BaseModel):
     class Config:
         from_attributes = True
 
+
 class PlantillaProductoBase(BaseModel):
     sector: str
     nombre: str
@@ -135,8 +170,10 @@ class PlantillaProductoBase(BaseModel):
     precio_base: Optional[float] = None
     imagen: Optional[str] = None
 
+
 class PlantillaProductoCrear(PlantillaProductoBase):
     pass
+
 
 class PlantillaProductoOut(PlantillaProductoBase):
     id: int
@@ -144,6 +181,7 @@ class PlantillaProductoOut(PlantillaProductoBase):
 
     class Config:
         from_attributes = True
+
 
 class MetricaTiendaBase(BaseModel):
     tienda_id: int
@@ -153,8 +191,10 @@ class MetricaTiendaBase(BaseModel):
     fuente_trafico: Optional[str] = None
     duracion_segundos: int = 0
 
+
 class MetricaTiendaCrear(MetricaTiendaBase):
     pass
+
 
 class MetricaTiendaOut(MetricaTiendaBase):
     id: int
@@ -163,12 +203,14 @@ class MetricaTiendaOut(MetricaTiendaBase):
     class Config:
         from_attributes = True
 
+
 class MetricaResumen(BaseModel):
     total_visitas: int
     visitantes_unicos: int
     productos_mas_vistos: list
     tiempo_promedio_segundos: float
     fuentes_trafico: dict
+
 
 class ProductoBase(BaseModel):
     nombre: str
@@ -179,8 +221,10 @@ class ProductoBase(BaseModel):
     imagen: Optional[str] = None
     activo: bool = True
 
+
 class ProductoCrear(ProductoBase):
     tienda_id: int
+
 
 class ProductoUpdate(BaseModel):
     nombre: Optional[str] = None
@@ -191,6 +235,7 @@ class ProductoUpdate(BaseModel):
     imagen: Optional[str] = None
     activo: Optional[bool] = None
 
+
 class ProductoOut(ProductoBase):
     id: int
     tienda_id: int
@@ -199,6 +244,7 @@ class ProductoOut(ProductoBase):
     class Config:
         from_attributes = True
 
+
 class ClienteBase(BaseModel):
     nombre: str
     empresa: Optional[str] = None
@@ -206,6 +252,7 @@ class ClienteBase(BaseModel):
     telefono: Optional[str] = None
     direccion: Optional[str] = None
     notas: Optional[str] = None
+
 
 class ClienteConTienda(BaseModel):
     nombre: str
@@ -216,8 +263,10 @@ class ClienteConTienda(BaseModel):
     notas: Optional[str] = None
     tienda: Optional[TiendaCrear] = None
 
+
 class ClienteCrear(ClienteBase):
     pass
+
 
 class ClienteUpdate(BaseModel):
     nombre: Optional[str] = None
@@ -227,6 +276,7 @@ class ClienteUpdate(BaseModel):
     direccion: Optional[str] = None
     notas: Optional[str] = None
 
+
 class ClienteOut(ClienteBase):
     id: int
     fecha_creacion: datetime
@@ -234,11 +284,13 @@ class ClienteOut(ClienteBase):
     class Config:
         from_attributes = True
 
+
 class PedidoItemSchema(BaseModel):
     producto_id: int
     cantidad: int
     precio: float
     producto_nombre: Optional[str] = None  # El backend lo completará desde la BD
+
 
 class PedidoCrear(BaseModel):
     tienda_id: int
@@ -248,18 +300,20 @@ class PedidoCrear(BaseModel):
     direccion_envio: str
     notas: Optional[str] = None
     items: list[PedidoItemSchema]
-    
+
     @validator("items")
     def validate_items_not_empty(cls, v):
         if not v:
             raise ValueError("Debe incluir al menos un producto")
         return v
 
+
 class PedidoItemOut(PedidoItemSchema):
     id: int
 
     class Config:
         from_attributes = True
+
 
 class PedidoOut(BaseModel):
     id: int
@@ -280,6 +334,7 @@ class PedidoOut(BaseModel):
 
 
 # ERP Schemas - Inventario
+
 
 class MovimientoInventarioBase(BaseModel):
     producto_id: Optional[int] = None
@@ -314,6 +369,7 @@ class StockProductoOut(BaseModel):
 
 
 # ERP Schemas - Finanzas
+
 
 class IngresoBase(BaseModel):
     tipo: str  # venta, manual

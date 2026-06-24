@@ -36,9 +36,20 @@ interface Producto {
   imagen: string;
 }
 
+function useSubdominio(): string | undefined {
+  const params = useParams<{ subdominio: string }>();
+  const host = window.location.host;
+  const dominioBase = import.meta.env.VITE_DOMINIO_BASE || "localhost:5173";
+  if (host !== dominioBase && host.includes(dominioBase)) {
+    const sub = host.replace(`.${dominioBase}`, "");
+    if (sub && sub !== "www") return sub;
+  }
+  return params.subdominio;
+}
+
 export default function TiendaPublica() {
-  const { subdominio } = useParams<{ subdominio: string }>();
-  
+  const subdominio = useSubdominio();
+
   const [tienda, setTienda] = useState<Tienda | null>(null);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<string[]>([]);
@@ -47,7 +58,7 @@ export default function TiendaPublica() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
-  
+
   const { agregarItem, cantidadTotal, setTiendaActiva } = useCarrito();
 
   useEffect(() => {
@@ -61,14 +72,15 @@ export default function TiendaPublica() {
   }, [tienda?.id, setTiendaActiva]);
 
   const fetchData = async () => {
+    if (!subdominio) return;
     try {
       const tiendaRes = await api.get(`/tiendas/por-subdominio/${subdominio}`);
       setTienda(tiendaRes.data);
-      
+
       const productosRes = await api.get(`/tiendas/${tiendaRes.data.id}/productos`);
       const prods = productosRes.data;
       setProductos(prods);
-      
+
       const cats = [...new Set(prods.map((p: Producto) => p.categoria).filter(Boolean))];
       setCategorias(cats as string[]);
     } catch (error) {
@@ -84,7 +96,7 @@ export default function TiendaPublica() {
         tienda_id: tienda?.id,
         tipo,
         producto_id: productoId,
-        url: window.location.pathname,
+        url: window.location.host + window.location.pathname,
         fuente_trafico: "directo",
       });
     } catch (error) {

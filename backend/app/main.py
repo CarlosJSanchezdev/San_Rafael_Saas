@@ -1,10 +1,65 @@
 import os
+import re
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+
+
+def extraer_subdominio(host: str, dominio_base: str):
+    """Extrae el subdominio del Host header, excluyendo www y dominio base."""
+    if not host:
+        return None
+    host_clean = host.split(":")[0]
+    if not host_clean.endswith(dominio_base):
+        return None
+    prefix = host_clean[: -len(dominio_base)].rstrip(".")
+    if not prefix or prefix == "www":
+        return None
+    if not re.match(r"^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$", prefix):
+        return None
+    return prefix
+
+
+class SubdomainMiddleware(BaseHTTPMiddleware):
+    """Middleware que detecta el subdominio del Host y lo inyecta en request.state."""
+
+    async def dispatch(self, request: Request, call_next):
+        path = request.url.path
+        # Rutas que no requieren resolver tienda por subdominio
+        if (
+            path.startswith(
+                (
+                    "/admin",
+                    "/auth",
+                    "/docs",
+                    "/openapi.json",
+                    "/redoc",
+                    "/tiendas",
+                    "/metricas",
+                    "/productos",
+                    "/pedidos",
+                    "/usuarios",
+                    "/clientes",
+                    "/wompi",
+                    "/stats",
+                    "/tienda",
+                )
+            )
+            or path == "/"
+        ):
+            return await call_next(request)
+        host = request.headers.get("X-Forwarded-Host") or request.headers.get(
+            "host", ""
+        )
+        dominio_base = os.getenv("DOMINIO_BASE", "localhost:5173")
+        sub = extraer_subdominio(host, dominio_base)
+        if sub:
+            request.state.subdominio = sub
+        return await call_next(request)
+
 
 # Load .env file
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
@@ -38,13 +93,13 @@ app.state.limiter = limiter
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         response = await call_next(request)
-        
+
         # Prevent clickjacking
         response.headers["X-Frame-Options"] = "DENY"
-        
+
         # Prevent MIME-type sniffing
         response.headers["X-Content-Type-Options"] = "nosniff"
-        
+
         # Content Security Policy
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
@@ -55,10 +110,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "connect-src 'self' https:; "
             "frame-ancestors 'none';"
         )
-        
+
         # Referrer Policy
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        
+
         # Permissions Policy
         response.headers["Permissions-Policy"] = (
             "geolocation=(), "
@@ -70,11 +125,11 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "payment=(), "
             "usb=()"
         )
-        
+
         # HSTS - HTTP Strict Transport Security (solo en producción)
         # Descomentar en producción:
         # response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-        
+
         return response
 
 
@@ -82,9 +137,17 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 
 # ---------------------------------------------------------------------------
+# Subdomain Middleware - detecta subdominio del Host y lo inyecta en request.state
+# Debe registrarse ANTES de CORS para que request.state.subdominio esté disponible
+# ---------------------------------------------------------------------------
+app.add_middleware(SubdomainMiddleware)
+
+
+# ---------------------------------------------------------------------------
 # Request Size Limit Middleware
 # ---------------------------------------------------------------------------
 MAX_REQUEST_SIZE = 10 * 1024 * 1024  # 10MB
+
 
 class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
@@ -93,10 +156,11 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
             return Response(
                 content="Request too large",
                 status_code=413,
-                headers={"Content-Type": "text/plain"}
+                headers={"Content-Type": "text/plain"},
             )
         response = await call_next(request)
         return response
+
 
 app.add_middleware(RequestSizeLimitMiddleware)
 
@@ -108,18 +172,31 @@ app.add_middleware(RequestSizeLimitMiddleware)
 # are allowed because ngrok URLs change frequently. In production, replace with
 # exact domain list for better security.
 _raw_origins = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:5173,http://localhost:4173"
+    "ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:4173"
 )
 ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 # Wildcards necesarios para túneles temporales (ngrok, localtunnel)
 # En producción, usar solo dominios exactos
-ALLOWED_ORIGINS.extend([
-    "https://*.ngrok-free.dev",
-    "https://*.ngrok.io",
-    "https://*.localtunnel.me",
-])
+ALLOWED_ORIGINS.extend(
+    [
+        "https://*.ngrok-free.dev",
+        "https://*.ngrok.io",
+        "https://*.localtunnel.me",
+    ]
+)
+
+# Wildcards para subdominios de tiendas (dev y prod)
+_DOMINIO_BASE = os.getenv("DOMINIO_BASE", "localhost:5173")
+_DOMINIO_BASE_PROD = os.getenv("DOMINIO_BASE_PROD", "sanrafaeldesarrollo.com")
+ALLOWED_ORIGINS.extend(
+    [
+        f"http://*.{_DOMINIO_BASE}",
+        f"https://*.{_DOMINIO_BASE}",
+        f"http://*.{_DOMINIO_BASE_PROD}",
+        f"https://*.{_DOMINIO_BASE_PROD}",
+    ]
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -133,10 +210,12 @@ app.add_middleware(
 # Routers públicos (sin autenticación requerida)
 # ---------------------------------------------------------------------------
 app.include_router(auth_router)
-app.include_router(tienda_router)      # /tienda (demo/home, pública)
-app.include_router(tiendas_router)    # /tiendas/*, /sectores (públicos)
-app.include_router(metricas_router)   # POST /metricas/visita (público)
-app.include_router(wompi_router, prefix="/pedidos")  # /pedidos/create-wompi-transaction, /webhooks/wompi
+app.include_router(tienda_router)  # /tienda (demo/home, pública)
+app.include_router(tiendas_router)  # /tiendas/*, /sectores (públicos)
+app.include_router(metricas_router)  # POST /metricas/visita (público)
+app.include_router(
+    wompi_router, prefix="/pedidos"
+)  # /pedidos/create-wompi-transaction, /webhooks/wompi
 
 # ---------------------------------------------------------------------------
 # Routers protegidos — todas las rutas requieren token válido
@@ -145,16 +224,19 @@ app.include_router(wompi_router, prefix="/pedidos")  # /pedidos/create-wompi-tra
 # ---------------------------------------------------------------------------
 _auth_dep = [Depends(get_current_user)]
 
-app.include_router(usuarios_router,      dependencies=_auth_dep)
-app.include_router(productos_router,     dependencies=_auth_dep)
-app.include_router(clientes_router,      dependencies=_auth_dep)
-app.include_router(stats_router,         dependencies=_auth_dep)
-app.include_router(plantillas_router,    dependencies=_auth_dep)
+app.include_router(usuarios_router, dependencies=_auth_dep)
+app.include_router(productos_router, dependencies=_auth_dep)
+app.include_router(clientes_router, dependencies=_auth_dep)
+app.include_router(stats_router, dependencies=_auth_dep)
+app.include_router(plantillas_router, dependencies=_auth_dep)
 app.include_router(pedidos_router)
 app.include_router(tiendas_admin_router, dependencies=_auth_dep)  # /admin/tiendas/*
-app.include_router(metricas_admin_router, dependencies=_auth_dep) # /admin/.../metricas
-app.include_router(inventario_router, dependencies=_auth_dep)  # /admin/tienda/{id}/inventario/*
-app.include_router(finanzas_router, dependencies=_auth_dep)  # /admin/tienda/{id}/finanzas/*
+app.include_router(metricas_admin_router, dependencies=_auth_dep)  # /admin/.../metricas
+app.include_router(
+    inventario_router, dependencies=_auth_dep
+)  # /admin/tienda/{id}/inventario/*
+app.include_router(
+    finanzas_router, dependencies=_auth_dep
+)  # /admin/tienda/{id}/finanzas/*
 
 Base.metadata.create_all(bind=engine)
-

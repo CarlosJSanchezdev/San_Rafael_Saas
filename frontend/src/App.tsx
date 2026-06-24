@@ -24,6 +24,15 @@ import Pedidos from './pages/Pedidos';
 import Contacto from './pages/Contacto';
 import Home from './pages/Home';
 
+function obtenerSubdominioDeHost(): string | null {
+  const host = window.location.host;
+  const dominioBase = import.meta.env.VITE_DOMINIO_BASE || "localhost:5173";
+  if (host === dominioBase || !host.includes(dominioBase)) return null;
+  const sub = host.replace(`.${dominioBase}`, "");
+  if (!sub || sub === "www") return null;
+  return sub;
+}
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { usuario, loading } = useAuth();
   const location = useLocation();
@@ -47,6 +56,31 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
+  const subdominioHost = obtenerSubdominioDeHost();
+
+  // Modo tienda pública por subdominio real (ej: cafe-test.localhost:5173)
+  if (subdominioHost) {
+    return (
+      <ToastProvider>
+        <AuthProvider>
+          <CarritoProvider>
+            <Router>
+              <Carrito />
+              <Routes>
+                <Route path="/" element={<TiendaPublica />} />
+                <Route path="/checkout" element={<CheckoutTienda />} />
+                <Route path="/producto/:id" element={<ProductoDetalle />} />
+                <Route path="/sobre-nosotros" element={<TiendaPublica />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Router>
+          </CarritoProvider>
+        </AuthProvider>
+      </ToastProvider>
+    );
+  }
+
+  // Modo normal: admin + fallback /t/{subdominio}
   return (
     <ToastProvider>
       <AuthProvider>
@@ -64,139 +98,139 @@ function App() {
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/recuperar-password" element={<RecuperarPassword />} />
             <Route path="/reset-password" element={<RecuperarPassword />} />
-            
+
             <Route path="/t/:subdominio" element={<TiendaPublica />} />
             <Route path="/t/:subdominio/checkout" element={<CheckoutTienda />} />
             <Route path="/t/:subdominio/producto/:id" element={<ProductoDetalle />} />
             <Route path="/t/:subdominio/sobre-nosotros" element={<TiendaPublica />} />
-            
-            <Route 
-              path="/admin" 
+
+            <Route
+              path="/admin"
               element={
                 <ProtectedRoute>
                   <Dashboard />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/tiendas" 
+            <Route
+              path="/admin/tiendas"
               element={
                 <ProtectedRoute>
                   <Tiendas />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/tiendas/:tiendaId/dashboard" 
+            <Route
+              path="/admin/tiendas/:tiendaId/dashboard"
               element={
                 <ProtectedRoute>
                   <TiendaAdmin />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/tiendas/:tiendaId/preview" 
+            <Route
+              path="/admin/tiendas/:tiendaId/preview"
               element={
                 <ProtectedRoute>
                   <TiendaAdmin />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/tiendas/:tiendaId/productos" 
+            <Route
+              path="/admin/tiendas/:tiendaId/productos"
               element={
                 <ProtectedRoute>
                   <TiendaAdmin />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/tiendas/:tiendaId/pedidos" 
+            <Route
+              path="/admin/tiendas/:tiendaId/pedidos"
               element={
                 <ProtectedRoute>
                   <TiendaAdmin />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/tiendas/:tiendaId/metricas" 
+            <Route
+              path="/admin/tiendas/:tiendaId/metricas"
               element={
                 <ProtectedRoute>
                   <TiendaAdmin />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/tiendas/:tiendaId/pagos" 
+            <Route
+              path="/admin/tiendas/:tiendaId/pagos"
               element={
                 <ProtectedRoute>
                   <TiendaAdmin />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/tiendas/:tiendaId/inventario" 
+            <Route
+              path="/admin/tiendas/:tiendaId/inventario"
               element={
                 <ProtectedRoute>
                   <TiendaAdmin />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/tiendas/:tiendaId/finanzas" 
+            <Route
+              path="/admin/tiendas/:tiendaId/finanzas"
               element={
                 <ProtectedRoute>
                   <TiendaAdmin />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/usuarios" 
+            <Route
+              path="/admin/usuarios"
               element={
                 <ProtectedRoute>
                   <Usuarios />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/productos" 
+            <Route
+              path="/admin/productos"
               element={
                 <ProtectedRoute>
                   <Productos />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/clientes" 
+            <Route
+              path="/admin/clientes"
               element={
                 <ProtectedRoute>
                   <Clientes />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/pedidos" 
+            <Route
+              path="/admin/pedidos"
               element={
                 <ProtectedRoute>
                   <Pedidos />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/reportes" 
+            <Route
+              path="/admin/reportes"
               element={
                 <ProtectedRoute>
                   <Reportes />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/configuracion" 
+            <Route
+              path="/admin/configuracion"
               element={
                 <ProtectedRoute>
                   <Configuracion />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route path="/home" element={<Navigate to="/admin" />} />
             </Routes>

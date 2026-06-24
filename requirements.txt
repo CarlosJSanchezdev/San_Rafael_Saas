@@ -9,3 +9,4 @@ email-validator
 stripe
 python-dotenv
 requests
+slowapi
