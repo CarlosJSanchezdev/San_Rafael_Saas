@@ -45,14 +45,13 @@ class SubdomainMiddleware(BaseHTTPMiddleware):
                     "/clientes",
                     "/wompi",
                     "/stats",
-                    "/tienda",
+                    "/tienda/",
                 )
             )
             or path == "/"
+            or path == "/tienda"
             or path.startswith("/tiendas/por-")
             or path.startswith("/tiendas/sectores")
-            or path.startswith("/tiendas/")
-            or path == "/tiendas"
         ):
             return await call_next(request)
         host = request.headers.get("X-Forwarded-Host") or request.headers.get(
