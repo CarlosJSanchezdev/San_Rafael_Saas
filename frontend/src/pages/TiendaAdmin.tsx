@@ -38,7 +38,8 @@ import {
   HiOutlineUser,
   HiOutlineTrendingUp,
   HiOutlineTrendingDown,
-  HiOutlineDocumentText
+  HiOutlineDocumentText,
+  HiOutlineShoppingBag
 } from "react-icons/hi";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
@@ -553,13 +554,11 @@ export default function TiendaAdmin() {
             className="logo-icon"
             style={{ backgroundColor: tienda?.color_primario }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'white' }}>
-              storefront
-            </span>
+            <HiOutlineShoppingBag style={{ fontSize: 20, color: 'white' }} />
           </div>
           <div className="logo-text">
             <h3>{tienda?.nombre}</h3>
-            <span>{tienda?.subdominio}.srf.com</span>
+            <span>{tienda?.subdominio}.{import.meta.env.VITE_DOMINIO_BASE?.split(":")[0] || "srf.com"}</span>
           </div>
         </div>
 
@@ -1354,7 +1353,7 @@ export default function TiendaAdmin() {
                     </div>
                   ) : (
                     <div className="image-placeholder">
-                      <span className="material-symbols-outlined">shopping_bag</span>
+                      <HiOutlineShoppingBag />
                       <span>Agregar imagen</span>
                     </div>
                   )}

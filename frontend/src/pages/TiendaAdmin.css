@@ -90,12 +90,25 @@
 
 .logo-text h3 {
   font-size: 1rem;
-  margin-bottom: 0.1rem;
+  margin: 0 0 0.1rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
 }
 
 .logo-text span {
   font-size: 0.75rem;
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  display: block;
+}
+
+.logo-text {
+  min-width: 0;
 }
 
 .tienda-nav {
@@ -168,6 +181,8 @@
   padding: 2rem;
   overflow-y: auto;
   min-height: 100vh;
+  max-width: 1200px;
+  width: calc(100% - 280px);
 }
 
 .tienda-main h2 {
@@ -572,8 +587,10 @@
   color: var(--text-secondary);
 }
 
-.image-placeholder .material-symbols-outlined {
+.image-placeholder svg {
   font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .image-input {
