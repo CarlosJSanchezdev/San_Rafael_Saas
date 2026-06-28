@@ -163,6 +163,7 @@ export default function Tienda() {
                           id: producto.id,
                           nombre: producto.nombre,
                           precio: producto.precio,
+                          stock: producto.stock,
                           imagen: producto.imagen,
                         }, 1);
                         showToast(`${producto.nombre} agregado`, "success");

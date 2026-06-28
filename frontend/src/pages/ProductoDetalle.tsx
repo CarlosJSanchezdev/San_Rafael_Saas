@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import api from "../api";
 import { useCarrito } from "../context/CarritoContext";
 import { useToast } from "../context/ToastContext";
-import { HiOutlineShoppingBag, HiOutlinePlus, HiOutlineMinus } from "react-icons/hi";
+import { HiOutlineShoppingBag, HiOutlinePlus, HiOutlineMinus, HiOutlineArrowLeft, HiOutlineTruck, HiOutlineBadgeCheck, HiOutlineSupport, HiOutlineShoppingCart } from "react-icons/hi";
 import TiendaStyle from "../components/TiendaStyle";
 
 // Static import - load for store pages
@@ -18,6 +18,7 @@ interface Tienda {
   telefono: string;
   email: string;
   plantilla: string;
+  logo: string;
 }
 
 interface Producto {
@@ -38,7 +39,7 @@ export default function ProductoDetalle() {
   const [cantidad, setCantidad] = useState(1);
   const [loading, setLoading] = useState(true);
   
-  const { agregarItem, cantidadTotal, setTiendaActiva } = useCarrito();
+  const { agregarItem, cantidadTotal, setTiendaActiva, items } = useCarrito();
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -73,6 +74,7 @@ export default function ProductoDetalle() {
       id: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
+      stock: producto.stock,
       imagen: producto.imagen,
     }, cantidad);
     
@@ -80,8 +82,11 @@ export default function ProductoDetalle() {
   };
 
   const actualizarCantidad = (delta: number) => {
+    if (!producto) return;
+    const enCarrito = items.find(i => i.id === producto.id)?.cantidad || 0;
+    const maxDisponible = producto.stock - enCarrito;
     const nuevaCantidad = cantidad + delta;
-    if (nuevaCantidad >= 1 && nuevaCantidad <= (producto?.stock || 1)) {
+    if (nuevaCantidad >= 1 && nuevaCantidad <= maxDisponible) {
       setCantidad(nuevaCantidad);
     }
   };
@@ -125,7 +130,11 @@ export default function ProductoDetalle() {
           <nav className="st-navbar">
             <div className="st-nav-left">
               <Link to={`/t/${subdominio}`} className="st-logo">
-                <span className="material-symbols-outlined st-logo-icon">shopping_bag</span>
+                {tienda.logo ? (
+                  <img src={tienda.logo} alt={tienda.nombre} className="st-logo-icon" style={{ width: 32, height: 32, borderRadius: 8 }} />
+                ) : (
+                  <HiOutlineShoppingBag className="st-logo-icon" size={24} />
+                )}
                 <span className="st-logo-text">{tienda.nombre}</span>
               </Link>
             </div>
@@ -143,7 +152,7 @@ export default function ProductoDetalle() {
       <main className="st-product-detail">
         <div className="st-container">
           <Link to={`/t/${subdominio}`} className="st-back-link">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <HiOutlineArrowLeft size={20} />
             Volver a la tienda
           </Link>
           
@@ -155,7 +164,7 @@ export default function ProductoDetalle() {
                   <img src={producto.imagen} alt={producto.nombre} />
                 ) : (
                   <div className="st-product-placeholder">
-                    <span className="material-symbols-outlined">shopping_bag</span>
+                    <HiOutlineShoppingBag size={48} />
                   </div>
                 )}
               </div>
@@ -188,7 +197,7 @@ export default function ProductoDetalle() {
                   <button 
                     className="st-qty-btn"
                     onClick={() => actualizarCantidad(1)}
-                    disabled={cantidad >= producto.stock}
+                    disabled={cantidad >= (producto.stock - (items.find(i => i.id === producto.id)?.cantidad || 0))}
                   >
                     <HiOutlinePlus />
                   </button>
@@ -197,10 +206,10 @@ export default function ProductoDetalle() {
                 <button 
                   className="st-add-to-cart-btn"
                   onClick={agregarAlCarrito}
-                  disabled={producto.stock === 0}
+                  disabled={producto.stock === 0 || (items.find(i => i.id === producto.id)?.cantidad || 0) >= producto.stock}
                 >
-                  <span className="material-symbols-outlined">add_shopping_cart</span>
-                  {producto.stock === 0 ? 'Agotado' : 'Agregar al Carrito'}
+                  <HiOutlineShoppingCart size={20} />
+                  {producto.stock === 0 ? 'Agotado' : ((items.find(i => i.id === producto.id)?.cantidad || 0) >= producto.stock ? 'En carrito al máximo' : 'Agregar al Carrito')}
                 </button>
               </div>
               
@@ -212,15 +221,15 @@ export default function ProductoDetalle() {
               
               <div className="st-product-meta">
                 <div className="st-product-meta-item">
-                  <span className="material-symbols-outlined st-product-meta-icon">local_shipping</span>
+                  <HiOutlineTruck className="st-product-meta-icon" size={24} />
                   <span className="st-product-meta-text">Envío a todo el país</span>
                 </div>
                 <div className="st-product-meta-item">
-                  <span className="material-symbols-outlined st-product-meta-icon">verified</span>
+                  <HiOutlineBadgeCheck className="st-product-meta-icon" size={24} />
                   <span className="st-product-meta-text">Producto de calidad garantizada</span>
                 </div>
                 <div className="st-product-meta-item">
-                  <span className="material-symbols-outlined st-product-meta-icon">support_agent</span>
+                  <HiOutlineSupport className="st-product-meta-icon" size={24} />
                   <span className="st-product-meta-text">Atención personalizada</span>
                 </div>
               </div>

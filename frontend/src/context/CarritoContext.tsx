@@ -5,6 +5,7 @@ export interface CarritoItem {
   nombre: string;
   precio: number;
   cantidad: number;
+  stock: number;
   imagen?: string;
   tienda_id: number;
 }
@@ -24,6 +25,7 @@ interface CarritoContextType {
   toggleCarrito: () => void;
   isOpen: boolean;
   setTiendaActiva: (tiendaId: number) => void;
+  stockMaximoAlcanzado: (id: number) => boolean;
 }
 
 const CarritoContext = createContext<CarritoContextType | undefined>(undefined);
@@ -75,14 +77,18 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
       const itemsTienda = prev[tiendaKey] || [];
       
       const existente = itemsTienda.find(i => i.id === item.id);
+      const stockDisp = (item.stock !== undefined ? item.stock : (existente?.stock ?? 0));
       let nuevosItems: CarritoItem[];
       
       if (existente) {
+        const nuevaCantidad = Math.min(existente.cantidad + cantidad, stockDisp);
         nuevosItems = itemsTienda.map(i =>
-          i.id === item.id ? { ...i, cantidad: i.cantidad + cantidad } : i
+          i.id === item.id ? { ...i, cantidad: nuevaCantidad, stock: stockDisp } : i
         );
       } else {
-        nuevosItems = [...itemsTienda, { ...item, cantidad, tienda_id: tiendaActiva }];
+        const cantidadFinal = Math.min(cantidad, stockDisp);
+        if (cantidadFinal <= 0) return prev;
+        nuevosItems = [...itemsTienda, { ...item, cantidad: cantidadFinal, stock: stockDisp, tienda_id: tiendaActiva }];
       }
       
       return { ...prev, [tiendaKey]: nuevosItems };
@@ -111,6 +117,10 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
     setCarritoData(prev => {
       const tiendaKey = tiendaActiva.toString();
       const itemsTienda = prev[tiendaKey] || [];
+      const item = itemsTienda.find(i => i.id === id);
+      if (item && cantidad > item.stock) {
+        cantidad = item.stock;
+      }
       return {
         ...prev,
         [tiendaKey]: itemsTienda.map(i => i.id === id ? { ...i, cantidad } : i)
@@ -131,6 +141,11 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
   const total = items.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
   const cantidadTotal = items.reduce((sum, item) => sum + item.cantidad, 0);
 
+  const stockMaximoAlcanzado = (id: number): boolean => {
+    const item = items.find(i => i.id === id);
+    return item ? item.cantidad >= item.stock : false;
+  };
+
   return (
     <CarritoContext.Provider
       value={{
@@ -144,6 +159,7 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
         toggleCarrito,
         isOpen,
         setTiendaActiva,
+        stockMaximoAlcanzado,
       }}
     >
       {children}

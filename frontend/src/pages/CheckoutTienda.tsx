@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import api from "../api";
 import { useCarrito } from "../context/CarritoContext";
 import { useToast } from "../context/ToastContext";
-import { HiOutlineShoppingBag } from "react-icons/hi";
+import { HiOutlineShoppingBag, HiOutlineCheckCircle, HiOutlineShoppingCart, HiOutlineArrowLeft, HiOutlineCreditCard, HiOutlineTrash, HiOutlineExclamation } from "react-icons/hi";
 import TiendaStyle from "../components/TiendaStyle";
 import WompiCheckout from "../components/WompiCheckout";
 
@@ -19,6 +19,7 @@ interface Tienda {
   telefono: string;
   email: string;
   plantilla: string;
+  logo: string;
   wompi_public_key?: string;
   wompi_activo?: boolean;
 }
@@ -70,12 +71,30 @@ export default function CheckoutTienda() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleContinueToPayment = (e: React.FormEvent) => {
+  const handleContinueToPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) {
       showToast("El carrito está vacío", "error");
       return;
     }
+    
+    if (tienda?.id) {
+      try {
+        const res = await api.get(`/tiendas/${tienda.id}/productos`);
+        const productosActuales = res.data;
+        for (const item of items) {
+          const prod = productosActuales.find((p: { id: number; stock: number }) => p.id === item.id);
+          if (!prod || prod.stock < item.cantidad) {
+            showToast(`Stock insuficiente para "${item.nombre}". Disponible: ${prod?.stock ?? 0}`, "error");
+            return;
+          }
+        }
+      } catch {
+        showToast("Error verificando stock. Intenta de nuevo.", "error");
+        return;
+      }
+    }
+    
     setShowPayment(true);
   };
 
@@ -123,7 +142,7 @@ export default function CheckoutTienda() {
         />
         <div className="st-checkout-success">
           <div className="st-success-icon">
-            <span className="material-symbols-outlined">check_circle</span>
+            <HiOutlineCheckCircle size={48} />
           </div>
           <h2>¡Pedido Confirmado!</h2>
           <p>Tu pedido #{pedidoCreado} ha sido creado exitosamente.</p>
@@ -146,7 +165,7 @@ export default function CheckoutTienda() {
           colorSecundario={tienda.color_secundario}
         />
         <div className="st-empty-cart">
-          <span className="material-symbols-outlined">shopping_cart</span>
+          <HiOutlineShoppingCart size={48} />
           <h2>Tu carrito está vacío</h2>
           <p>Agrega productos para continuar</p>
           <Link to={`/t/${subdominio}`} className="st-btn-primary">
@@ -170,7 +189,7 @@ export default function CheckoutTienda() {
           <nav className="st-navbar">
             <div className="st-nav-left">
               <Link to={`/t/${subdominio}`} className="st-logo">
-                <span className="material-symbols-outlined st-logo-icon">shopping_bag</span>
+                <HiOutlineShoppingBag className="st-logo-icon" size={24} />
                 <span className="st-logo-text">{tienda.nombre}</span>
               </Link>
             </div>
@@ -188,7 +207,7 @@ export default function CheckoutTienda() {
         <div className="st-container">
           <div className="st-checkout-header">
             <Link to={`/t/${subdominio}`} className="st-back-link">
-              <span className="material-symbols-outlined">arrow_back</span>
+              <HiOutlineArrowLeft size={20} />
               Volver a la tienda
             </Link>
             <h1>Finalizar Compra</h1>
@@ -255,6 +274,18 @@ export default function CheckoutTienda() {
                     rows={3}
                   />
                 </div>
+              {!showPayment && (
+                <button
+                  type="submit"
+                  className="st-checkout-btn"
+
+                  disabled={loadingSubmit}
+                  style={{ marginTop: "1rem" }}
+                >
+                  <HiOutlineCreditCard size={20} />
+                  Continuar al Pago
+                </button>
+              )}
               </form>
 
               {/* Wompi Payment */}
@@ -273,24 +304,12 @@ export default function CheckoutTienda() {
                   />
                 ) : (
                   <div className="st-payment-unavailable">
-                    <p>⚠️ Los pagos no están disponibles en este momento.</p>
+                    <div className="st-payment-warn-icon"><HiOutlineExclamation size={24} /></div><p>Los pagos no están disponibles en este momento.</p>
                     <p>Por favor, contacta al administrador de la tienda.</p>
                   </div>
                 )
               )}
 
-              {!showPayment && (
-                <button
-                  type="button"
-                  className="st-checkout-btn"
-                  onClick={handleContinueToPayment}
-                  disabled={loadingSubmit}
-                  style={{ marginTop: "1rem" }}
-                >
-                  <span className="material-symbols-outlined">credit_card</span>
-                  Continuar al Pago
-                </button>
-              )}
             </div>
 
             {/* Cart Summary */}
@@ -303,7 +322,7 @@ export default function CheckoutTienda() {
                       {item.imagen ? (
                         <img src={item.imagen} alt={item.nombre} />
                       ) : (
-                        <span className="material-symbols-outlined">shopping_bag</span>
+                        <HiOutlineShoppingBag size={24} />
                       )}
                     </div>
                     <div className="st-order-item-info">
@@ -316,7 +335,7 @@ export default function CheckoutTienda() {
                         className="st-remove-btn"
                         onClick={() => eliminarItem(item.id)}
                       >
-                        <span className="material-symbols-outlined">delete</span>
+                        <HiOutlineTrash size={18} />
                       </button>
                     </div>
                   </div>

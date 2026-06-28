@@ -108,3 +108,19 @@
 .admin-theme .skeleton {
   background: linear-gradient(90deg, #f5f0eb 25%, #ece8e3 50%, #f5f0eb 75%);
 }
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: #e8e4e0;
+  }
+
+  .store-theme .skeleton {
+    background: #e8e4e0;
+  }
+
+  .admin-theme .skeleton {
+    background: #ece8e3;
+  }
+}

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
 import { useCarrito } from "../context/CarritoContext";
-import { HiOutlineShoppingBag, HiOutlinePlus, HiOutlineMenu, HiOutlineX } from "react-icons/hi";
+import { useToast } from "../context/ToastContext";
+import { HiOutlineShoppingBag, HiOutlinePlus, HiOutlineMenu, HiOutlineX, HiOutlineSearch, HiOutlineBadgeCheck, HiOutlineTruck, HiOutlineSupport, HiOutlineOfficeBuilding, HiOutlinePhone, HiOutlineMail, HiOutlineMap } from "react-icons/hi";
 import WhatsAppFloat from "../components/WhatsAppFloat";
 import TiendaStyle from "../components/TiendaStyle";
 import { SkeletonProductGrid } from "../components/Skeleton";
@@ -61,7 +62,8 @@ export default function TiendaPublica() {
   const [loading, setLoading] = useState(true);
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
 
-  const { agregarItem, cantidadTotal, setTiendaActiva } = useCarrito();
+  const { agregarItem, cantidadTotal, setTiendaActiva, items, stockMaximoAlcanzado } = useCarrito();
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchData();
@@ -121,13 +123,17 @@ export default function TiendaPublica() {
   });
 
   const handleAddToCart = (producto: Producto) => {
+    const enCarrito = items.find(i => i.id === producto.id)?.cantidad || 0;
+    if (enCarrito >= producto.stock) return;
     agregarItem({
       id: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
+      stock: producto.stock,
       imagen: producto.imagen,
     });
     registrarMetrica("carrito_agregado", producto.id);
+    showToast(`${producto.nombre} agregado al carrito`, "success");
   };
 
   if (loading) {
@@ -171,7 +177,7 @@ export default function TiendaPublica() {
       />
       
       {/* Header */}
-      <header className="st-header">
+      <header className={`st-header ${menuOpen ? "st-menu-open" : ""}`}>
         <div className="st-container">
           <nav className="st-navbar">
             <div className="st-nav-left">
@@ -179,45 +185,38 @@ export default function TiendaPublica() {
                 {tienda.logo ? (
                   <img src={tienda.logo} alt={tienda.nombre} className="st-logo-icon" style={{ width: 40, height: 40, borderRadius: 8 }} />
                 ) : (
-                  <span className="material-symbols-outlined st-logo-icon">shopping_bag</span>
+                  <HiOutlineShoppingBag className="st-logo-icon" size={32} />
                 )}
                 <span className="st-logo-text">{tienda.nombre}</span>
               </Link>
-              
-              <div className="st-nav-links">
-                <Link to={`/t/${subdominio}`} className="st-nav-link">Inicio</Link>
-                <Link to={`/t/${subdominio}#productos`} className="st-nav-link">Productos</Link>
-                <Link to={`/t/${subdominio}#nosotros`} className="st-nav-link">Nosotros</Link>
-                <Link to={`/t/${subdominio}#contacto`} className="st-nav-link">Contacto</Link>
-              </div>
             </div>
-            
+            <div className="st-nav-links">
+              <Link to={`/t/${subdominio}`}>Inicio</Link>
+              <a href="#productos">Productos</a>
+              {tienda.descripcion && <a href="#nosotros">Nosotros</a>}
+              <a href="#contacto">Contacto</a>
+            </div>
             <div className="st-nav-right">
-              <button className="st-nav-btn">
-                Ver Catálogo
-              </button>
-              
+              <a href="#productos" className="st-nav-btn">
+                Ver Productos
+              </a>
               <Link to={`/t/${subdominio}/checkout`} className="st-icon-btn">
                 <HiOutlineShoppingBag />
                 {cantidadTotal > 0 && <span className="st-cart-badge">{cantidadTotal}</span>}
               </Link>
-              
               <button className="st-mobile-toggle" onClick={() => setMenuOpen(!menuOpen)}>
                 {menuOpen ? <HiOutlineX /> : <HiOutlineMenu />}
               </button>
             </div>
           </nav>
         </div>
-        
-        {/* Mobile Menu */}
-        {menuOpen && (
-          <div className="st-mobile-menu">
-            <Link to={`/t/${subdominio}`} onClick={() => setMenuOpen(false)}>Inicio</Link>
-            <Link to={`/t/${subdominio}#productos`} onClick={() => setMenuOpen(false)}>Productos</Link>
-            <Link to={`/t/${subdominio}#nosotros`} onClick={() => setMenuOpen(false)}>Nosotros</Link>
-            <Link to={`/t/${subdominio}#contacto`} onClick={() => setMenuOpen(false)}>Contacto</Link>
-          </div>
-        )}
+        {/* Mobile Menu - always rendered, transitioned via CSS */}
+        <div className="st-mobile-menu">
+          <Link to={`/t/${subdominio}`} onClick={() => setMenuOpen(false)}>Inicio</Link>
+          <Link to={`/t/${subdominio}#productos`} onClick={() => setMenuOpen(false)}>Productos</Link>
+          <a href="#nosotros" onClick={() => setMenuOpen(false)}>Nosotros</a>
+          <a href="#contacto" onClick={() => setMenuOpen(false)}>Contacto</a>
+        </div>
       </header>
       
       {/* Hero Section */}
@@ -243,7 +242,7 @@ export default function TiendaPublica() {
             <div className="st-hero-visual">
               <div className="st-hero-glow" />
               <div className="st-hero-shape">
-                <span className="material-symbols-outlined" style={{ fontSize: 120 }}>shopping_bag</span>
+                <HiOutlineShoppingBag size={120} />
               </div>
             </div>
           </div>
@@ -260,7 +259,7 @@ export default function TiendaPublica() {
           
           {/* Search */}
           <div className="st-search-container">
-            <span className="material-symbols-outlined st-search-icon">search</span>
+            <HiOutlineSearch className="st-search-icon" size={20} />
             <input
               type="text"
               className="st-search-input"
@@ -299,7 +298,7 @@ export default function TiendaPublica() {
                       <img src={producto.imagen} alt={producto.nombre} />
                     ) : (
                       <div className="st-product-placeholder">
-                        <span className="material-symbols-outlined">shopping_bag</span>
+                        <HiOutlineShoppingBag size={32} />
                       </div>
                     )}
                     {producto.stock < 10 && producto.stock > 0 && (
@@ -325,7 +324,7 @@ export default function TiendaPublica() {
                           e.stopPropagation();
                           handleAddToCart(producto);
                         }}
-                        disabled={producto.stock === 0}
+                        disabled={producto.stock === 0 || stockMaximoAlcanzado(producto.id)}
                       >
                         <HiOutlinePlus />
                       </button>
@@ -345,21 +344,18 @@ export default function TiendaPublica() {
         </div>
       </section>
       
-      {/* About Section */}
+{/* About Section - only render if tienda has a description */}
+      {tienda.descripcion && (
       <section id="nosotros" className="st-about">
         <div className="st-container">
           <div className="st-about-grid">
             <div className="st-about-content">
               <h2>Sobre Nosotros</h2>
-              <p>
-                En {tienda.nombre}, nos dedicamos a ofrecerte los mejores productos 
-                con la mejor calidad. Cada artículo es seleccionado cuidadosamente 
-                para garantizar tu satisfacción.
-              </p>
+              <p>{tienda.descripcion}</p>
               <div className="st-about-features">
                 <div className="st-about-feature">
                   <div className="st-about-icon">
-                    <span className="material-symbols-outlined">verified</span>
+                    <HiOutlineBadgeCheck size={24} />
                   </div>
                   <div>
                     <h4>Calidad Premium</h4>
@@ -368,7 +364,7 @@ export default function TiendaPublica() {
                 </div>
                 <div className="st-about-feature">
                   <div className="st-about-icon">
-                    <span className="material-symbols-outlined">local_shipping</span>
+                    <HiOutlineTruck size={24} />
                   </div>
                   <div>
                     <h4>Envío Rápido</h4>
@@ -377,7 +373,7 @@ export default function TiendaPublica() {
                 </div>
                 <div className="st-about-feature">
                   <div className="st-about-icon">
-                    <span className="material-symbols-outlined">support_agent</span>
+                    <HiOutlineSupport size={24} />
                   </div>
                   <div>
                     <h4>Atención Personalizada</h4>
@@ -388,62 +384,13 @@ export default function TiendaPublica() {
             </div>
             <div className="st-about-images">
               <div className="st-hero-shape" style={{ maxWidth: 400 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 100 }}>storefront</span>
+                <HiOutlineOfficeBuilding size={100} />
               </div>
             </div>
           </div>
         </div>
       </section>
-      
-      {/* Testimonials */}
-      <section className="st-testimonials">
-        <div className="st-container">
-          <div className="st-section-header">
-            <h2>Lo que dicen <span>nuestros clientes</span></h2>
-          </div>
-          <div className="st-testimonials-grid">
-            <div className="st-testimonial-card">
-              <span className="material-symbols-outlined st-testimonial-quote">format_quote</span>
-              <p className="st-testimonial-text">
-                "Excelente atención y productos de muy buena calidad. Totally recomendado!"
-              </p>
-              <div className="st-testimonial-author">
-                <div className="st-author-avatar">JD</div>
-                <div>
-                  <p className="st-author-name">Juan Díaz</p>
-                  <p className="st-author-role">Cliente Verificado</p>
-                </div>
-              </div>
-            </div>
-            <div className="st-testimonial-card">
-              <span className="material-symbols-outlined st-testimonial-quote">format_quote</span>
-              <p className="st-testimonial-text">
-                "Me encantó la experiencia de compra. El envío fue muy rápido."
-              </p>
-              <div className="st-testimonial-author">
-                <div className="st-author-avatar">MR</div>
-                <div>
-                  <p className="st-author-name">María Rodríguez</p>
-                  <p className="st-author-role">Cliente Verificado</p>
-                </div>
-              </div>
-            </div>
-            <div className="st-testimonial-card">
-              <span className="material-symbols-outlined st-testimonial-quote">format_quote</span>
-              <p className="st-testimonial-text">
-                "Productos de excelente calidad. Siempre vuelvo a comprar."
-              </p>
-              <div className="st-testimonial-author">
-                <div className="st-author-avatar">CP</div>
-                <div>
-                  <p className="st-author-name">Carlos Pérez</p>
-                  <p className="st-author-role">Cliente Verificado</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      )}
       
       {/* Contact Section */}
       <section id="contacto" className="st-contact">
@@ -456,7 +403,7 @@ export default function TiendaPublica() {
             {tienda.telefono && (
               <a href={`tel:${tienda.telefono}`} className="st-contact-item">
                 <div className="st-contact-icon">
-                  <span className="material-symbols-outlined">phone</span>
+                  <HiOutlinePhone size={22} />
                 </div>
                 <div>
                   <p className="st-contact-label">Teléfono</p>
@@ -467,7 +414,7 @@ export default function TiendaPublica() {
             {tienda.email && (
               <a href={`mailto:${tienda.email}`} className="st-contact-item">
                 <div className="st-contact-icon">
-                  <span className="material-symbols-outlined">email</span>
+                  <HiOutlineMail size={22} />
                 </div>
                 <div>
                   <p className="st-contact-label">Email</p>
@@ -478,7 +425,7 @@ export default function TiendaPublica() {
             {tienda.direccion && (
               <div className="st-contact-item">
                 <div className="st-contact-icon">
-                  <span className="material-symbols-outlined">location_on</span>
+                  <HiOutlineMap size={22} />
                 </div>
                 <div>
                   <p className="st-contact-label">Dirección</p>
@@ -547,7 +494,7 @@ export default function TiendaPublica() {
                     handleAddToCart(productoSeleccionado);
                     setProductoSeleccionado(null);
                   }}
-                  disabled={productoSeleccionado.stock === 0}
+                  disabled={productoSeleccionado.stock === 0 || stockMaximoAlcanzado(productoSeleccionado.id)}
                 >
                   <HiOutlinePlus /> Agregar al Carrito
                 </button>
@@ -557,7 +504,7 @@ export default function TiendaPublica() {
                   <img src={productoSeleccionado.imagen} alt={productoSeleccionado.nombre} />
                 ) : (
                   <div className="st-modal-placeholder">
-                    <span className="material-symbols-outlined">shopping_bag</span>
+                    <HiOutlineShoppingBag size={48} />
                   </div>
                 )}
               </div>

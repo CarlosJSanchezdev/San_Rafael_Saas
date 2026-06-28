@@ -117,7 +117,10 @@ export default function Carrito() {
                             <HiOutlineMinus />
                           </button>
                           <span>{item.cantidad}</span>
-                          <button onClick={() => actualizarCantidad(item.id, item.cantidad + 1)}>
+                          <button 
+                            onClick={() => actualizarCantidad(item.id, item.cantidad + 1)}
+                            disabled={item.cantidad >= item.stock}
+                          >
                             <HiOutlinePlus />
                           </button>
                         </div>

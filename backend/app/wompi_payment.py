@@ -26,11 +26,13 @@ def sanitize_input(text_input: str) -> str:
     if not text_input:
         return text_input
     text_input = html.escape(text_input)
-    text_input = re.sub(r'[<>]', '', text_input)
+    text_input = re.sub(r"[<>]", "", text_input)
     return text_input.strip()
 
 
-def generate_wompi_signature(reference: str, amount_in_cents: int, currency: str, integrity_secret: str) -> str:
+def generate_wompi_signature(
+    reference: str, amount_in_cents: int, currency: str, integrity_secret: str
+) -> str:
     """Genera la firma SHA256 para Wompi"""
     concatenated = f"{reference}{amount_in_cents}{currency}{integrity_secret}"
     return hashlib.sha256(concatenated.encode()).hexdigest()
@@ -49,13 +51,13 @@ def verify_wompi_signature(payload: bytes, signature_header: str) -> bool:
     """
     events_key = os.getenv("WOMPI_EVENTS_KEY")
     if not events_key or events_key == "tu_wompi_events_key_aqui":
-        logger.warning("WOMPI_EVENTS_KEY no configurada - webhook signature validation deshabilitada")
+        logger.warning(
+            "WOMPI_EVENTS_KEY no configurada - webhook signature validation deshabilitada"
+        )
         return False
 
     expected_signature = hmac.new(
-        events_key.encode(),
-        payload,
-        hashlib.sha256
+        events_key.encode(), payload, hashlib.sha256
     ).hexdigest()
 
     return hmac.compare_digest(expected_signature, signature_header)
@@ -63,54 +65,67 @@ def verify_wompi_signature(payload: bytes, signature_header: str) -> bool:
 
 @router.post("/create-wompi-transaction")
 @limiter.limit("30/minute")
-def crear_transaccion_wompi(request: Request, pedido_data: schemas.PedidoCrear, db: Session = Depends(get_db)):
+def crear_transaccion_wompi(
+    request: Request, pedido_data: schemas.PedidoCrear, db: Session = Depends(get_db)
+):
     """
     Crea una transacción de Wompi y retorna los datos necesarios para el widget.
     """
-    tienda = db.query(models.Tienda).filter(models.Tienda.id == pedido_data.tienda_id).first()
+    tienda = (
+        db.query(models.Tienda)
+        .filter(models.Tienda.id == pedido_data.tienda_id)
+        .first()
+    )
     if not tienda:
         raise HTTPException(status_code=400, detail="Tienda no encontrada")
-    
+
     if not tienda.wompi_activo:
-        raise HTTPException(status_code=400, detail="Wompi no está activo para esta tienda")
-    
+        raise HTTPException(
+            status_code=400, detail="Wompi no está activo para esta tienda"
+        )
+
     if not tienda.wompi_public_key or not tienda.wompi_integrity_secret:
-        raise HTTPException(status_code=400, detail="Credenciales de Wompi no configuradas")
+        raise HTTPException(
+            status_code=400, detail="Credenciales de Wompi no configuradas"
+        )
 
     total = 0
     items_detalle = []
 
     for item in pedido_data.items:
-        producto = db.query(models.Producto).filter(
-            models.Producto.id == item.producto_id,
-            models.Producto.tienda_id == pedido_data.tienda_id
-        ).first()
+        producto = (
+            db.query(models.Producto)
+            .filter(
+                models.Producto.id == item.producto_id,
+                models.Producto.tienda_id == pedido_data.tienda_id,
+            )
+            .with_for_update()
+            .first()
+        )
 
         if not producto:
-            raise HTTPException(
-                status_code=400,
-                detail="Error al procesar el pago"
-            )
+            raise HTTPException(status_code=400, detail="Error al procesar el pago")
 
         if abs(producto.precio - item.precio) > 0.01:
             raise HTTPException(
-                status_code=400,
-                detail="El precio del producto ha sido modificado"
+                status_code=400, detail="El precio del producto ha sido modificado"
             )
 
         if producto.stock < item.cantidad:
             raise HTTPException(
                 status_code=400,
-                detail=f"Stock insuficiente para {producto.nombre}. Stock: {producto.stock}"
+                detail=f"Stock insuficiente para {producto.nombre}. Stock: {producto.stock}",
             )
 
         total += producto.precio * item.cantidad
-        items_detalle.append({
-            "producto_id": producto.id,
-            "producto_nombre": producto.nombre,
-            "precio": producto.precio,
-            "cantidad": item.cantidad
-        })
+        items_detalle.append(
+            {
+                "producto_id": producto.id,
+                "producto_nombre": producto.nombre,
+                "precio": producto.precio,
+                "cantidad": item.cantidad,
+            }
+        )
 
     amount_in_cents = int(total * 100)
     reference = generate_reference()
@@ -118,7 +133,7 @@ def crear_transaccion_wompi(request: Request, pedido_data: schemas.PedidoCrear, 
         reference=reference,
         amount_in_cents=amount_in_cents,
         currency="COP",
-        integrity_secret=tienda.wompi_integrity_secret
+        integrity_secret=tienda.wompi_integrity_secret,
     )
 
     # Guardar transacción en BD para idempotencia del webhook
@@ -126,16 +141,16 @@ def crear_transaccion_wompi(request: Request, pedido_data: schemas.PedidoCrear, 
         "email": sanitize_input(pedido_data.cliente_email),
         "nombre": sanitize_input(pedido_data.cliente_nombre),
         "telefono": sanitize_input(pedido_data.cliente_telefono or ""),
-        "direccion": sanitize_input(pedido_data.direccion_envio or "")
+        "direccion": sanitize_input(pedido_data.direccion_envio or ""),
     }
-    
+
     db_transaccion = models.TransaccionWompi(
         reference=reference,
         tienda_id=tienda.id,
         estado="pendiente",
         datos_cliente=datos_cliente,
         items_json=items_detalle,
-        total=amount_in_cents
+        total=amount_in_cents,
     )
     db.add(db_transaccion)
     db.commit()
@@ -152,13 +167,10 @@ def crear_transaccion_wompi(request: Request, pedido_data: schemas.PedidoCrear, 
             "email": sanitize_input(pedido_data.cliente_email),
             "fullName": sanitize_input(pedido_data.cliente_nombre),
             "phoneNumber": sanitize_input(pedido_data.cliente_telefono or ""),
-            "phoneNumberPrefix": "+57"
+            "phoneNumberPrefix": "+57",
         },
         "redirectUrl": f"/t/{tienda.subdominio}/checkout",
-        "metadata": {
-            "tienda_id": tienda.id,
-            "reference": reference
-        }
+        "metadata": {"tienda_id": tienda.id, "reference": reference},
     }
 
 
@@ -171,7 +183,7 @@ class WompiWebhookData(BaseModel):
 async def webhook_wompi(
     request: Request,
     x_wompi_signature: Optional[str] = Header(None, alias="x-wompi-signature"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Webhook que Wompi llama para notificar eventos de pago.
@@ -199,7 +211,9 @@ async def webhook_wompi(
     reference = transaction_data.get("reference")
     status = transaction_data.get("status")
 
-    logger.info(f"Wompi webhook received: event={event}, transaction_id={transaction_id}, reference={reference}, status={status}")
+    logger.info(
+        f"Wompi webhook received: event={event}, transaction_id={transaction_id}, reference={reference}, status={status}"
+    )
 
     # Solo procesar eventos de transacciones actualizadas a APPROVED
     if event != "transaction.updated" or status != "APPROVED":
@@ -209,9 +223,11 @@ async def webhook_wompi(
         return {"status": "error", "message": "reference faltante"}
 
     # Buscar transacción en BD (NO confiar en metadata del payload)
-    transaccion = db.query(models.TransaccionWompi).filter(
-        models.TransaccionWompi.reference == reference
-    ).first()
+    transaccion = (
+        db.query(models.TransaccionWompi)
+        .filter(models.TransaccionWompi.reference == reference)
+        .first()
+    )
 
     if not transaccion:
         return {"status": "error", "message": "Transacción no encontrada"}
@@ -221,9 +237,11 @@ async def webhook_wompi(
         return {"status": "already_processed", "pedido_id": transaccion.pedido_id}
 
     # Obtener tienda desde la transacción guardada
-    tienda = db.query(models.Tienda).filter(
-        models.Tienda.id == transaccion.tienda_id
-    ).first()
+    tienda = (
+        db.query(models.Tienda)
+        .filter(models.Tienda.id == transaccion.tienda_id)
+        .first()
+    )
 
     if not tienda:
         return {"status": "error", "message": "Tienda no encontrada"}
@@ -241,26 +259,53 @@ async def webhook_wompi(
     total = 0
 
     for item in items_data:
-        producto = db.query(models.Producto).filter(
-            models.Producto.id == item.get("producto_id"),
-            models.Producto.tienda_id == transaccion.tienda_id
-        ).with_for_update().first()
+        producto = (
+            db.query(models.Producto)
+            .filter(
+                models.Producto.id == item.get("producto_id"),
+                models.Producto.tienda_id == transaccion.tienda_id,
+            )
+            .with_for_update()
+            .first()
+        )
 
         if not producto:
-            continue
+            db.rollback()
+            transaccion.estado = "fallida"
+            db.commit()
+            logger.error(
+                f"Webhook: producto {item.get('producto_id')} no encontrado (reference={reference})"
+            )
+            return {
+                "status": "error",
+                "message": f"Producto no encontrado: {item.get('producto_nombre')}",
+            }
 
-        if producto.stock < item.get("cantidad", 1):
-            continue
+        cantidad = item.get("cantidad", 1)
+        if producto.stock < cantidad:
+            db.rollback()
+            transaccion.estado = "fallida"
+            db.commit()
+            logger.error(
+                f"Webhook: stock insuficiente para '{producto.nombre}' "
+                f"(stock={producto.stock}, solicitado={cantidad}, reference={reference})"
+            )
+            return {
+                "status": "error",
+                "message": f"Stock insuficiente para '{producto.nombre}'. Stock disponible: {producto.stock}",
+            }
 
-        producto.stock -= item.get("cantidad", 1)
-        total += producto.precio * item.get("cantidad", 1)
+        producto.stock -= cantidad
+        total += producto.precio * cantidad
 
-        items_validados.append({
-            "producto_id": item.get("producto_id"),
-            "producto_nombre": item.get("producto_nombre"),
-            "precio": producto.precio,
-            "cantidad": item.get("cantidad", 1)
-        })
+        items_validados.append(
+            {
+                "producto_id": item.get("producto_id"),
+                "producto_nombre": item.get("producto_nombre"),
+                "precio": producto.precio,
+                "cantidad": cantidad,
+            }
+        )
 
     # Crear pedido
     db_pedido = models.Pedido(
@@ -272,7 +317,7 @@ async def webhook_wompi(
         total=total,
         estado="pendiente",
         estado_pago="pagado",
-        notas=f"Wompi Transaction ID: {transaction_id}"
+        notas=f"Wompi Transaction ID: {transaction_id}",
     )
     db.add(db_pedido)
     db.flush()
@@ -283,7 +328,7 @@ async def webhook_wompi(
             producto_id=item_val["producto_id"],
             producto_nombre=item_val["producto_nombre"],
             precio=item_val["precio"],
-            cantidad=item_val["cantidad"]
+            cantidad=item_val["cantidad"],
         )
         db.add(db_item)
 
@@ -293,7 +338,9 @@ async def webhook_wompi(
 
     db.commit()
 
-    logger.info(f"Pedido created successfully: {db_pedido.id} (transaction: {reference})")
+    logger.info(
+        f"Pedido created successfully: {db_pedido.id} (transaction: {reference})"
+    )
 
     return {"status": "success", "pedido_id": db_pedido.id}
 
@@ -305,27 +352,29 @@ def verificar_transaccion(transaction_id: str, db: Session = Depends(get_db)):
     NOTE: El frontend DEBE usar el webhook para confirmar pagos. Este endpoint es solo para polling.
     """
     # Buscar transacción por reference (que en Wompi es el transaction_id interno)
-    transaccion = db.query(models.TransaccionWompi).filter(
-        models.TransaccionWompi.reference == transaction_id
-    ).first()
+    transaccion = (
+        db.query(models.TransaccionWompi)
+        .filter(models.TransaccionWompi.reference == transaction_id)
+        .first()
+    )
 
     if not transaccion:
         return {
             "transactionId": transaction_id,
             "status": "not_found",
-            "message": "Transacción no encontrada"
+            "message": "Transacción no encontrada",
         }
 
     # Mapear estados internos a estados Wompi
     estado_map = {
         "pendiente": "PENDING",
         "completada": "APPROVED",
-        "fallida": "DECLINED"
+        "fallida": "DECLINED",
     }
 
     return {
         "transactionId": transaction_id,
         "status": estado_map.get(transaccion.estado, "UNKNOWN"),
         "pedidoId": transaccion.pedido_id,
-        "message": f"Estado: {transaccion.estado}"
+        "message": f"Estado: {transaccion.estado}",
     }

@@ -106,13 +106,13 @@
 }
 
 .switch-link a {
-  color: var(--login-primary);
+  color: #A68B6F;
   text-decoration: none;
   font-weight: 500;
   margin-left: 0.25rem;
 }
 
 .switch-link a:hover {
-  color: var(--login-cta);
+  color: #C9A882;
   text-decoration: underline;
 }

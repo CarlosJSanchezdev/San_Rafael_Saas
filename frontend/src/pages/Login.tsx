@@ -9,12 +9,14 @@ import "./Login.css";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const data = new URLSearchParams();
@@ -30,6 +32,8 @@ export default function Login() {
       navigate("/admin");
     } catch {
       showToast("Correo o contraseña incorrectos", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,21 +44,27 @@ export default function Login() {
         <h2>Bienvenido</h2>
         <p>Inicia sesión en tu cuenta</p>
         <form onSubmit={handleSubmit} className="formulario-login">
+          <label htmlFor="login-email" className="sr-only">Correo electrónico</label>
           <input
+            id="login-email"
             type="email"
             placeholder="Correo electrónico"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+          <label htmlFor="login-password" className="sr-only">Contraseña</label>
           <input
+            id="login-password"
             type="password"
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Iniciar Sesión</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Ingresando..." : "Iniciar Sesión"}
+          </button>
         </form>
         <p className="switch-link">
           <Link to="/recuperar-password">¿Olvidaste tu contraseña?</Link>

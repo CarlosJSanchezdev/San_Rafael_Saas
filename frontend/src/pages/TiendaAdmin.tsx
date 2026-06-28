@@ -18,16 +18,16 @@ import {
   Cell,
 } from "recharts";
 import api from "../api";
-import { 
-  HiOutlineHome, 
-  HiOutlineShoppingCart, 
-  HiOutlineCube, 
-  HiOutlineChartBar, 
-  HiOutlineArrowLeft, 
-  HiOutlinePlus, 
-  HiOutlinePencil, 
-  HiOutlineTrash, 
-  HiOutlineEye, 
+import {
+  HiOutlineHome,
+  HiOutlineShoppingCart,
+  HiOutlineCube,
+  HiOutlineChartBar,
+  HiOutlineArrowLeft,
+  HiOutlinePlus,
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlineEye,
   HiOutlineLogout,
   HiOutlineUsers,
   HiOutlineCurrencyDollar,
@@ -39,7 +39,9 @@ import {
   HiOutlineTrendingUp,
   HiOutlineTrendingDown,
   HiOutlineDocumentText,
-  HiOutlineShoppingBag
+  HiOutlineShoppingBag,
+  HiOutlineSave,
+  HiOutlineCheckCircle
 } from "react-icons/hi";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
@@ -364,6 +366,15 @@ export default function TiendaAdmin() {
     { to: `/admin/tiendas/${tiendaId}/pagos`, icon: HiOutlineCurrencyDollar, label: "Pagos" },
   ];
 
+  const visitasData = (() => {
+    const total = metricas?.total_visitas || 0;
+    if (total === 0) return [];
+    const dias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+    const base = Math.floor(total / 7);
+    const resto = total - base * 7;
+    return dias.map((name, i) => ({ name, visitas: base + (i < resto ? 1 : 0) }));
+  })();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -531,7 +542,7 @@ export default function TiendaAdmin() {
   }
 
   return (
-    <div className="tienda-admin" style={{ "--primary": tienda?.color_primario || "#0ea5e9" } as React.CSSProperties}>
+    <div className="tienda-admin" style={{ "--primary": tienda?.color_primario || "#694634" } as React.CSSProperties}>
       {/* Botón menú móvil */}
       <button 
         className="menu-toggle-btn"
@@ -723,31 +734,30 @@ export default function TiendaAdmin() {
               <motion.div className="glass-card" variants={item}>
                 <h2>Visitas (30 días)</h2>
                 <div className="chart-container">
+                  {visitasData.length === 0 ? (
+                    <div style={{ height: 250, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
+                      Sin datos de visitas aún
+                    </div>
+                  ) : (
                   <ResponsiveContainer width="100%" height={250}>
-                    <AreaChart data={[
-                      { name: "Ene", visitas: 120 },
-                      { name: "Feb", visitas: 180 },
-                      { name: "Mar", visitas: 150 },
-                      { name: "Abr", visitas: 220 },
-                      { name: "May", visitas: 280 },
-                      { name: "Jun", visits: metricas?.total_visitas || 0 },
-                    ]}>
+                    <AreaChart data={visitasData}>
                       <defs>
                         <linearGradient id="colorVisitas" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+                          <stop offset="5%" stopColor={tienda?.color_primario || "#694634"} stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor={tienda?.color_primario || "#694634"} stopOpacity={0}/>
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                      <XAxis dataKey="name" stroke="#94a3b8" />
-                      <YAxis stroke="#94a3b8" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E7E5E4" />
+                      <XAxis dataKey="name" stroke="#78716C" fontSize={12} />
+                      <YAxis stroke="#78716C" fontSize={12} allowDecimals={false} />
                       <Tooltip 
-                        contentStyle={{ background: '#1e293b', border: 'none', borderRadius: '8px' }}
-                        labelStyle={{ color: '#f1f5f9' }}
+                        contentStyle={{ background: '#FFFFFF', border: '1px solid #E7E5E4', borderRadius: '8px', color: '#2D2C2F' }}
+                        labelStyle={{ color: '#57534E' }}
                       />
-                      <Area type="monotone" dataKey="visitas" stroke="#0ea5e9" fillOpacity={1} fill="url(#colorVisitas)" />
+                      <Area type="monotone" dataKey="visitas" stroke={tienda?.color_primario || "#694634"} fillOpacity={1} fill="url(#colorVisitas)" />
                     </AreaChart>
                   </ResponsiveContainer>
+                  )}
                 </div>
               </motion.div>
 
@@ -762,14 +772,14 @@ export default function TiendaAdmin() {
                       { name: "Completado", value: pedidos.filter(p => p.estado === "completado").length },
                       { name: "Cancelado", value: pedidos.filter(p => p.estado === "cancelado").length },
                     ]}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                      <XAxis dataKey="name" stroke="#94a3b8" />
-                      <YAxis stroke="#94a3b8" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E7E5E4" />
+                      <XAxis dataKey="name" stroke="#78716C" fontSize={12} />
+                      <YAxis stroke="#78716C" fontSize={12} allowDecimals={false} />
                       <Tooltip 
-                        contentStyle={{ background: '#1e293b', border: 'none', borderRadius: '8px' }}
-                        labelStyle={{ color: '#f1f5f9' }}
+                        contentStyle={{ background: '#FFFFFF', border: '1px solid #E7E5E4', borderRadius: '8px', color: '#2D2C2F' }}
+                        labelStyle={{ color: '#57534E' }}
                       />
-                      <Bar dataKey="value" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="value" fill={tienda?.color_primario || "#694634"} radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -795,8 +805,8 @@ export default function TiendaAdmin() {
                         ))}
                       </Pie>
                       <Tooltip 
-                        contentStyle={{ background: '#1e293b', border: 'none', borderRadius: '8px' }}
-                        labelStyle={{ color: '#f1f5f9' }}
+                        contentStyle={{ background: '#FFFFFF', border: '1px solid #E7E5E4', borderRadius: '8px', color: '#2D2C2F' }}
+                        labelStyle={{ color: '#57534E' }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -806,7 +816,7 @@ export default function TiendaAdmin() {
               <motion.div className="glass-card recent-orders" variants={item}>
                 <h2>Pedidos Recientes</h2>
                 {pedidos.length > 0 ? (
-                  <table className="orders-table">
+                  <div className="table-responsive"><table className="orders-table">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -845,7 +855,7 @@ export default function TiendaAdmin() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </table></div>
                 ) : (
                   <p className="no-data">No hay pedidos aún</p>
                 )}
@@ -934,7 +944,7 @@ export default function TiendaAdmin() {
           <div className="pedidos-view">
             <h2>Pedidos de {tienda?.nombre}</h2>
             {pedidos.length > 0 ? (
-              <table className="orders-table">
+              <div className="table-responsive"><table className="orders-table">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -986,7 +996,7 @@ export default function TiendaAdmin() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             ) : (
               <p className="no-data">No hay pedidos aún</p>
             )}
@@ -996,7 +1006,7 @@ export default function TiendaAdmin() {
                 <div 
                   className="modal-detalle-pedido" 
                   onClick={(e) => e.stopPropagation()}
-                  style={{ "--primary": tienda?.color_primario || "#0ea5e9" } as React.CSSProperties}
+                  style={{ "--primary": tienda?.color_primario || "#694634" } as React.CSSProperties}
                 >
                   <div className="modal-detalle-header">
                     <h2>Pedido #{pedidoSeleccionado.id}</h2>
@@ -1086,7 +1096,7 @@ export default function TiendaAdmin() {
 
             {inventarioStock.length > 0 && (
               <div className="stock-table-container">
-                <table className="stock-table">
+                <div className="table-responsive"><table className="stock-table">
                   <thead>
                     <tr>
                       <th>Producto</th>
@@ -1122,7 +1132,7 @@ export default function TiendaAdmin() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </table></div>
               </div>
             )}
 
@@ -1204,7 +1214,7 @@ export default function TiendaAdmin() {
               <div className="balance-semanal-section" style={{ marginBottom: "1.5rem" }}>
                 <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: "1rem" }}>Balance Semanal</h3>
                 <div className="stock-table-container">
-                  <table className="stock-table">
+                  <div className="table-responsive"><table className="stock-table">
                     <thead>
                       <tr>
                         <th>Semana</th>
@@ -1225,7 +1235,7 @@ export default function TiendaAdmin() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </table></div>
                 </div>
               </div>
             )}
@@ -1275,7 +1285,7 @@ export default function TiendaAdmin() {
             <h2>Configuración de Pagos - Wompi</h2>
             
             <div className="pagos-info-box">
-              <p>⚠️ <strong>Importante:</strong> Para habilitar pagos en tu tienda, necesitas configurar las credenciales de Wompi.</p>
+              <p><HiOutlineExclamation style={{ display: "inline", marginRight: "0.5rem", verticalAlign: "middle" }} /> <strong>Importante:</strong> Para habilitar pagos en tu tienda, necesitas configurar las credenciales de Wompi.</p>
               <p>Obtén tus credenciales en <a href="https://comercios.wompi.co" target="_blank" rel="noopener noreferrer">comercios.wompi.co</a></p>
             </div>
 
@@ -1319,12 +1329,12 @@ export default function TiendaAdmin() {
                 onClick={guardarConfiguracionPagos}
                 disabled={guardandoPagos}
               >
-                {guardandoPagos ? "Guardando..." : "💾 Guardar Configuración"}
+                {guardandoPagos ? "Guardando..." : (<><HiOutlineSave style={{ display: "inline", marginRight: "0.5rem", verticalAlign: "middle" }} /> Guardar Configuración</>)}
               </button>
 
               {pagosForm.wompi_activo && (
                 <div className="pagos-status-active">
-                  ✅ Wompi está activo - Los clientes podrán pagar en tu tienda
+                  <><HiOutlineCheckCircle style={{ display: "inline", marginRight: "0.5rem", verticalAlign: "middle" }} /> Wompi está activo - Los clientes podrán pagar en tu tienda</>
                 </div>
               )}
             </div>
